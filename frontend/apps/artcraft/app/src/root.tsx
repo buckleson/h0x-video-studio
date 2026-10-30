@@ -1,0 +1,49 @@
+import { LinksFunction } from "@remix-run/deno";
+import {
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from "@remix-run/react";
+
+import normalizeCss from "./styles/normalize.css?url";
+import tailwindCss from "./styles/tailwind.css?url";
+import baseCss from "./styles/base.css?url";
+//import { api } from "@storyteller/api";
+
+export const links: LinksFunction = () => [
+  {
+    rel: "stylesheet",
+    href: normalizeCss,
+  },
+  {
+    rel: "stylesheet",
+    href: tailwindCss,
+  },
+  {
+    rel: "stylesheet",
+    href: baseCss,
+  },
+];
+
+export default function App() {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body className="overflow-hidden bg-ui-background">
+        <div className="topbar-spacer" 
+         data-tauri-drag-region={true}
+        />
+        <Outlet />
+        <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
+  );
+}

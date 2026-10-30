@@ -1,0 +1,809 @@
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/resources/fonts/PlusJakartaSans-Variable.ttf") format("truetype");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/resources/fonts/PlusJakartaSans-Italic-Variable.ttf") format("truetype");
+  font-weight: 200 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/resources/fonts/GeistMono-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2c2c2f #0b0b0c;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #0b0b0c;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #2c2c2f;
+  border: 2px solid #0b0b0c;
+}
+
+/* Light theme: the scrollbar track/thumb must be light, not the dark defaults. */
+.theme-light {
+  scrollbar-color: #c4c4c8 #ececef;
+}
+
+.theme-light *::-webkit-scrollbar-track {
+  background: #ececef;
+}
+
+.theme-light *::-webkit-scrollbar-thumb {
+  background-color: #c4c4c8;
+  border: 2px solid #ececef;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family:
+    "Plus Jakarta Sans",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  letter-spacing: -0.03em;
+}
+
+h1,
+h2 {
+  font-weight: 620;
+}
+
+body {
+  font-family:
+    "Plus Jakarta Sans",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  color: var(--st-fg);
+  background-color: var(--st-bg);
+  color-scheme: var(--st-color-scheme, dark);
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: #2d81ff;
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid #74aaff;
+  outline-offset: 3px;
+}
+
+/* Mono HUD micro-label, matching the webapp/marketing site's .hud-label. */
+.hud-label {
+  font-family:
+    "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* Plain (unlayered) rule so it wins over font-weight utilities like
+   font-semibold. */
+.font-display {
+  font-weight: 620;
+}
+
+/* ===================== THEME VARIABLES ===================== */
+/* Violet Bloom. The default (the "gray" theme id) is the dark palette;
+   .theme-light is the light palette. */
+:root,
+.theme-gray {
+  --st-bg: #0a0a0a;
+  --st-panel: #171717;
+  --st-panel-border: #282828;
+  --st-modal: #262626;
+  --st-controls: #262626;
+  --st-controls-rgb: 38 38 38;
+  --st-controls-border: #282828;
+  --st-sunken: #262626;
+  --st-fg: #fafafa;
+  --st-fg-rgb: 250 250 250;
+  --st-divider: #282828;
+  --st-primary: #00ff04;
+  --st-primary-rgb: 0 255 4;
+  --st-primary-fg: #171717;
+  --radius-tile: 0.625rem;
+  --st-color-scheme: dark;
+  --st-gallery-vignette-alpha: 0.3;
+  --st-photo-tint-rgb: 0 0 0;
+  --st-photo-tint-alpha: 0.6;
+  --st-photo-grayscale: 1;
+  --st-badge-alpha: 0.4;
+
+  /* shadcn design tokens consumed by @storyteller/ui-video-editor. */
+  --background: 330 0% 4%;
+  --foreground: 180 0% 98%;
+  --card: 0 0% 9%;
+  --card-foreground: 180 0% 98%;
+  --popover: 0 0% 15%;
+  --popover-foreground: 180 0% 98%;
+  --primary: 121 100% 50%;
+  --primary-foreground: 0 0% 9%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 180 0% 98%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 63%;
+  --accent: 240 0% 25%;
+  --accent-foreground: 180 0% 98%;
+  --destructive: 359 100% 70%;
+  --destructive-foreground: 180 0% 98%;
+  --border: 0 0% 16%;
+  --input: 0 0% 20%;
+  --ring: 0 0% 45%;
+}
+
+:root {
+  /* Motion tokens, mirrored from artcraft-webapp. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-emphasis: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 340ms;
+  --dur-page: 260ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur-base: 1ms;
+    --dur-slow: 1ms;
+    --dur-page: 1ms;
+  }
+}
+
+/* Light theme */
+.theme-light {
+  --st-bg: #fdfdfd;
+  --st-panel: #f5f8fb;
+  --st-panel-border: #e7e7ee;
+  --st-modal: #fcfcfc;
+  --st-controls: #edf0f4;
+  --st-controls-rgb: 237 240 244;
+  --st-controls-border: #e7e7ee;
+  --st-sunken: #ebebeb;
+  --st-fg: #000000;
+  --st-fg-rgb: 0 0 0;
+  --st-divider: #e7e7ee;
+  --st-primary: #7033ff;
+  --st-primary-rgb: 112 51 255;
+  --st-primary-fg: #ffffff;
+  --radius-tile: 1.4rem;
+  --st-color-scheme: light;
+  --st-gallery-vignette-alpha: 0.6;
+  --st-photo-tint-rgb: 0 0 0;
+  --st-photo-tint-alpha: 0;
+  --st-photo-grayscale: 1;
+  /* lighter badge background for light themes */
+  --st-badge-alpha: 0.1;
+
+  --background: 180 0% 99%;
+  --foreground: 0 0% 0%;
+  --card: 180 0% 99%;
+  --card-foreground: 0 0% 0%;
+  --popover: 0 0% 99%;
+  --popover-foreground: 0 0% 0%;
+  --primary: 258 100% 60%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 24% 94%;
+  --secondary-foreground: 195 0% 3%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 32%;
+  --accent: 221 100% 94%;
+  --accent-foreground: 216 76% 49%;
+  --destructive: 358 75% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 240 17% 92%;
+  --input: 0 0% 92%;
+  --ring: 0 0% 0%;
+}
+
+/* Fallback classes hooking common UI areas to variables without refactors */
+.bg-ui-background {
+  background: var(--st-bg);
+}
+
+.bg-ui-panel {
+  background: var(--st-panel);
+}
+
+/* Panel surface. Brutalist system: flat, no gradient (class name kept
+   for lib compatibility). */
+.bg-ui-panel-gradient {
+  background: var(--st-panel);
+  background-color: var(--st-panel);
+}
+
+.bg-ui-modal {
+  background: var(--st-modal);
+}
+
+.border-ui-panel-border {
+  border-color: var(--st-panel-border);
+}
+
+.border-ui-controls-border {
+  border-color: var(--st-controls-border);
+}
+
+.bg-ui-controls {
+  background: var(--st-controls);
+}
+
+.bg-ui-badge {
+  background-color: rgba(0, 0, 0, var(--st-badge-alpha));
+}
+
+.text-base-fg {
+  color: rgb(var(--st-fg-rgb) / 1);
+}
+
+.border-ui-divider {
+  border-color: var(--st-divider);
+}
+
+/* Tauri custom titlebar drag regions */
+[data-tauri-drag-region] {
+  -webkit-app-region: drag;
+}
+
+.tauri-no-drag,
+[data-tauri-drag-region] .no-drag,
+[data-tauri-drag-region] button,
+[data-tauri-drag-region] a,
+[data-tauri-drag-region] input,
+[data-tauri-drag-region] textarea,
+[data-tauri-drag-region] select {
+  -webkit-app-region: no-drag;
+}
+
+img {
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Icon auto-contrast: invert only in dark themes */
+.icon-auto-contrast {
+  filter: invert(1);
+}
+
+.theme-light .icon-auto-contrast {
+  filter: none;
+}
+
+/* Hide native scrollbars while preserving scrollability */
+/* Minimal thin scrollbar for prompt textareas */
+.promptbox-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.promptbox-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.promptbox-scrollbar::-webkit-scrollbar:vertical {
+  width: 4px;
+}
+
+.promptbox-scrollbar::-webkit-scrollbar:horizontal {
+  height: 4px;
+}
+
+.promptbox-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.promptbox-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.promptbox-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Light theme: white thumb is invisible on the light glass — use a dark tint. */
+.theme-light .promptbox-scrollbar {
+  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+}
+
+.theme-light .promptbox-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.theme-light .promptbox-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.promptbox-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.promptbox-scrollbar::-webkit-resizer {
+  background: transparent;
+  border: none;
+}
+
+.promptbox-resize-wrap {
+  position: relative;
+}
+
+.promptbox-resize-wrap::after {
+  content: "";
+  position: absolute;
+  bottom: 16px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.5) 40%,
+    rgba(255, 255, 255, 0.5) 45%,
+    transparent 45%,
+    transparent 55%,
+    rgba(255, 255, 255, 0.5) 55%,
+    rgba(255, 255, 255, 0.5) 60%,
+    transparent 60%,
+    transparent 70%,
+    rgba(255, 255, 255, 0.5) 70%,
+    rgba(255, 255, 255, 0.5) 75%,
+    transparent 75%
+  );
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+.topbar-spacer {
+  height: 56px;
+  width: 100vw;
+}
+
+.prevent-select {
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+  pointer-events: none;
+}
+
+.text-overflow-ellipsis {
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/*!
+ * three-dots - v0.3.2
+ * CSS loading animations made with single element
+ * https://nzbin.github.io/three-dots/
+ *
+ * Copyright (c) 2018 nzbin
+ * Released under MIT License
+ */
+
+/**
+ * ==============================================
+ * Dot Typing
+ * ==============================================
+ */
+.dot-typing {
+  position: relative;
+  left: -9999px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #ffffff30;
+  color: #ffffff30;
+  box-shadow:
+    9984px 0 0 0 #ffffff30,
+    9999px 0 0 0 #ffffff30,
+    10014px 0 0 0 #ffffff30;
+  animation: dot-typing 1.5s infinite linear;
+}
+
+@keyframes dot-typing {
+  0% {
+    box-shadow:
+      9984px 0 0 0 #ffffff30,
+      9999px 0 0 0 #ffffff30,
+      10014px 0 0 0 #ffffff30;
+  }
+
+  16.667% {
+    box-shadow:
+      9984px -10px 0 0 #ffffff30,
+      9999px 0 0 0 #ffffff30,
+      10014px 0 0 0 #ffffff30;
+  }
+
+  33.333% {
+    box-shadow:
+      9984px 0 0 0 #ffffff30,
+      9999px 0 0 0 #ffffff30,
+      10014px 0 0 0 #ffffff30;
+  }
+
+  50% {
+    box-shadow:
+      9984px 0 0 0 #ffffff30,
+      9999px -10px 0 0 #ffffff30,
+      10014px 0 0 0 #ffffff30;
+  }
+
+  66.667% {
+    box-shadow:
+      9984px 0 0 0 #ffffff30,
+      9999px 0 0 0 #ffffff30,
+      10014px 0 0 0 #ffffff30;
+  }
+
+  83.333% {
+    box-shadow:
+      9984px 0 0 0 #ffffff30,
+      9999px 0 0 0 #ffffff30,
+      10014px -10px 0 0 #ffffff30;
+  }
+
+  100% {
+    box-shadow:
+      9984px 0 0 0 #ffffff30,
+      9999px 0 0 0 #ffffff30,
+      10014px 0 0 0 #ffffff30;
+  }
+}
+
+/**
+  * ==============================================
+  * Dot Bricks
+  * ==============================================
+  */
+.dot-bricks {
+  position: relative;
+  top: 8px;
+  left: -9999px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #ffffff30;
+  color: #ffffff30;
+  box-shadow:
+    9991px -16px 0 0 #ffffff30,
+    9991px 0 0 0 #ffffff30,
+    10007px 0 0 0 #ffffff30;
+  animation: dot-bricks 2s infinite ease;
+}
+
+@keyframes dot-bricks {
+  0% {
+    box-shadow:
+      9991px -16px 0 0 #ffffff30,
+      9991px 0 0 0 #ffffff30,
+      10007px 0 0 0 #ffffff30;
+  }
+
+  8.333% {
+    box-shadow:
+      10007px -16px 0 0 #ffffff30,
+      9991px 0 0 0 #ffffff30,
+      10007px 0 0 0 #ffffff30;
+  }
+
+  16.667% {
+    box-shadow:
+      10007px -16px 0 0 #ffffff30,
+      9991px -16px 0 0 #ffffff30,
+      10007px 0 0 0 #ffffff30;
+  }
+
+  25% {
+    box-shadow:
+      10007px -16px 0 0 #ffffff30,
+      9991px -16px 0 0 #ffffff30,
+      9991px 0 0 0 #ffffff30;
+  }
+
+  33.333% {
+    box-shadow:
+      10007px 0 0 0 #ffffff30,
+      9991px -16px 0 0 #ffffff30,
+      9991px 0 0 0 #ffffff30;
+  }
+
+  41.667% {
+    box-shadow:
+      10007px 0 0 0 #ffffff30,
+      10007px -16px 0 0 #ffffff30,
+      9991px 0 0 0 #ffffff30;
+  }
+
+  50% {
+    box-shadow:
+      10007px 0 0 0 #ffffff30,
+      10007px -16px 0 0 #ffffff30,
+      9991px -16px 0 0 #ffffff30;
+  }
+
+  58.333% {
+    box-shadow:
+      9991px 0 0 0 #ffffff30,
+      10007px -16px 0 0 #ffffff30,
+      9991px -16px 0 0 #ffffff30;
+  }
+
+  66.666% {
+    box-shadow:
+      9991px 0 0 0 #ffffff30,
+      10007px 0 0 0 #ffffff30,
+      9991px -16px 0 0 #ffffff30;
+  }
+
+  75% {
+    box-shadow:
+      9991px 0 0 0 #ffffff30,
+      10007px 0 0 0 #ffffff30,
+      10007px -16px 0 0 #ffffff30;
+  }
+
+  83.333% {
+    box-shadow:
+      9991px -16px 0 0 #ffffff30,
+      10007px 0 0 0 #ffffff30,
+      10007px -16px 0 0 #ffffff30;
+  }
+
+  91.667% {
+    box-shadow:
+      9991px -16px 0 0 #ffffff30,
+      9991px 0 0 0 #ffffff30,
+      10007px -16px 0 0 #ffffff30;
+  }
+
+  100% {
+    box-shadow:
+      9991px -16px 0 0 #ffffff30,
+      9991px 0 0 0 #ffffff30,
+      10007px 0 0 0 #ffffff30;
+  }
+}
+
+.ReactCrop__crop-selection:focus {
+  outline: none !important;
+}
+
+/* Editor3D HistoryStack pending running border (continuous) */
+.st-loading-tile {
+  position: relative;
+}
+
+.st-border-svg {
+  position: absolute;
+  inset: -2px;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  pointer-events: none;
+}
+
+/* base rect style for runner */
+.st-border-svg rect {
+  fill: none;
+  stroke: rgba(59, 130, 246, 1);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Single runner: a solid line chasing its tail */
+/* Continuous runner with wrapping to avoid flicker at corners */
+.st-border-solid {
+  stroke-dasharray: 90 110;
+  /* shorter visible segment + larger gap = clearer motion */
+  stroke-dashoffset: 0;
+  animation: st-solid-wrap 1.6s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.8))
+    drop-shadow(0 0 18px rgba(59, 130, 246, 0.5));
+}
+
+@keyframes st-solid-wrap {
+  0% {
+    stroke-dashoffset: 0;
+  }
+
+  100% {
+    stroke-dashoffset: -200;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Shimmer skeleton used by the shared generation-list rows (matches the
+   webapp's .animate-shimmer — gradient sweep over a translucent base). */
+@keyframes generation-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: generation-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Prompt box drag & drop overlay (mirrors the webapp's styles.css) */
+@keyframes promptbox-drop-overlay-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.promptbox-drop-overlay {
+  animation: promptbox-drop-overlay-in 0.15s ease-out both;
+}
+
+@keyframes promptbox-drop-chip-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+    scale: 0.9;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+.promptbox-drop-chip {
+  animation: promptbox-drop-chip-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ===================== Brutalist extras (from artcraft-webapp) ========== */
+
+.liquid-glass {
+  background: rgba(11, 11, 12, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.animate-toast-in {
+  animation: toast-in 0.2s ease-out both;
+}
+
+.bg-dots {
+  background-image: radial-gradient(#ffffff20 1px, transparent 0);
+  background-color: var(--st-panel);
+  background-size: 33px 33px;
+  background-position: center;
+}
+
+/* Fine registration marks echo the landing page section corners. */
+.frame-corner-mark {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  margin: -5px;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(242, 241, 238, 0.4), rgba(242, 241, 238, 0.4))
+      center / 1px 11px no-repeat,
+    linear-gradient(rgba(242, 241, 238, 0.4), rgba(242, 241, 238, 0.4))
+      center / 11px 1px no-repeat;
+}
+
+/* Contained section borders match the landing without decorative extensions. */
+.create-empty-section {
+  margin-inline: 12px;
+  border: 1px solid rgba(242, 241, 238, 0.2);
+  background: rgba(242, 241, 238, 0.015);
+}
+
+@media (min-width: 640px) {
+  .create-empty-section {
+    margin-inline: 32px;
+  }
+}
