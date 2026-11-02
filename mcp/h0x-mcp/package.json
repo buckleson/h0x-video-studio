@@ -1,0 +1,19 @@
+{
+  "name": "@h0x/mcp",
+  "version": "0.1.0",
+  "description": "H0x Video Studio MCP server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": "true",
+  "type": "module",
+  "dependencies": {
+    "@gradio/client": "^1.19.1",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^3.25.76"
+  }
+}
