@@ -32,7 +32,8 @@ log.workspace = true
 open = "5"
 reqwest = { workspace = true, features = ["multipart"] }
 resvg = "0.45"
-rfd = "0.16"
+# gtk3 to match tauri-plugin-dialog; rfd refuses gtk3 + xdg-portal together on Linux.
+rfd = { version = "0.16", default-features = false, features = ["gtk3"] }
 rodio = { version = "0.20", default-features = false, features = ["symphonia-all"] }
 serde.workspace = true
 serde_json.workspace = true
