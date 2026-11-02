@@ -1,4 +1,4 @@
 
-/// The version of the ArtCraft desktop app reported in the UI and via Analytics.
-/// This should match the CI builds.
-pub const ARTCRAFT_VERSION: &str = "0.42.0";
+/// The version of the desktop app reported in the UI.
+/// This should match `version` in the Tauri configs and the release tag.
+pub const ARTCRAFT_VERSION: &str = "0.1.0";
