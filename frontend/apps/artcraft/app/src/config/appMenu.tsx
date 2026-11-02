@@ -256,7 +256,7 @@ export const ALL_APPS: FullAppItem[] = [
     icon: GlobeIcon,
     category: "generate",
     action: "IMAGE_TO_3D_WORLD",
-    color: "bg-blue-500/40",
+    color: "bg-primary/40",
   },
   {
     id: "edit-image",

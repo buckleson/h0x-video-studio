@@ -136,8 +136,8 @@ export const BaseImageSelector = ({
             icon={PencilIcon}
             title="Edit Image"
             description="Click to upload or drag and drop an image here to edit"
-            accentBackgroundClass="bg-blue-500/40"
-            accentBorderClass="border-blue-400/30"
+            accentBackgroundClass="bg-primary/40"
+            accentBorderClass="border-primary/30"
             accept="image/*"
             multiple
             onFilesSelected={handleFileUpload}

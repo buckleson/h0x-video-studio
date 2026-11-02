@@ -43,7 +43,6 @@ import type { PopoverItem } from "@storyteller/ui-popover";
 import { v4 as uuidv4 } from "uuid";
 
 import { EngineContext } from "./contexts/EngineContext/EngineContext";
-import { AnonHintChip } from "./comps/AnonHintChip";
 import { AspectRatioMenu } from "./comps/AspectRatioMenu";
 import { ControlPanelSceneObject } from "./comps/ControlPanelSceneObject";
 import { Controls3D } from "./comps/Controls3D";
@@ -507,7 +506,6 @@ export const Stage3DBody = ({
                   {!isRecord && <CameraStatusPill />}
                   {!isRecord && <AspectRatioMenu />}
                   {!isRecord && topBarEndSlot}
-                  {!isRecord && <AnonHintChip />}
                 </div>
               </div>
             </div>
