@@ -8,6 +8,7 @@ Lets Claude (Claude Code or Claude Desktop) make videos for you. It runs on your
 |---|---|
 | `list_video_providers` | Shows which providers are ready and where videos are saved |
 | `generate_video` | Makes a video from a prompt (and optionally animates an image), waits, and saves an `.mp4` |
+| `generate_image` | Makes a still image with Seedream 4.5 (needs `BYTEPLUS_API_KEY`) and saves a `.png`. Use it as a keyframe for `generate_video`. |
 
 ## Providers
 
