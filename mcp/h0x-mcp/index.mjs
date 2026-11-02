@@ -16,7 +16,9 @@ const TIMEOUT_MS = 15 * 60 * 1000;
 
 const FREE_SPACE = "Lightricks/ltx-video-distilled";
 const SEEDANCE_BASE = process.env.BYTEPLUS_BASE_URL || "https://ark.ap-southeast.bytepluses.com/api/v3";
+// 1.5 pro stopped taking new activations; 1.0 pro and 1.0 pro fast (seedance-1-0-pro-fast-251015) still do.
 const SEEDANCE_MODEL = process.env.BYTEPLUS_SEEDANCE_MODEL || "seedance-1-0-pro-250528";
+const SEEDREAM_MODEL = process.env.BYTEPLUS_SEEDREAM_MODEL || "seedream-4-5-251128";
 const FAL_DEFAULT_MODEL = "fal-ai/veo3.1/fast";
 
 const PROVIDERS = {
@@ -80,6 +82,35 @@ server.registerTool(
   },
 );
 
+server.registerTool(
+  "generate_image",
+  {
+    description:
+      "Generate a still image with Seedream on BytePlus ModelArk (needs BYTEPLUS_API_KEY) and save it as a PNG. Use it to make a sharp keyframe, then pass the path to generate_video as image_path.",
+    inputSchema: {
+      prompt: z.string().min(1).describe("The image: subject, composition, lighting, style, aspect ratio."),
+      size: z.string().default("2560x1440").describe('"2K", "4K" or exact WIDTHxHEIGHT, e.g. 2560x1440 for 16:9.'),
+      file_name: z.string().regex(/^[\w-]+$/).optional().describe("Output file name without extension."),
+    },
+  },
+  async ({ prompt, size, file_name }) => {
+    if (!PROVIDERS.seedance.ready()) return text("Image generation needs BYTEPLUS_API_KEY.", true);
+    try {
+      const res = await json(fetch(`${SEEDANCE_BASE}/images/generations`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${process.env.BYTEPLUS_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ model: SEEDREAM_MODEL, prompt, size, response_format: "url", watermark: false }),
+      }));
+      const url = res.data?.[0]?.url;
+      if (!url) throw new Error("no image returned");
+      const file = await save(await download(url), file_name || `image-${Date.now()}`, "png");
+      return text(`Saved image: ${file}`);
+    } catch (e) {
+      return text(`Image generation failed: ${e.message}`, true);
+    }
+  },
+);
+
 await server.connect(new StdioServerTransport());
 
 // ── providers ──
@@ -104,12 +135,20 @@ async function generateFree({ prompt, image_path, duration_seconds }) {
 
 async function generateSeedance({ prompt, image_path, duration_seconds }) {
   const headers = { Authorization: `Bearer ${process.env.BYTEPLUS_API_KEY}`, "Content-Type": "application/json" };
-  const content = [{ type: "text", text: `${prompt} --duration ${Math.round(duration_seconds)} --resolution 1080p` }];
-  if (image_path) content.push({ type: "image_url", image_url: { url: await dataUrl(image_path) } });
+  const content = [{ type: "text", text: prompt }];
+  if (image_path) content.push({ type: "image_url", image_url: { url: await dataUrl(image_path) }, role: "first_frame" });
   const task = await json(fetch(`${SEEDANCE_BASE}/contents/generations/tasks`, {
     method: "POST",
     headers,
-    body: JSON.stringify({ model: SEEDANCE_MODEL, content }),
+    body: JSON.stringify({
+      model: SEEDANCE_MODEL,
+      content,
+      // Seedance 1.0 renders 5 s or 10 s clips.
+      duration: duration_seconds > 7 ? 10 : 5,
+      resolution: "1080p",
+      ratio: image_path ? "adaptive" : "16:9",
+      watermark: false,
+    }),
   }));
   const done = await poll(async () => {
     const t = await json(fetch(`${SEEDANCE_BASE}/contents/generations/tasks/${task.id}`, { headers }));
@@ -165,9 +204,9 @@ async function dataUrl(file) {
   return `data:image/${ext};base64,${(await readFile(file)).toString("base64")}`;
 }
 
-async function save(bytes, name) {
+async function save(bytes, name, ext = "mp4") {
   await mkdir(OUTPUT_DIR, { recursive: true });
-  const file = path.join(OUTPUT_DIR, `${name}.mp4`);
+  const file = path.join(OUTPUT_DIR, `${name}.${ext}`);
   await writeFile(file, bytes);
   return file;
 }

@@ -14,7 +14,7 @@ Lets Claude (Claude Code or Claude Desktop) make videos for you. It runs on your
 | Provider | Key (environment variable) | Notes |
 |---|---|---|
 | `free` | none (optional `HF_TOKEN`) | LTX-Video on a public Hugging Face Space. Short clips (up to about 8 s), 704×512. Shared daily GPU quota. |
-| `seedance` | `BYTEPLUS_API_KEY` | Seedance on BytePlus ModelArk, 1080p. New accounts get free tokens. Change the model with `BYTEPLUS_SEEDANCE_MODEL`. |
+| `seedance` | `BYTEPLUS_API_KEY` | Seedance 1.0 Pro on BytePlus ModelArk, 1080p, 5 or 10 s (set `BYTEPLUS_SEEDANCE_MODEL=seedance-1-0-pro-fast-251015` for the cheaper Fast model). New accounts get free tokens. Change the model with `BYTEPLUS_SEEDANCE_MODEL`. |
 | `fal` | `FAL_KEY` | fal.ai models such as `fal-ai/veo3.1/fast` or `fal-ai/kling-video/v2.6/pro/text-to-video` (pass `model`). |
 
 Videos are saved to `~/Videos/H0x Video Studio`. Set `H0X_OUTPUT_DIR` to change this.
