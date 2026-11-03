@@ -12,7 +12,9 @@ const IMAGE_DIR = path.join(GEN_DIR, 'generate_image');
 const PROVIDER_RS = path.join(IMAGE_DIR, 'providers/byteplus.rs');
 const VIDEO_BYTEPLUS_RS = path.join(GEN_DIR, 'generate_video/byteplus.rs');
 const SEEDREAM_MODEL = 'seedream-4-5-251128';
-const VENDOR_REFS = ['create_prompt_record', 'upload_to_backend', 'storyteller', 'cdn', 'artcraft_client'];
+const VENDOR_REFS = ['create_prompt_record', 'upload_to_backend', 'storyteller', 'artcraft_client::endpoints'];
+// The only artcraft_client item allowed: the ApiHost type notify_frontend_of_completion needs.
+const ALLOWED_ARTCRAFT_CLIENT_USE = 'use artcraft_client::utils::api_host::ApiHost;';
 const VENDOR_SYMBOLS = [
   'StorytellerCredentialManager',
   'CreditsBalanceChangedEvent',
@@ -164,6 +166,17 @@ describe('R2-3b vendor and brand leaks', () => {
   it.each(VENDOR_REFS)('providers/byteplus.rs has no %s reference', (ref) => {
     expect(PROVIDER.length).toBeGreaterThan(0);
     expect(PROVIDER.toLowerCase()).not.toContain(ref);
+  });
+
+  it('the only artcraft_client use is the ApiHost type, never an endpoint call', () => {
+    const uses = PROVIDER.match(/artcraft_client::[\w:{}, ]+/g) ?? [];
+    expect(uses).toEqual(['artcraft_client::utils::api_host::ApiHost']);
+    expect(PROVIDER).toContain(ALLOWED_ARTCRAFT_CLIENT_USE);
+  });
+
+  it('the only CDN mention is the empty maybe_cdn_url field (no upload, no CDN URL)', () => {
+    const lines = PROVIDER.split(/\r?\n/).filter((l) => /cdn/i.test(l));
+    expect(lines.map((l) => l.trim())).toEqual(['maybe_cdn_url: None,']);
   });
 
   it.each(VENDOR_SYMBOLS)('providers/byteplus.rs does not use %s', (symbol) => {

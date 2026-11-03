@@ -63,6 +63,7 @@ server.registerTool(
       image_path: z.string().optional().describe("Absolute path to a local PNG/JPEG to animate (image-to-video)."),
       provider: z.enum(["free", "seedance", "fal"]).default("free"),
       duration_seconds: z.number().min(1).max(10).default(5).describe("Requested length. The free provider caps at a few seconds."),
+      resolution: z.enum(["720p", "1080p"]).default("1080p").describe("Seedance output resolution. 720p uses less than half the tokens."),
       model: z.string().optional().describe("fal model id, e.g. fal-ai/veo3.1/fast or fal-ai/kling-video/v2.6/pro/text-to-video."),
       file_name: z.string().regex(/^[\w-]+$/).optional().describe("Output file name without extension."),
     },
@@ -90,16 +91,24 @@ server.registerTool(
     inputSchema: {
       prompt: z.string().min(1).describe("The image: subject, composition, lighting, style, aspect ratio."),
       size: z.string().default("2560x1440").describe('"2K", "4K" or exact WIDTHxHEIGHT, e.g. 2560x1440 for 16:9.'),
+      reference_image_paths: z.array(z.string()).max(14).optional().describe("Local images to guide the result: character sheets, a 3D blocking frame, a style reference."),
       file_name: z.string().regex(/^[\w-]+$/).optional().describe("Output file name without extension."),
     },
   },
-  async ({ prompt, size, file_name }) => {
+  async ({ prompt, size, reference_image_paths, file_name }) => {
     if (!PROVIDERS.seedance.ready()) return text("Image generation needs BYTEPLUS_API_KEY.", true);
     try {
       const res = await json(fetch(`${SEEDANCE_BASE}/images/generations`, {
         method: "POST",
         headers: { Authorization: `Bearer ${process.env.BYTEPLUS_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model: SEEDREAM_MODEL, prompt, size, response_format: "url", watermark: false }),
+        body: JSON.stringify({
+          model: SEEDREAM_MODEL,
+          prompt,
+          size,
+          response_format: "url",
+          watermark: false,
+          ...(reference_image_paths?.length ? { image: await Promise.all(reference_image_paths.map(dataUrl)) } : {}),
+        }),
       }));
       const url = res.data?.[0]?.url;
       if (!url) throw new Error("no image returned");
@@ -133,7 +142,7 @@ async function generateFree({ prompt, image_path, duration_seconds }) {
   return download(url);
 }
 
-async function generateSeedance({ prompt, image_path, duration_seconds }) {
+async function generateSeedance({ prompt, image_path, duration_seconds, resolution }) {
   const headers = { Authorization: `Bearer ${process.env.BYTEPLUS_API_KEY}`, "Content-Type": "application/json" };
   const content = [{ type: "text", text: prompt }];
   if (image_path) content.push({ type: "image_url", image_url: { url: await dataUrl(image_path) }, role: "first_frame" });
@@ -145,7 +154,7 @@ async function generateSeedance({ prompt, image_path, duration_seconds }) {
       content,
       // Seedance 1.0 renders 5 s or 10 s clips.
       duration: duration_seconds > 7 ? 10 : 5,
-      resolution: "1080p",
+      resolution,
       ratio: image_path ? "adaptive" : "16:9",
       watermark: false,
     }),

@@ -2,6 +2,7 @@ use crate::core::providers::credentials::provider_credential_loading_cache::Prov
 use crate::core::state::app_env_configs::app_env_configs::AppEnvConfigs;
 use crate::core::state::data_dir::app_data_root::AppDataRoot;
 use crate::core::state::task_database::TaskDatabase;
+use crate::core::threads::third_party_task_polling_thread::handlers::byteplus::poll_byteplus_tasks::poll_byteplus_tasks;
 use crate::core::threads::third_party_task_polling_thread::handlers::fal::poll_fal_tasks::poll_fal_tasks;
 use crate::core::utils::task_database_pending_statuses::TASK_DATABASE_PENDING_STATUSES;
 use crate::services::storyteller::state::storyteller_credential_manager::StorytellerCredentialManager;
@@ -79,8 +80,12 @@ async fn poll_iteration(
     .filter(|t| t.provider == GenerationProvider::Fal)
     .collect();
 
+  let byteplus_tasks: Vec<&Task> = tasks.iter()
+    .filter(|t| t.provider == GenerationProvider::BytePlus)
+    .collect();
+
   let non_fal_tasks: Vec<&Task> = tasks.iter()
-    .filter(|t| t.provider != GenerationProvider::Fal)
+    .filter(|t| t.provider != GenerationProvider::Fal && t.provider != GenerationProvider::BytePlus)
     .collect();
 
   if !non_fal_tasks.is_empty() {
@@ -92,6 +97,18 @@ async fn poll_iteration(
         task.task_type,
       );
     }
+  }
+
+  if !byteplus_tasks.is_empty() {
+    info!("[ThirdPartyPolling] {} BytePlus job(s) ready to check", byteplus_tasks.len());
+    poll_byteplus_tasks(
+      app_handle,
+      app_env_configs,
+      app_data_root,
+      task_database,
+      credential_cache,
+      &byteplus_tasks,
+    ).await;
   }
 
   if fal_tasks.is_empty() {
