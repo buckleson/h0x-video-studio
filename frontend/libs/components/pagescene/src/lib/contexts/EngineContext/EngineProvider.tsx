@@ -5,6 +5,7 @@ import Editor from "../../engine/editor";
 import type { PageSceneAdapter } from "../../adapter";
 import { getSceneGenerationMetaData } from "../../sceneMetadata";
 import { usePageSceneStore } from "../../PageSceneStore";
+import { installStageAutomation } from "../../automation/stageAutomation";
 
 interface Props {
   sceneToken?: string;
@@ -71,6 +72,7 @@ export const EngineProvider = ({
     });
     setEditor(newEditor);
     setActiveEditor(newEditor);
+    const uninstallAutomation = installStageAutomation(newEditor);
 
     // Capture the serialize callback NOW, before any subsequent render
     // can re-point onSerializeRef.current. Hosts typically rebuild this
@@ -94,6 +96,7 @@ export const EngineProvider = ({
         onSerializeForThisScene?.(JSON.stringify(cacheJson));
       }
 
+      uninstallAutomation();
       newEditor.unmountEngine();
       setEditor(null);
       setActiveEditor(null);

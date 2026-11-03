@@ -564,10 +564,14 @@ class Scene {
   // for the lifetime of the Scene; entries are cheap (string→string).
   private mediaUrlCache: Map<string, string> = new Map();
 
-  // Resolve a media_file_token to its CDN URL. Reads from the warm
-  // cache first (populated by warmMediaURLs during a scene load) before
-  // falling back to a single-token metadata fetch.
+  // Resolve a media_file_token to its CDN URL. `Local::<path>` ids are
+  // bundled app resources served from the app origin. Otherwise reads
+  // from the warm cache first (populated by warmMediaURLs during a scene
+  // load) before falling back to a single-token metadata fetch.
   async getMediaURL(media_id: string) {
+    if (media_id.startsWith("Local::")) {
+      return new URL(media_id.slice("Local::".length), location.origin).href;
+    }
     const cached = this.mediaUrlCache.get(media_id);
     if (cached !== undefined) return cached;
     return this.deps.getMediaUrlByToken(media_id);

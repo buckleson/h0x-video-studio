@@ -243,6 +243,10 @@ export const useTauriPageSceneAdapter = (
         if (init?.signal?.aborted) {
           throw new DOMException("Aborted", "AbortError");
         }
+        // Bundled app resources (Local:: media) are same-origin.
+        if (new URL(url, location.origin).origin === location.origin) {
+          return await window.fetch(url, { signal: init?.signal });
+        }
         try {
           return await FetchProxy(url, { signal: init?.signal });
         } catch {

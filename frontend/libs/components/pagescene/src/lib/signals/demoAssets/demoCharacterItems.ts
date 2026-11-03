@@ -4,6 +4,22 @@ import { AssetType } from "../../enums";
 export const demoCharacterItems: MediaItem[] = [
   {
     version: 1,
+    media_id: "Local::/resources/3d/characters/fighter.glb",
+    type: AssetType.CHARACTER,
+    name: "Fighter",
+    thumbnail: "/resources/3d/thumbs/fighter.png",
+    media_type: "glb",
+  },
+  {
+    version: 1,
+    media_id: "Local::/resources/3d/characters/brute.glb",
+    type: AssetType.CHARACTER,
+    name: "Brute",
+    thumbnail: "/resources/3d/thumbs/brute.png",
+    media_type: "glb",
+  },
+  {
+    version: 1,
     media_id: "m_gff67btr810vg3ng9szj85zskztcgy",
     type: AssetType.CHARACTER,
     name: "Story Girl",

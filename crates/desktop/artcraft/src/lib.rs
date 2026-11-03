@@ -30,6 +30,7 @@ use crate::core::commands::get_app_info_command::get_app_info_command;
 use crate::core::commands::load_without_cors_command::load_without_cors_command;
 use crate::core::commands::media_files::list_local_media_command::list_local_media_command;
 use crate::core::commands::media_files::media_file_delete_command::media_file_delete_command;
+use crate::core::commands::media_files::save_scene_frame_command::save_scene_frame_command;
 use crate::core::commands::platform_info_command::platform_info_command;
 use crate::core::commands::providers::deprecated::get_provider_order_command::get_provider_order_command;
 use crate::core::commands::providers::deprecated::set_provider_order_command::set_provider_order_command;
@@ -202,6 +203,7 @@ pub fn run() {
     load_without_cors_command,
     mark_task_as_dismissed_command,
     list_local_media_command,
+    save_scene_frame_command,
     media_file_delete_command,
     platform_info_command,
     set_provider_order_command,
