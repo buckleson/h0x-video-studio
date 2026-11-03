@@ -34,6 +34,8 @@ pub enum GenerationProvider {
   Picsart,
   Pixverse,
   Runway,
+  #[serde(rename = "byteplus")]
+  BytePlus,
 }
 
 impl_enum_display_and_debug_using_to_str!(GenerationProvider);
@@ -62,6 +64,7 @@ impl GenerationProvider {
       Self::Picsart => "picsart",
       Self::Pixverse => "pixverse",
       Self::Runway => "runway",
+      Self::BytePlus => "byteplus",
     }
   }
 
@@ -81,6 +84,7 @@ impl GenerationProvider {
       "picsart" => Ok(Self::Picsart),
       "pixverse" => Ok(Self::Pixverse),
       "runway" => Ok(Self::Runway),
+      "byteplus" => Ok(Self::BytePlus),
       _ => Err(EnumError::CouldNotConvertFromString(value.to_string())),
     }
   }
@@ -103,6 +107,7 @@ impl GenerationProvider {
       Self::Picsart,
       Self::Pixverse,
       Self::Runway,
+      Self::BytePlus,
     ])
   }
 }
@@ -132,6 +137,7 @@ mod tests {
       assert_serialization(GenerationProvider::Picsart, "picsart");
       assert_serialization(GenerationProvider::Pixverse, "pixverse");
       assert_serialization(GenerationProvider::Runway, "runway");
+      assert_serialization(GenerationProvider::BytePlus, "byteplus");
     }
 
     #[test]
@@ -150,6 +156,7 @@ mod tests {
       assert_eq!(GenerationProvider::Picsart.to_str(), "picsart");
       assert_eq!(GenerationProvider::Pixverse.to_str(), "pixverse");
       assert_eq!(GenerationProvider::Runway.to_str(), "runway");
+      assert_eq!(GenerationProvider::BytePlus.to_str(), "byteplus");
     }
 
     #[test]
@@ -168,6 +175,16 @@ mod tests {
       assert_eq!(GenerationProvider::from_str("picsart").unwrap(), GenerationProvider::Picsart);
       assert_eq!(GenerationProvider::from_str("pixverse").unwrap(), GenerationProvider::Pixverse);
       assert_eq!(GenerationProvider::from_str("runway").unwrap(), GenerationProvider::Runway);
+      assert_eq!(GenerationProvider::from_str("byteplus").unwrap(), GenerationProvider::BytePlus);
+    }
+
+    #[test]
+    fn byteplus_round_trip() {
+      let variant = GenerationProvider::BytePlus;
+      assert_eq!(GenerationProvider::from_str(variant.to_str()).unwrap(), variant);
+      let json = serde_json::to_string(&variant).unwrap();
+      assert_eq!(json, "\"byteplus\"");
+      assert_eq!(serde_json::from_str::<GenerationProvider>(&json).unwrap(), variant);
     }
 
     #[test]
@@ -184,7 +201,7 @@ mod tests {
     #[test]
     fn all_variants() {
       let mut variants = GenerationProvider::all_variants();
-      assert_eq!(variants.len(), 14);
+      assert_eq!(variants.len(), 15);
       assert_eq!(variants.pop_first(), Some(GenerationProvider::Artcraft));
       assert_eq!(variants.pop_first(), Some(GenerationProvider::Fal));
       assert_eq!(variants.pop_first(), Some(GenerationProvider::Grok));
@@ -199,7 +216,124 @@ mod tests {
       assert_eq!(variants.pop_first(), Some(GenerationProvider::Picsart));
       assert_eq!(variants.pop_first(), Some(GenerationProvider::Pixverse));
       assert_eq!(variants.pop_first(), Some(GenerationProvider::Runway));
+      assert_eq!(variants.pop_first(), Some(GenerationProvider::BytePlus));
       assert_eq!(variants.pop_first(), None);
+    }
+  }
+
+  mod byteplus_edge_cases {
+    use super::*;
+
+    const BYTEPLUS: &str = "byteplus";
+
+    const REJECTED_SPELLINGS: [&str; 9] = [
+      "byte_plus",
+      "BytePlus",
+      "Byteplus",
+      "BYTEPLUS",
+      "byte-plus",
+      " byteplus",
+      "byteplus ",
+      "byteplu",
+      "",
+    ];
+
+    #[test]
+    fn value_is_exact_and_fits_database_column() {
+      assert_eq!(GenerationProvider::BytePlus.to_str(), BYTEPLUS);
+      assert_eq!(BYTEPLUS.len(), 8);
+      assert!(BYTEPLUS.len() <= 16);
+    }
+
+    #[test]
+    fn display_and_debug_use_wire_value() {
+      assert_eq!(format!("{}", GenerationProvider::BytePlus), BYTEPLUS);
+      assert_eq!(format!("{:?}", GenerationProvider::BytePlus), BYTEPLUS);
+    }
+
+    #[test]
+    fn serde_does_not_use_snake_case_default() {
+      let json = serde_json::to_string(&GenerationProvider::BytePlus).unwrap();
+      assert_ne!(json, "\"byte_plus\"");
+      assert_eq!(json, format!("\"{}\"", BYTEPLUS));
+    }
+
+    #[test]
+    fn serde_value_matches_to_str() {
+      let json = serde_json::to_string(&GenerationProvider::BytePlus).unwrap();
+      assert_eq!(json.trim_matches('"'), GenerationProvider::BytePlus.to_str());
+    }
+
+    #[test]
+    fn from_str_rejects_near_miss_spellings() {
+      for value in REJECTED_SPELLINGS {
+        match GenerationProvider::from_str(value) {
+          Err(EnumError::CouldNotConvertFromString(err_value)) => assert_eq!(err_value, value),
+          _ => panic!("expected from_str({:?}) to fail", value),
+        }
+      }
+    }
+
+    #[test]
+    fn serde_rejects_near_miss_spellings() {
+      for value in REJECTED_SPELLINGS {
+        let json = serde_json::to_string(value).unwrap();
+        assert!(
+          serde_json::from_str::<GenerationProvider>(&json).is_err(),
+          "expected serde to reject {:?}", value
+        );
+      }
+    }
+
+    #[test]
+    fn serde_rejects_non_string_json() {
+      assert!(serde_json::from_str::<GenerationProvider>("null").is_err());
+      assert!(serde_json::from_str::<GenerationProvider>("14").is_err());
+      assert!(serde_json::from_str::<GenerationProvider>("{}").is_err());
+      assert_eq!(
+        serde_json::from_str::<GenerationProvider>("{\"byteplus\":null}").unwrap(),
+        GenerationProvider::BytePlus
+      );
+    }
+
+    #[test]
+    fn round_trips_inside_struct_and_option() {
+      #[derive(serde::Serialize, serde::Deserialize, PartialEq, Debug)]
+      struct Wrapper {
+        provider: Option<GenerationProvider>,
+      }
+      let wrapper = Wrapper { provider: Some(GenerationProvider::BytePlus) };
+      let json = serde_json::to_string(&wrapper).unwrap();
+      assert_eq!(json, "{\"provider\":\"byteplus\"}");
+      assert_eq!(serde_json::from_str::<Wrapper>(&json).unwrap(), wrapper);
+    }
+
+    #[test]
+    fn listed_in_all_variants() {
+      assert!(GenerationProvider::all_variants().contains(&GenerationProvider::BytePlus));
+    }
+
+    #[test]
+    fn wire_values_are_unique_across_variants() {
+      let variants = GenerationProvider::all_variants();
+      let values: std::collections::BTreeSet<&str> = variants.iter().map(|v| v.to_str()).collect();
+      assert_eq!(values.len(), variants.len());
+    }
+
+    #[test]
+    fn serde_and_to_str_agree_for_every_variant() {
+      for variant in GenerationProvider::all_variants() {
+        let json = serde_json::to_string(&variant).unwrap();
+        assert_eq!(json, format!("\"{}\"", variant.to_str()), "mismatch for {:?}", variant);
+      }
+    }
+
+    #[test]
+    fn wire_value_has_no_brand_leak() {
+      let value = GenerationProvider::BytePlus.to_str().to_lowercase();
+      for banned in ["artcraft", "storyteller", "fakeyou", "ltx", "lightricks"] {
+        assert!(!value.contains(banned), "byteplus value contains {:?}", banned);
+      }
     }
   }
 

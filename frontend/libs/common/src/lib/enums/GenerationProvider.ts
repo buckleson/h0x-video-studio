@@ -1,5 +1,6 @@
 export enum GenerationProvider {
   Artcraft = "artcraft",
+  BytePlus = "byteplus",
   Fal = "fal",
   Higgsfield = "higgsfield",
   Krea = "krea",

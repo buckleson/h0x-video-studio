@@ -285,6 +285,7 @@ fn provider_to_generation_service(provider: GenerationProvider) -> GenerationSer
     GenerationProvider::Picsart => GenerationServiceProvider::Picsart,
     GenerationProvider::Pixverse => GenerationServiceProvider::Pixverse,
     GenerationProvider::Runway => GenerationServiceProvider::Runway,
+    GenerationProvider::BytePlus => GenerationServiceProvider::BytePlus,
   }
 }
 
@@ -345,5 +346,34 @@ fn task_model_type_to_generation_model(model: TaskModelType) -> Option<Generatio
     TaskModelType::WorldlabsMarble => Some(GenerationModel::WorldlabsMarble),
     TaskModelType::WorldlabsMarble0p1Mini => Some(GenerationModel::WorldlabsMarble0p1Mini),
     TaskModelType::WorldlabsMarble0p1Plus => Some(GenerationModel::WorldlabsMarble0p1Plus),
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use crate::core::utils::enum_conversion::generation_provider::to_generation_service_provider;
+
+  #[test]
+  fn byteplus_completion_reports_byteplus_service() {
+    assert!(matches!(
+      provider_to_generation_service(GenerationProvider::BytePlus),
+      GenerationServiceProvider::BytePlus
+    ));
+  }
+
+  #[test]
+  fn completion_mapping_agrees_with_shared_conversion() {
+    for provider in [
+      GenerationProvider::Artcraft,
+      GenerationProvider::Fal,
+      GenerationProvider::Higgsfield,
+      GenerationProvider::Runway,
+      GenerationProvider::BytePlus,
+    ] {
+      let here = serde_json::to_value(provider_to_generation_service(provider)).unwrap();
+      let shared = serde_json::to_value(to_generation_service_provider(provider)).unwrap();
+      assert_eq!(here, shared, "{:?}", provider);
+    }
   }
 }

@@ -214,7 +214,7 @@ function read(file: string): string {
 
 function gitGrep(args: string[]): string[] {
   try {
-    return execFileSync('git', ['grep', '-n', ...args], { cwd: APP_ROOT, encoding: 'utf8' }).split('\n').filter(Boolean);
+    return execFileSync('git', ['grep', '-n', ...args, ':!**/*.spec.*', ':!**/*.test.*'], { cwd: APP_ROOT, encoding: 'utf8' }).split('\n').filter(Boolean);
   } catch {
     return [];
   }

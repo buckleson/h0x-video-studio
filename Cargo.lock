@@ -372,6 +372,7 @@ dependencies = [
  "artcraft_router",
  "base64 0.22.1",
  "build_metadata",
+ "byteplus_client",
  "bytes",
  "chrono",
  "directories",
@@ -1151,6 +1152,16 @@ name = "byteorder-lite"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f1fe948ff07f4bd06c30984e69f5b4899c516a3ef74f34df92a2df2ab535495"
+
+[[package]]
+name = "byteplus_client"
+version = "0.0.1"
+dependencies = [
+ "anyhow",
+ "reqwest 0.12.23",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "bytes"

@@ -10,7 +10,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { Client as GradioClient, handle_file } from "@gradio/client";
 import { z } from "zod";
 
-const OUTPUT_DIR = process.env.H0X_OUTPUT_DIR || path.join(homedir(), "Videos", "H0x Video Studio");
+const OUTPUT_DIR = process.env.H0X_OUTPUT_DIR || path.join(homedir(), "Artcraft", "downloads", "h0x-mcp");
 const POLL_MS = 5000;
 const TIMEOUT_MS = 15 * 60 * 1000;
 

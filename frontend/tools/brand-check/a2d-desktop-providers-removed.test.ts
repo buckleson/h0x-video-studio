@@ -136,6 +136,7 @@ const REGISTERED_COMMANDS = [
   'get_provider_order_command',
   'get_task_queue_command',
   'list_image_models_command',
+  'list_local_media_command',
   'list_video_models_command',
   'load_without_cors_command',
   'mark_task_as_dismissed_command',
@@ -166,7 +167,7 @@ const REGISTERED_COMMANDS = [
 
 // Every dependency in Cargo.toml after the drops, sorted.
 const EXPECTED_DEPS = [
-  'anyhow', 'artcraft_api_defs', 'artcraft_client', 'artcraft_router', 'base64', 'build_metadata', 'bytes', 'chrono',
+  'anyhow', 'artcraft_api_defs', 'artcraft_client', 'artcraft_router', 'base64', 'build_metadata', 'byteplus_client', 'bytes', 'chrono',
   'directories', 'dirs', 'discord-rich-presence', 'enums', 'errors', 'fal_client', 'filesys', 'futures', 'image', 'images',
   'indexmap', 'log', 'memory_store', 'mimetypes', 'once_cell', 'os_info', 'primitives', 'rand', 'reqwest', 'serde',
   'serde_derive', 'serde_json', 'serial_test', 'sqlite_tasks', 'tauri', 'tauri-build', 'tauri-plugin-dialog',
@@ -228,7 +229,7 @@ describe('A2d deleted files and directories', () => {
 
   it.each([
     [`${SRC}/core/commands/generate/generate_image/providers/mod.rs`, ['grok', 'midjourney', 'sora'], ['artcraft', 'artcraft_router']],
-    [`${SRC}/core/commands/generate/generate_video/mod.rs`, ['grok', 'sora2'], ['artcraft', 'generate_video_command', 'request']],
+    [`${SRC}/core/commands/generate/generate_video/mod.rs`, ['grok', 'sora2'], ['artcraft', 'byteplus', 'generate_video_command', 'request']],
     [
       `${SRC}/core/commands/deprecated/text_to_image/mod.rs`,
       ['grok', 'midjourney', 'sora'],
@@ -1006,8 +1007,8 @@ function stripComments(src: string): string {
 
 function stripStringsAndComments(src: string): string {
   return src
-    .replace(/r(#+)"[\s\S]*?"\1/g, '""')
-    .replace(/r"[^"]*"/g, '""')
+    .replace(/(?<![A-Za-z0-9_])r(#+)"[\s\S]*?"\1/g, '""')
+    .replace(/(?<![A-Za-z0-9_])r"[^"]*"/g, '""')
     .replace(/b?"(?:[^"\\]|\\.)*"/g, '""')
     .replace(/'(?:[^'\\\n]|\\.)'/g, "' '")
     .replace(/\/\*[\s\S]*?\*\//g, '')

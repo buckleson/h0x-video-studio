@@ -12,15 +12,17 @@
     "security": {
       "assetProtocol": {
         "enable": true,
-        "scope": ["**"]
+        "scope": ["**", "$HOME/Artcraft/downloads/**"]
       },
       "csp": {
         "default-src": [
           "'self'",
           "'unsafe-eval'",
           "'unsafe-inline'",
+          "asset:",
           "blob:",
           "data:",
+          "http://asset.localhost",
           "https://*.fakeyou.com",
           "https://*.storyteller.ai",
           "ipc://localhost",
@@ -47,8 +49,10 @@
           "'self'",
           "'unsafe-inline'",
           "*",
+          "asset:",
           "blob:",
           "data:",
+          "http://asset.localhost",
           "https://*.fakeyou.com",
           "https://*.storyteller.ai",
           "ipc://localhost",

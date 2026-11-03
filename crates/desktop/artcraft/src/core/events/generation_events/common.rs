@@ -17,6 +17,8 @@ pub enum GenerationServiceProvider {
   Picsart,
   Pixverse,
   Runway,
+  #[serde(rename = "byteplus")]
+  BytePlus,
 }
 
 #[derive(Debug, Clone, Serialize)]

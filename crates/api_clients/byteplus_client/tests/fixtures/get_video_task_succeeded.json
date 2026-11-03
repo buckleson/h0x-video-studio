@@ -1,0 +1,14 @@
+{
+  "id": "cgt-20251103123456-abcde",
+  "model": "seedance-1-0-pro-250528",
+  "status": "succeeded",
+  "content": {
+    "video_url": "https://example.com/output/video.mp4"
+  },
+  "usage": {
+    "completion_tokens": 246840,
+    "total_tokens": 246840
+  },
+  "created_at": 1762170000,
+  "updated_at": 1762170060
+}

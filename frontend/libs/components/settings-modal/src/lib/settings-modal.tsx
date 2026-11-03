@@ -1,6 +1,6 @@
 import { Modal } from "@storyteller/ui-modal";
 import { useEffect, useState } from "react";
-import { DownloadIcon, FlaskConicalIcon, InfoIcon, KeyboardIcon, PaletteIcon, SettingsIcon, Volume2Icon } from "lucide-react";
+import { DownloadIcon, FlaskConicalIcon, InfoIcon, KeyboardIcon, KeyRoundIcon, PaletteIcon, SettingsIcon, Volume2Icon } from "lucide-react";
 import { DynamicIcon } from "@storyteller/icons";
 import { twMerge } from "tailwind-merge";
 import { KeybindsSettings } from "@storyteller/keybinds";
@@ -16,6 +16,47 @@ import { AppearanceSettingsPane } from "./panes/AppearanceSettingsPane";
 import { Button } from "@storyteller/ui-button";
 import { useExperimentalStore } from "./experimental-store";
 import { ExperimentalConfirmModal } from "./ExperimentalConfirmModal";
+import { CommandSuccessStatus, ProviderSetApiKey } from "@storyteller/tauri-api";
+
+const ProviderKeysSettingsPane = () => {
+  const [apiKey, setApiKey] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = async () => {
+    try {
+      const result = await ProviderSetApiKey(apiKey);
+      if (result?.status === CommandSuccessStatus.Success) {
+        setApiKey("");
+        setSaved(true);
+      }
+    } catch {
+      // backend unavailable: keep the input and the saved state as they are
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <label htmlFor="byteplus-api-key">BytePlus API key</label>
+      <div className="flex items-center gap-2">
+        <input
+          id="byteplus-api-key"
+          type="password"
+          autoComplete="off"
+          value={apiKey}
+          onChange={(e) => {
+            setApiKey(e.target.value);
+            setSaved(false);
+          }}
+          className="flex-1 rounded-[3px] border border-ui-panel-border bg-transparent px-2 py-1"
+        />
+        <Button onClick={handleSave} disabled={!apiKey}>
+          Save
+        </Button>
+      </div>
+      {saved && <span>saved ✓</span>}
+    </div>
+  );
+};
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -34,6 +75,7 @@ type SettingsSection =
   | "alerts"
   | "about"
   | "provider_priority"
+  | "provider_keys"
   | "billing"
   | "experimental";
 
@@ -73,6 +115,7 @@ export const SettingsModal = ({
       label: "Provider Priority",
       icon: RouteIcon,
     }, */
+    { id: "provider_keys" as const, label: "Provider keys", icon: KeyRoundIcon },
     { id: "appearance" as const, label: "Appearance", icon: PaletteIcon },
     { id: "keybinds" as const, label: "Keybinds", icon: KeyboardIcon },
     { id: "alerts" as const, label: "Alerts", icon: Volume2Icon },
@@ -106,6 +149,8 @@ export const SettingsModal = ({
         return <AboutSettingsPane />;
       case "provider_priority":
         return <ProviderPrioritySettingsPane />;
+      case "provider_keys":
+        return <ProviderKeysSettingsPane />;
       case "billing":
         return <BillingSettingsPane />;
       case "experimental":
