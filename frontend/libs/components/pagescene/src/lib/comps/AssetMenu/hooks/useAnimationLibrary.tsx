@@ -166,7 +166,7 @@ export const useAnimationLibrary = (): {
 
   const loadMoreUserAnimations = useCallback(() => {
     const adapter = editor?.adapter;
-    if (!adapter) return;
+    if (!adapter?.getCurrentUserToken?.()) return;
     loadMoreUserAnimationsShared(adapter);
   }, [editor]);
 

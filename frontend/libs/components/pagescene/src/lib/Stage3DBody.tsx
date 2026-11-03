@@ -44,6 +44,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { EngineContext } from "./contexts/EngineContext/EngineContext";
 import { AspectRatioMenu } from "./comps/AspectRatioMenu";
+import { SaveFrameButton } from "./comps/SaveFrameButton/SaveFrameButton";
 import { ControlPanelSceneObject } from "./comps/ControlPanelSceneObject";
 import { Controls3D } from "./comps/Controls3D";
 import { SceneModePill } from "./comps/SceneModePill";
@@ -505,6 +506,7 @@ export const Stage3DBody = ({
                       the render-frame aspect ratio. */}
                   {!isRecord && <CameraStatusPill />}
                   {!isRecord && <AspectRatioMenu />}
+                  {!isRecord && <SaveFrameButton />}
                   {!isRecord && topBarEndSlot}
                 </div>
               </div>
