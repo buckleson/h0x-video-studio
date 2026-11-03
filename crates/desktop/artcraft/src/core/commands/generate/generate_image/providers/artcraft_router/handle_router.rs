@@ -50,6 +50,7 @@ fn map_provider_to_credential_key(
 ) -> Result<ProviderCredentialKey, GenerateError> {
   match provider {
     GenerationProvider::Fal => Ok(ProviderCredentialKey::FalApiKey),
+    GenerationProvider::BytePlus => Ok(ProviderCredentialKey::BytePlusApiKey),
     _ => Err(GenerateError::NotYetImplemented(
       format!("Provider {:?} does not have a mapped credential key yet", provider),
     )),
@@ -64,5 +65,39 @@ fn map_provider_to_missing_credentials_error(provider: GenerationProvider) -> Ge
     GenerationProvider::Sora => GenerateError::MissingCredentials(MissingCredentialsReason::NeedsSoraCredentials),
     GenerationProvider::WorldLabs => GenerateError::MissingCredentials(MissingCredentialsReason::NeedsWorldLabsCredentials),
     _ => GenerateError::NoProviderAvailable,
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn byteplus_maps_to_byteplus_api_key() {
+    assert_eq!(
+      map_provider_to_credential_key(GenerationProvider::BytePlus).unwrap(),
+      ProviderCredentialKey::BytePlusApiKey
+    );
+  }
+
+  #[test]
+  fn fal_mapping_is_unchanged() {
+    assert_eq!(
+      map_provider_to_credential_key(GenerationProvider::Fal).unwrap(),
+      ProviderCredentialKey::FalApiKey
+    );
+  }
+
+  #[test]
+  fn unmapped_provider_is_not_yet_implemented() {
+    let err = map_provider_to_credential_key(GenerationProvider::Higgsfield).unwrap_err();
+    assert!(matches!(err, GenerateError::NotYetImplemented(_)), "{:?}", err);
+  }
+
+  /// No BytePlus-specific MissingCredentialsReason exists yet, so it falls through.
+  #[test]
+  fn byteplus_missing_credentials_falls_through_to_no_provider() {
+    let err = map_provider_to_missing_credentials_error(GenerationProvider::BytePlus);
+    assert!(matches!(err, GenerateError::NoProviderAvailable), "{:?}", err);
   }
 }

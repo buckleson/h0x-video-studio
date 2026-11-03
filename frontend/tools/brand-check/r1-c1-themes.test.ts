@@ -176,7 +176,7 @@ const read = (file: string) => readFileSync(path.join(APP_ROOT, file), 'utf8');
 
 function gitGrep(args: string[]): string[] {
   try {
-    return execFileSync('git', ['grep', '-n', ...args], { cwd: APP_ROOT, encoding: 'utf8' })
+    return execFileSync('git', ['grep', '-n', ...args, ':!**/*.spec.*', ':!**/*.test.*'], { cwd: APP_ROOT, encoding: 'utf8' })
       .split('\n')
       .filter(Boolean);
   } catch {

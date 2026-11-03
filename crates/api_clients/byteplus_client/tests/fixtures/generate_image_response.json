@@ -1,0 +1,15 @@
+{
+  "model": "seedream-4-0-250828",
+  "created": 1762170000,
+  "data": [
+    {
+      "url": "https://example.com/output/image.jpeg",
+      "size": "2048x2048"
+    }
+  ],
+  "usage": {
+    "generated_images": 1,
+    "output_tokens": 16384,
+    "total_tokens": 16384
+  }
+}

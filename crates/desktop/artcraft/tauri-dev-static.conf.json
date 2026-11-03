@@ -8,6 +8,12 @@
   "app": {
     "withGlobalTauri": true,
     "windows": [
-    ]
+    ],
+    "security": {
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["**", "$HOME/Artcraft/downloads/**"]
+      }
+    }
   }
 }

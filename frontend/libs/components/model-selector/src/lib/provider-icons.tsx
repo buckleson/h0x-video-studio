@@ -34,6 +34,8 @@ export const getProviderDisplayName = (provider: GenerationProvider): string => 
   switch (provider) {
     case GenerationProvider.Artcraft:
       return "H0x Video Studio";
+    case GenerationProvider.BytePlus:
+      return "BytePlus";
     case GenerationProvider.Fal:
       return "FAL";
     case GenerationProvider.Higgsfield:

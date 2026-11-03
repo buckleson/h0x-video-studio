@@ -6,6 +6,7 @@ use crate::core::commands::enqueue::generate_error::{GenerateError, MissingCrede
 use crate::core::commands::enqueue::task_enqueue_success::TaskEnqueueSuccess;
 use crate::core::commands::generate::generate_image::providers::artcraft::handle_artcraft;
 use crate::core::commands::generate::generate_image::providers::artcraft_router::handle_router::handle_router;
+use crate::core::commands::generate::generate_image::providers::byteplus::generate_image_byteplus;
 use crate::core::commands::generate::generate_image::tauri_generate_image_request::{
   TauriGenerateImageErrorType, TauriGenerateImageRequest, TauriGenerateImageResponse,
 };
@@ -26,6 +27,9 @@ use tauri::{AppHandle, State};
 pub async fn generate_image_command(request: OmniRequest, app: AppHandle) -> OmniResult {
   if request.uses_artcraft() && !request.uses_legacy_image_endpoint() {
     return omni::generate(request, Modality::Image, &app).await;
+  }
+  if request.provider == Some(GenerationProvider::BytePlus) {
+    return adapt_legacy_response(generate_image_byteplus(request, &app, &app.state::<AppEnvConfigs>().storyteller_host).await);
   }
   adapt_legacy_response(generate_image_native(
     decode_native(request)?, app.clone(),

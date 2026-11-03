@@ -12,6 +12,8 @@ import React, {
   useRef,
 } from "react";
 import { createPortal } from "react-dom";
+import { convertFileSrc } from "@tauri-apps/api/core";
+import { ListLocalMedia, type LocalMediaFile } from "@storyteller/tauri-api";
 import {
   FilterMediaClasses,
   FilterMediaType,
@@ -650,6 +652,10 @@ export const GalleryModal = React.memo(
       }
     }, [showUploads]);
     const [allItems, setAllItems] = useState<GalleryItem[]>([]);
+    const [librarySource, setLibrarySource] = useState<"local" | "vendor">(
+      "vendor",
+    );
+    const [localItems, setLocalItems] = useState<LocalMediaFile[]>([]);
     const [pageIndex, setPageIndex] = useState(0);
     const [hasMore, setHasMore] = useState(true);
 
@@ -953,6 +959,7 @@ export const GalleryModal = React.memo(
         const name = await fetchCurrentUsername();
         if (cancelled) return;
         if (!name) {
+          setLibrarySource("local");
           setUsernameError(true);
           setInitialLoading(false);
           return;
@@ -976,6 +983,19 @@ export const GalleryModal = React.memo(
         cancelled = true;
       };
     }, [mode, galleryModalVisibleViewMode.value, isOpen, usernameRetryCount]);
+
+    useEffect(() => {
+      const modalIsOpen =
+        isOpen || (mode === "view" && galleryModalVisibleViewMode.value);
+      if (!modalIsOpen || librarySource !== "local") return;
+      let cancelled = false;
+      ListLocalMedia()
+        .then((files) => !cancelled && setLocalItems(files))
+        .catch(() => !cancelled && setLocalItems([]));
+      return () => {
+        cancelled = true;
+      };
+    }, [mode, galleryModalVisibleViewMode.value, isOpen, librarySource]);
 
     // Helper to build the cache key for the current filter
     const getCacheKey = useCallback(
@@ -2600,25 +2620,43 @@ export const GalleryModal = React.memo(
             <div className="border-b border-ui-panel-border p-4 py-3 bg-ui-panel">
               <div className="flex flex-wrap justify-between items-center gap-y-2">
                 <div className="flex items-center gap-3 flex-wrap gap-y-1">
-                  {(mode === "view" || mode === "select") && (
-                    <div className="flex items-center gap-0.5 rounded-[3px] bg-ui-controls/40 p-0.5 relative z-[51]">
-                      {(["unsorted", "folders"] as const).map((t) => (
-                        <button
-                          key={t}
-                          type="button"
-                          onClick={() => switchGalleryTab(t)}
-                          className={twMerge(
-                            "rounded-[3px] px-3 py-1 text-sm font-medium transition-colors",
-                            galleryTab === t
-                              ? "bg-ui-controls text-base-fg"
-                              : "text-base-fg/60 hover:text-base-fg",
-                          )}
-                        >
-                          {t === "unsorted" ? "All Assets" : "Folders"}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  <div className="flex items-center gap-0.5 rounded-[3px] bg-ui-controls/40 p-0.5 relative z-[51]">
+                    {(["local", "vendor"] as const).map((src) => (
+                      <button
+                        key={src}
+                        type="button"
+                        onClick={() => setLibrarySource(src)}
+                        className={twMerge(
+                          "rounded-[3px] px-3 py-1 text-sm font-medium transition-colors",
+                          librarySource === src
+                            ? "bg-ui-controls text-base-fg"
+                            : "text-base-fg/60 hover:text-base-fg",
+                        )}
+                      >
+                        {src === "local" ? "On this computer" : "Online"}
+                      </button>
+                    ))}
+                  </div>
+                  {librarySource === "vendor" &&
+                    (mode === "view" || mode === "select") && (
+                      <div className="flex items-center gap-0.5 rounded-[3px] bg-ui-controls/40 p-0.5 relative z-[51]">
+                        {(["unsorted", "folders"] as const).map((t) => (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => switchGalleryTab(t)}
+                            className={twMerge(
+                              "rounded-[3px] px-3 py-1 text-sm font-medium transition-colors",
+                              galleryTab === t
+                                ? "bg-ui-controls text-base-fg"
+                                : "text-base-fg/60 hover:text-base-fg",
+                            )}
+                          >
+                            {t === "unsorted" ? "All Assets" : "Folders"}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   {mode === "view" &&
                     galleryTab === "folders" &&
                     !activeFolder && (
@@ -3070,8 +3108,44 @@ export const GalleryModal = React.memo(
                 }
               >
                 {/* Subfolder tiles for the current location (root or open folder) */}
-                {folderChipsSection}
-                {activeTagToken ? (
+                {librarySource === "vendor" && folderChipsSection}
+                {librarySource === "local" ? (
+                  /* ── Local media (On this computer) ── */
+                  localItems.length === 0 ? (
+                    <div className="flex h-full items-center justify-center">
+                      <div className="text-base-fg/40 text-sm">
+                        No media on this computer yet
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className={twMerge("grid p-4", gapClass)}
+                      style={{
+                        gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
+                      }}
+                    >
+                      {localItems.map((file) =>
+                        file.kind === "video" ? (
+                          <video
+                            key={file.path}
+                            src={convertFileSrc(file.path)}
+                            className="aspect-square w-full bg-black/30 object-cover"
+                            controls
+                            muted
+                            preload="metadata"
+                          />
+                        ) : (
+                          <img
+                            key={file.path}
+                            src={convertFileSrc(file.path)}
+                            alt=""
+                            className="aspect-square w-full bg-black/30 object-cover"
+                          />
+                        ),
+                      )}
+                    </div>
+                  )
+                ) : activeTagToken ? (
                   /* ── Tag view ── */
                   tagContentLoading && activeTagItems.length === 0 ? (
                     <div className="flex h-full items-center justify-center">

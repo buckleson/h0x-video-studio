@@ -9,6 +9,7 @@ const CONSUMER_TEXT = /midjourney|\bsora\b|chatgpt|openai|grok|world\s*labs/i;
 const REMOVED_VALUES = ["midjourney", "sora", "grok", "worldlabs", "", "unknown"];
 const EXPECTED_NAMES: Record<GenerationProvider, string> = {
   [GenerationProvider.Artcraft]: "H0x Video Studio",
+  [GenerationProvider.BytePlus]: "BytePlus",
   [GenerationProvider.Fal]: "Fal",
   [GenerationProvider.Higgsfield]: "Higgsfield",
   [GenerationProvider.Krea]: "Krea",

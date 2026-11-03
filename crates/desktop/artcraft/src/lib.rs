@@ -28,6 +28,7 @@ use crate::core::commands::generate::generate_video::generate_video_command::gen
 use crate::core::commands::flip_image::flip_image;
 use crate::core::commands::get_app_info_command::get_app_info_command;
 use crate::core::commands::load_without_cors_command::load_without_cors_command;
+use crate::core::commands::media_files::list_local_media_command::list_local_media_command;
 use crate::core::commands::media_files::media_file_delete_command::media_file_delete_command;
 use crate::core::commands::platform_info_command::platform_info_command;
 use crate::core::commands::providers::deprecated::get_provider_order_command::get_provider_order_command;
@@ -200,6 +201,7 @@ pub fn run() {
     provider_set_api_key_command,
     load_without_cors_command,
     mark_task_as_dismissed_command,
+    list_local_media_command,
     media_file_delete_command,
     platform_info_command,
     set_provider_order_command,

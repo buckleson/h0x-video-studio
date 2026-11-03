@@ -29,6 +29,7 @@ artcraft_api_defs.workspace = true
 artcraft_client.workspace = true
 artcraft_router.workspace = true
 build_metadata.workspace = true
+byteplus_client.workspace = true
 enums.workspace = true
 errors.workspace = true
 fal_client.workspace = true

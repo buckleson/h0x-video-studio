@@ -1098,6 +1098,11 @@ export const PromptBoxVideo = ({
         request.provider = selectedProvider;
       }
 
+      if (selectedModel.getProviders().includes(GenerationProvider.BytePlus)) {
+        request.provider = GenerationProvider.BytePlus;
+        request.model = selectedModel.id;
+      }
+
       if (selectedModel.generateWithSound) {
         request.generate_audio = !!generateWithSound;
       }

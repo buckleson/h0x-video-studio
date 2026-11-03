@@ -30,6 +30,7 @@ export function ProviderBillingModal({
   let block;
 
   switch (provider) {
+    case GenerationProvider.BytePlus:
     case GenerationProvider.Fal:
     case GenerationProvider.Higgsfield:
     case GenerationProvider.Krea:

@@ -5,6 +5,7 @@ use crate::core::commands::enqueue::common::notify_frontend_of_errors::notify_fr
 use crate::core::commands::enqueue::generate_error::{BadInputReason, GenerateError, MissingCredentialsReason};
 use crate::core::commands::enqueue::task_enqueue_success::TaskEnqueueSuccess;
 use crate::core::commands::generate::generate_video::artcraft::handle_artcraft_video::handle_video_artcraft;
+use crate::core::commands::generate::generate_video::byteplus::generate_video_byteplus;
 use crate::core::commands::generate::generate_video::request::{
   TauriGenerateVideoErrorType, TauriGenerateVideoRequest, TauriGenerateVideoResponse,
 };
@@ -19,6 +20,7 @@ use crate::core::state::artcraft_usage_tracker::artcraft_usage_type::{ArtcraftUs
 use crate::core::state::provider_priority::{Provider, ProviderPriorityStore};
 use crate::core::state::task_database::TaskDatabase;
 use crate::services::storyteller::state::storyteller_credential_manager::StorytellerCredentialManager;
+use enums::common::generation_provider::GenerationProvider;
 use log::{error, info, warn};
 use tauri::{AppHandle, State};
 
@@ -26,6 +28,9 @@ use tauri::{AppHandle, State};
 pub async fn generate_video_command(request: OmniRequest, app: AppHandle) -> OmniResult {
   if request.uses_artcraft() {
     return omni::generate(request, Modality::Video, &app).await;
+  }
+  if request.provider == Some(GenerationProvider::BytePlus) {
+    return adapt_legacy_response(generate_video_byteplus(request, &app).await);
   }
   adapt_legacy_response(generate_video_native(
     decode_native(request)?, app.clone(),

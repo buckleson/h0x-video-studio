@@ -76,6 +76,8 @@ export function ProviderSetupModal({
 
 function getServiceProviderName(provider: GenerationProvider) : string {
   switch (provider) {
+    case GenerationProvider.BytePlus:
+      return "BytePlus";
     case GenerationProvider.Fal:
       return "Fal";
     case GenerationProvider.Higgsfield:

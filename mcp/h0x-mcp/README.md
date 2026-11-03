@@ -18,7 +18,7 @@ Lets Claude (Claude Code or Claude Desktop) make videos for you. It runs on your
 | `seedance` | `BYTEPLUS_API_KEY` | Seedance 1.0 Pro on BytePlus ModelArk, 1080p, 5 or 10 s (set `BYTEPLUS_SEEDANCE_MODEL=seedance-1-0-pro-fast-251015` for the cheaper Fast model). New accounts get free tokens. Change the model with `BYTEPLUS_SEEDANCE_MODEL`. |
 | `fal` | `FAL_KEY` | fal.ai models such as `fal-ai/veo3.1/fast` or `fal-ai/kling-video/v2.6/pro/text-to-video` (pass `model`). |
 
-Videos are saved to `~/Videos/H0x Video Studio`. Set `H0X_OUTPUT_DIR` to change this.
+Videos are saved to `~/Artcraft/downloads/h0x-mcp`. Set `H0X_OUTPUT_DIR` to change this.
 
 ## Set up
 
