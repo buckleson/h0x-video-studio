@@ -55,7 +55,7 @@ describe('R2-3a wiring', () => {
   });
 
   it('mod.rs declares the byteplus module exactly once', () => {
-    const mods = read(path.join(VIDEO_DIR, 'mod.rs')).match(/^\s*(?:pub )?mod byteplus;/gm) ?? [];
+    const mods = read(path.join(VIDEO_DIR, 'mod.rs')).match(/^\s*(?:pub(?:\([^)]*\))?\s+)?mod byteplus;/gm) ?? [];
     expect(mods).toHaveLength(1);
   });
 

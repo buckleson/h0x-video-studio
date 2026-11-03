@@ -153,3 +153,58 @@ impl std::fmt::Display for PollError {
     }
   }
 }
+
+#[cfg(test)]
+mod tests {
+  const SOURCE: &str = include_str!("third_party_task_polling_thread.rs");
+  const HANDLERS_MOD: &str = include_str!("handlers/mod.rs");
+  const BYTEPLUS_MOD: &str = include_str!("handlers/byteplus/mod.rs");
+
+  #[test]
+  fn byteplus_tasks_are_selected_by_provider() {
+    assert!(production_source().contains(".filter(|t| t.provider == GenerationProvider::BytePlus)"));
+  }
+
+  #[test]
+  fn byteplus_tasks_are_excluded_from_skipped_non_fal_branch() {
+    let production = production_source();
+    let start = position(production, "let non_fal_tasks");
+    let filter = &production[start..start + position(&production[start..], ".collect()")];
+    assert!(filter.contains("t.provider != GenerationProvider::Fal"));
+    assert!(filter.contains("t.provider != GenerationProvider::BytePlus"));
+  }
+
+  #[test]
+  fn byteplus_is_polled_before_fal_only_early_return() {
+    let production = production_source();
+    let byteplus_call = position(production, "poll_byteplus_tasks(");
+    let fal_early_return = position(production, "if fal_tasks.is_empty()");
+    assert!(byteplus_call < fal_early_return, "a BytePlus-only batch would never be polled");
+  }
+
+  #[test]
+  fn byteplus_poll_gets_credential_cache_not_backend_creds() {
+    let production = production_source();
+    let start = position(production, "poll_byteplus_tasks(");
+    let call = &production[start..start + position(&production[start..], ").await")];
+    assert!(call.contains("credential_cache"));
+    assert!(!call.contains("storyteller_creds_manager"));
+  }
+
+  #[test]
+  fn handler_modules_are_declared() {
+    assert!(HANDLERS_MOD.lines().any(|l| l.trim() == "pub mod byteplus;"));
+    assert!(HANDLERS_MOD.lines().any(|l| l.trim() == "pub mod fal;"));
+    assert!(BYTEPLUS_MOD.lines().any(|l| l.trim() == "pub mod poll_byteplus_tasks;"));
+  }
+
+  // ========== Helpers ==========
+
+  fn production_source() -> &'static str {
+    SOURCE.split("#[cfg(test)]").next().unwrap()
+  }
+
+  fn position(haystack: &str, needle: &str) -> usize {
+    haystack.find(needle).unwrap_or_else(|| panic!("missing {:?}", needle))
+  }
+}

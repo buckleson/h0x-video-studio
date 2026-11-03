@@ -228,7 +228,7 @@ describe('A2d deleted files and directories', () => {
   });
 
   it.each([
-    [`${SRC}/core/commands/generate/generate_image/providers/mod.rs`, ['grok', 'midjourney', 'sora'], ['artcraft', 'artcraft_router']],
+    [`${SRC}/core/commands/generate/generate_image/providers/mod.rs`, ['grok', 'midjourney', 'sora'], ['artcraft', 'artcraft_router', 'byteplus']],
     [`${SRC}/core/commands/generate/generate_video/mod.rs`, ['grok', 'sora2'], ['artcraft', 'byteplus', 'generate_video_command', 'request']],
     [
       `${SRC}/core/commands/deprecated/text_to_image/mod.rs`,
@@ -255,7 +255,7 @@ describe('A2d module tree (compiler stand-in)', () => {
   it('every `mod x;` resolves to an existing file', () => {
     const missing: string[] = [];
     for (const f of files) {
-      for (const d of modDeclsWithPath(read(f))) {
+      for (const d of modDeclsWithPath(prodSource(read(f)))) {
         if (!resolveMod(f, d)) missing.push(`${f}: mod ${d.name}`);
       }
     }
@@ -350,7 +350,7 @@ describe('A2d module tree (compiler stand-in)', () => {
   // so a half-deleted block shows up here.
   it('every source outside the known lexer quirks has balanced brackets (no half-deleted block)', () => {
     const zero = JSON.stringify({ brace: 0, paren: 0, bracket: 0 });
-    const bad = files.filter((f) => !LEXER_QUIRKS.includes(f) && JSON.stringify(balance(stripStringsAndComments(read(f)))) !== zero);
+    const bad = files.filter((f) => !LEXER_QUIRKS.includes(f) && JSON.stringify(balance(stripStringsAndComments(prodSource(read(f))))) !== zero);
     expect(bad).toEqual([]);
   }, 30_000);
 });
@@ -709,7 +709,7 @@ describe('A2d acceptance grep and scope', () => {
   });
 
   // Ceilings are the counts after A2d, so any new string pushes the total over.
-  const literalCount = (re: RegExp) => rustFiles().reduce((n, f) => n + stringLiterals(read(f)).filter((s) => re.test(s)).length, 0);
+  const literalCount = (re: RegExp) => rustFiles().reduce((n, f) => n + stringLiterals(prodSource(read(f))).filter((s) => re.test(s)).length, 0);
 
   it('the crate gained no user-visible "ArtCraft" string', () => {
     expect(literalCount(/artcraft/i)).toBeLessThanOrEqual(107);
@@ -724,6 +724,12 @@ describe('A2d acceptance grep and scope', () => {
 
 function abs(rel: string): string {
   return path.join(APP_ROOT, ...rel.split('/'));
+}
+
+// Shipped code only: Rust unit tests sit after `#[cfg(test)]` and quote module names,
+// brackets and banned words in string literals, which these source scans must ignore.
+function prodSource(src: string): string {
+  return src.split('#[cfg(test)]')[0];
 }
 
 function read(rel: string): string {

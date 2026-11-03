@@ -198,3 +198,53 @@ describe('R2-3b vendor and brand leaks', () => {
     for (const call of PROVIDER.match(/format!\([^;]*?\)/g) ?? []) expect(call).not.toMatch(/\bkey\b/);
   });
 });
+
+describe('R2-3b invalid auth state and saved-path contract', () => {
+  it('a missing BytePlus key returns Unauthorized with needs_byteplus_api_key', () => {
+    expect(PROVIDER).toContain('CommandErrorStatus::Unauthorized');
+    expect(PROVIDER).toContain('"needs_byteplus_api_key"');
+    // The missing-key early return comes before any network call.
+    expect(PROVIDER.indexOf('"needs_byteplus_api_key"')).toBeLessThan(PROVIDER.search(/generate_image\(\s*&key/));
+  });
+
+  it('the missing-key message is user-facing, names BytePlus, and leaks no foreign brand', () => {
+    const msg = stringLiterals(PROVIDER).find((s) => /api key/i.test(s));
+    expect(msg).toBeDefined();
+    expect(msg).toMatch(/BytePlus/);
+    expect(msg).not.toMatch(FOREIGN_BRANDS);
+  });
+
+  it('a non-2xx download is rejected before bytes are written', () => {
+    const status = PROVIDER.indexOf('error_for_status()');
+    expect(status).toBeGreaterThan(-1);
+    expect(status).toBeLessThan(PROVIDER.indexOf('tokio::fs::write('));
+  });
+
+  it('the downloads dir is created before the file is written', () => {
+    const mkdir = PROVIDER.indexOf('create_dir_all(');
+    expect(mkdir).toBeGreaterThan(PROVIDER.indexOf('downloads_dir()'));
+    expect(mkdir).toBeLessThan(PROVIDER.indexOf('tokio::fs::write('));
+  });
+
+  it('the file is saved under the downloads dir via directory.join', () => {
+    expect(PROVIDER).toMatch(/let directory = [^;]*downloads_dir\(\)[^;]*;/);
+    expect(PROVIDER).toMatch(/let path = directory\.join\(/);
+  });
+
+  it('a result URL with no extension falls back to png', () => {
+    expect(PROVIDER).toMatch(/\.extension\(\)[^;]*unwrap_or\("png"\)/);
+  });
+
+  it('the local path is stored on both the inserted row and the notified task', () => {
+    expect(PROVIDER).toMatch(/provider_job_id:\s*Some\(&local_path\)/);
+    expect(PROVIDER).toMatch(/provider_job_id:\s*Some\(local_path\)/);
+    // The row is inserted with create_task before the frontend is notified.
+    expect(PROVIDER.indexOf('create_task(CreateTaskArgs')).toBeLessThan(PROVIDER.indexOf('notify_frontend_of_completion('));
+  });
+
+  it('the completion is an Image media class with no batch or thumbnail URL', () => {
+    expect(PROVIDER).toContain('media_class: TaskMediaFileClass::Image');
+    expect(PROVIDER).toMatch(/maybe_thumbnail_url_template:\s*None/);
+    expect(PROVIDER).toMatch(/maybe_batch_token:\s*None/);
+  });
+});
