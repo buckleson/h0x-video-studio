@@ -8,7 +8,7 @@ const { generateApps, editApps } = vi.hoisted(() => {
       id,
       label: `${id} label`,
       description: `${id} description`,
-      icon: id,
+      icon: () => null,
       action,
       badge,
     }) as unknown as FullAppItem;
@@ -30,7 +30,6 @@ vi.mock("~/config/appMenu", () => ({
   goToApp: vi.fn(),
 }));
 
-vi.mock("@storyteller/icons", () => ({ DynamicIcon: () => null }));
 
 import { AppsIndexPage } from "./AppsIndexPage";
 

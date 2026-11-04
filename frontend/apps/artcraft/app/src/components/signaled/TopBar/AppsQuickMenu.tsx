@@ -1,4 +1,3 @@
-import { DynamicIcon } from "@storyteller/icons";
 import { twMerge } from "tailwind-merge";
 import {
   useGenerateApps,
@@ -51,7 +50,7 @@ const AppsQuickMenuSection = ({
                 palette.iconColor,
               )}
             >
-              <DynamicIcon icon={app.icon} className="text-sm" />
+              <app.icon weight="duotone" className="text-base" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">

@@ -1,4 +1,5 @@
-import { ChevronRightIcon, HouseIcon, ImagesIcon, MinusIcon, PictureInPicture2Icon, SettingsIcon, SquareIcon, XIcon } from "lucide-react";
+import { HouseIcon } from "@phosphor-icons/react";
+import { ChevronRightIcon, ImagesIcon, MinusIcon, PictureInPicture2Icon, SettingsIcon, SquareIcon, XIcon } from "lucide-react";
 import { DynamicIcon } from "@storyteller/icons";
 import { signal } from "@preact/signals-react";
 import { useSignals } from "@preact/signals-react/runtime";
@@ -85,7 +86,7 @@ const appMenuTabs: MenuIconItem[] = [
   {
     id: "APPS",
     label: "Home",
-    icon: <HouseIcon />,
+    icon: <HouseIcon weight="duotone" />,
     description: "Explore all apps and miniapps",
     large: true,
     tooltipContent: <AppsQuickMenu />,
@@ -95,7 +96,7 @@ const appMenuTabs: MenuIconItem[] = [
   ...APP_DESCRIPTORS.map((d) => ({
     id: d.id,
     label: d.label,
-    icon: <DynamicIcon icon={d.icon} />,
+    icon: <d.icon weight="duotone" />,
     imageSrc: d.imageSrc,
     description: d.description,
     large: d.large,

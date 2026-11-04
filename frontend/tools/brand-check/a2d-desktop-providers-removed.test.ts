@@ -145,6 +145,7 @@ const REGISTERED_COMMANDS = [
   'provider_clear_command',
   'provider_list_command',
   'provider_set_api_key_command',
+  'save_scene_frame_command',
   'set_provider_order_command',
   'storyteller_cancel_login_challenge_command',
   'storyteller_create_login_challenge_command',
@@ -705,7 +706,8 @@ describe('A2d acceptance grep and scope', () => {
   });
 
   it('no crate source has an LTX or Lightricks brand', () => {
-    for (const f of rustFiles()) expect(read(f), f).not.toMatch(/\bLTX\b|Lightricks/i);
+    // Test modules may list the banned words themselves (e.g. brand-word guards).
+    for (const f of rustFiles()) expect(prodSource(read(f)), f).not.toMatch(/\bLTX\b|Lightricks/i);
   });
 
   // Ceilings are the counts after A2d, so any new string pushes the total over.
