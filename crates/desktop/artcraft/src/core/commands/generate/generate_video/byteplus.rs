@@ -117,3 +117,34 @@ pub(crate) async fn image_to_data_url(image: &str) -> Result<String, ByteplusErr
 fn command_error(status: CommandErrorStatus, kind: &str, message: String) -> ByteplusError {
   CommandErrorResponseWrapper { status, error_type: Some(kind.into()), error_message: Some(message), error_details: None }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  const PNG_BYTES: [u8; 8] = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+
+  #[tokio::test]
+  async fn data_url_passes_through_unchanged() {
+    let data_url = "data:image/png;base64,iVBORw0KGgo=";
+    assert_eq!(image_to_data_url(data_url).await.unwrap(), data_url);
+  }
+
+  #[tokio::test]
+  async fn local_file_path_becomes_a_data_url() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("first frame.png");
+    std::fs::write(&path, PNG_BYTES).unwrap();
+
+    let data_url = image_to_data_url(path.to_str().unwrap()).await.unwrap();
+
+    assert_eq!(data_url, "data:image/png;base64,iVBORw0KGgo=");
+  }
+
+  #[tokio::test]
+  async fn vendor_media_token_is_a_clear_bad_request() {
+    let err = image_to_data_url("m_vendor123").await.unwrap_err();
+    assert!(matches!(err.status, CommandErrorStatus::BadRequest));
+    assert!(err.error_message.unwrap().starts_with("Cannot read image m_vendor123"));
+  }
+}

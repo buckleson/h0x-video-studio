@@ -29,6 +29,7 @@ import { ResolutionPicker } from "./common/ResolutionPicker";
 import { QualityPicker } from "./common/QualityPicker";
 import { ReferenceDeck } from "./deck/ReferenceDeck";
 import { useDeckMedia } from "./deck/useDeckMedia";
+import { keepImageLocal, localImageSource } from "./common/localImage";
 import {
   PromptBoxDropOverlay,
   usePromptBoxDrop,
@@ -129,11 +130,18 @@ export const PromptBoxImage = ({
     selectedModel?.maxImagePromptCount ?? 1,
   );
 
+  // BytePlus reads reference images from this machine, so they never go to
+  // the vendor upload API.
+  const isBytePlusModel =
+    !!selectedModel?.getProviders().includes(GenerationProvider.BytePlus);
+
   const deck = useDeckMedia({
     referenceImages,
     setReferenceImages,
     maxImages: maxImagePromptCount,
-    uploadImage: uploadImage as UploadMediaFn | undefined,
+    uploadImage: isBytePlusModel
+      ? keepImageLocal
+      : (uploadImage as UploadMediaFn | undefined),
     ownGalleryModal: true,
   });
 
@@ -415,9 +423,10 @@ export const PromptBoxImage = ({
         !!referenceImages &&
         referenceImages.length > 0
       ) {
-        request.image_media_tokens = referenceImages
-          .map((image) => image.mediaToken)
-          .filter((t) => t.length > 0);
+        const tokens = isBytePlusModel
+          ? await Promise.all(referenceImages.map(localImageSource))
+          : referenceImages.map((image) => image.mediaToken);
+        request.image_media_tokens = tokens.filter((t) => t.length > 0);
       }
 
       window.__storeTaskEnqueueMeta?.({
