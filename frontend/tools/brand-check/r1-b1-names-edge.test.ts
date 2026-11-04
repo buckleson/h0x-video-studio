@@ -16,7 +16,7 @@ const OVERLAY_CONFS = ['tauri-dev-hot-reload.conf.json', 'tauri-dev-static.conf.
 const ALL_CONFS = [...BASE_CONFS, ...OVERLAY_CONFS];
 const NAME = 'H0x Video Studio';
 const ID = 'com.buckleson.h0xvideostudio';
-const VERSION = '0.3.2';
+const VERSION = '0.3.3';
 const BRAND_KEYS = ['productName', 'identifier', 'version'] as const;
 const GOOGLE_FONTS = /fonts\.(googleapis|gstatic)\.com/i;
 // Old and third-party brands that must not show up in user-visible strings.
