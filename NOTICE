@@ -29,6 +29,7 @@ Carter One font (frontend/apps/artcraft/app/public/resources/fonts/CarterOneRegu
 Inter, Archivo and Geist Mono fonts (artcraft-native/assets/fonts/) — SIL Open Font License 1.1;
   each font's license is next to it. https://rsms.me/inter/ ·
   https://fonts.google.com/specimen/Archivo · https://vercel.com/font
+Mesh2Motion characters and animations (frontend/apps/artcraft/app/public/resources/3d/) — CC0 1.0; see CREDITS.md there. https://github.com/Mesh2Motion/mesh2motion-app
 
 Material not covered by the license above
 

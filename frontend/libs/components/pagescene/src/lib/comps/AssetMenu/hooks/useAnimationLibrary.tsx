@@ -27,10 +27,10 @@ import type { Pagination } from "../../../models/pagination";
 // upload) refreshes the user list every time and triggers the featured fetch
 // until it has succeeded once.
 //
-// The user's own uploads lead, then the server-curated set; the hardcoded
-// demo clips are only the fallback while the API has no featured animations
-// (deliberately replace, not merge). The user fetch is silent since anonymous
-// users legitimately 401.
+// The bundled Local:: clips always lead, then the user's own uploads, then the
+// server-curated set; the remaining hardcoded demo clips are only the fallback
+// while the API has no featured animations (deliberately replace, not merge).
+// Without a session token nothing is fetched at all.
 interface AnimationLibraryState {
   featuredAnimations?: MediaItem[];
   featuredFetchStatus: FetchStatus;
@@ -60,6 +60,10 @@ const dedupeById = (items: MediaItem[]): MediaItem[] => {
     return true;
   });
 };
+
+const localAnimations = demoAnimationItems.filter((item) =>
+  item.media_id.startsWith("Local::"),
+);
 
 const ANIMATION_FILTERS = {
   filterEngineCategories: [FilterEngineCategories.ANIMATION],
@@ -155,25 +159,32 @@ export const useAnimationLibrary = (): {
 
   const fetchUserAnimations = useCallback(() => {
     const adapter = editor?.adapter;
-    if (!adapter) return;
+    if (!adapter?.getCurrentUserToken?.()) return;
     void fetchFeaturedAnimations(adapter);
     void fetchUserAnimationsShared(adapter);
   }, [editor]);
 
   const loadMoreUserAnimations = useCallback(() => {
     const adapter = editor?.adapter;
-    if (!adapter) return;
+    if (!adapter?.getCurrentUserToken?.()) return;
     loadMoreUserAnimationsShared(adapter);
   }, [editor]);
 
   const defaultAnimations = useMemo(
     () =>
-      featuredAnimations?.length ? featuredAnimations : demoAnimationItems,
+      featuredAnimations?.length
+        ? [...localAnimations, ...featuredAnimations]
+        : demoAnimationItems,
     [featuredAnimations],
   );
 
   const allAnimations = useMemo(
-    () => [...(userAnimations ?? []), ...defaultAnimations],
+    () =>
+      dedupeById([
+        ...localAnimations,
+        ...(userAnimations ?? []),
+        ...defaultAnimations,
+      ]),
     [userAnimations, defaultAnimations],
   );
 

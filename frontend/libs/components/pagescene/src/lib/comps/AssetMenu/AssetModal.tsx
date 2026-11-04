@@ -288,11 +288,17 @@ export const AssetModal = () => {
       );
       if (found) priorityCharacters.push(found);
     }
+    const isLocal = (item: MediaItem) => item.media_id.startsWith("Local::");
     const remainingCharacters = characterCandidates.filter(
       (item) =>
+        !isLocal(item) &&
         !CHARACTER_PRIORITY_ORDER.includes(item.name?.toLowerCase() ?? ""),
     );
-    const orderedCharacters = [...priorityCharacters, ...remainingCharacters];
+    const orderedCharacters = [
+      ...characterCandidates.filter(isLocal),
+      ...priorityCharacters,
+      ...remainingCharacters,
+    ];
 
     return [
       { id: "all", label: "All", icon: LayersIcon, items: [] },

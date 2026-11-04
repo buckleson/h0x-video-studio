@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader, GLTF } from "three/addons/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { MMDLoader } from "three/addons/loaders/MMDLoader.js";
 
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
@@ -564,10 +565,14 @@ class Scene {
   // for the lifetime of the Scene; entries are cheap (string→string).
   private mediaUrlCache: Map<string, string> = new Map();
 
-  // Resolve a media_file_token to its CDN URL. Reads from the warm
-  // cache first (populated by warmMediaURLs during a scene load) before
-  // falling back to a single-token metadata fetch.
+  // Resolve a media_file_token to its CDN URL. `Local::<path>` ids are
+  // bundled app resources served from the app origin. Otherwise reads
+  // from the warm cache first (populated by warmMediaURLs during a scene
+  // load) before falling back to a single-token metadata fetch.
   async getMediaURL(media_id: string) {
+    if (media_id.startsWith("Local::")) {
+      return new URL(media_id.slice("Local::".length), location.origin).href;
+    }
     const cached = this.mediaUrlCache.get(media_id);
     if (cached !== undefined) return cached;
     return this.deps.getMediaUrlByToken(media_id);
@@ -1041,7 +1046,8 @@ class Scene {
         reject(error);
         return;
       }
-      const glbLoader = new GLTFLoader();
+      // Bundled clips use EXT_meshopt_compression.
+      const glbLoader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
       glbLoader.parse(
         buffer,
         "", // NB: No relative path to load additional assets!
@@ -1105,7 +1111,8 @@ class Scene {
     progress: (event: ProgressEvent) => void,
   ): Promise<GLTF> {
     return new Promise((resolve, reject) => {
-      const glbLoader = new GLTFLoader();
+      // Bundled clips use EXT_meshopt_compression.
+      const glbLoader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
       glbLoader.load(
         media_url,
         (gltf) => {

@@ -302,6 +302,10 @@ export interface PageSceneAdapter {
   // per-token cache's stored `original` snapshot.
   resetToOriginal?(): Promise<void> | void;
 
+  // Persist a "Save frame" PNG on the host (Tauri: the downloads folder).
+  // When undefined the lib falls back to a browser download.
+  saveFrame?(blob: Blob): Promise<void>;
+
   // Optional event hooks — telemetry, host-side modals, tab title sync.
   onSelectionChange?(
     sel: { uuid: string; assetType: string } | null,

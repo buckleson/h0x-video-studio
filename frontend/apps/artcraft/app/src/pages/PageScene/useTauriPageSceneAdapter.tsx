@@ -8,6 +8,7 @@
 // host-side implementation of the adapter contract.
 
 import { useMemo } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import { v4 as uuidv4 } from "uuid";
 import {
   GenerateImage,
@@ -243,6 +244,10 @@ export const useTauriPageSceneAdapter = (
         if (init?.signal?.aborted) {
           throw new DOMException("Aborted", "AbortError");
         }
+        // Bundled app resources (Local:: media) are same-origin.
+        if (new URL(url, location.origin).origin === location.origin) {
+          return await window.fetch(url, { signal: init?.signal });
+        }
         try {
           return await FetchProxy(url, { signal: init?.signal });
         } catch {
@@ -372,6 +377,11 @@ export const useTauriPageSceneAdapter = (
       },
 
       performLogout: () => setLogoutStates(),
+
+      saveFrame: async (blob: Blob) => {
+        const pngBytes = Array.from(new Uint8Array(await blob.arrayBuffer()));
+        await invoke("save_scene_frame_command", { pngBytes });
+      },
 
       initialSceneToken,
       cacheJsonString,

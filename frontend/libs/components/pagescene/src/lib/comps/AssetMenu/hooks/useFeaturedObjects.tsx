@@ -38,7 +38,7 @@ export const useFeaturedObjects = (props: useFeaturedObjectsProps) => {
   const nextPageCursor = nextFeaturedObjects?.maybe_next;
 
   const fetchFeaturedObjects = useCallback(async () => {
-    if (!editor) return;
+    if (!editor?.adapter?.getCurrentUserToken?.()) return;
     let breakFlag = false;
     setFeaturedFetch((curr) => {
       if (curr.status === FetchStatus.IN_PROGRESS) {
@@ -92,7 +92,7 @@ export const useFeaturedObjects = (props: useFeaturedObjectsProps) => {
     // call (fetchFeaturedObjects bails at !editor), and the subsequent
     // re-run after editor becomes available would see IN_PROGRESS and
     // skip the actual fetch forever. See PR #1492 regression.
-    if (!editor) return;
+    if (!editor?.adapter?.getCurrentUserToken?.()) return;
     if (
       (firstFetch.current === FetchStatus.READY ||
         firstFetch.current === FetchStatus.ERROR) &&
