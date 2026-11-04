@@ -83,8 +83,8 @@ function creditRows() {
 }
 
 describe('R3-1 edge: folder contents', () => {
-  it('3d root holds only characters/, animations/ and CREDITS.md', () => {
-    expect(readdirSync(ROOT).sort()).toEqual(['CREDITS.md', 'animations', 'characters']);
+  it('3d root holds only characters/, animations/, thumbs/ and CREDITS.md', () => {
+    expect(readdirSync(ROOT).sort()).toEqual(['CREDITS.md', 'animations', 'characters', 'thumbs']);
   });
 
   it('asset folders hold only .glb files (no .gltf/.bin/.png sidecars, no subfolders)', () => {

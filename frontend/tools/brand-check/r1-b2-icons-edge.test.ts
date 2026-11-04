@@ -19,7 +19,6 @@ const APP_ROOT = path.resolve(__dirname, '../../..');
 const PUBLIC = 'frontend/apps/artcraft/app/public';
 const TAURI_ICONS = 'crates/desktop/artcraft/icons';
 const TAURI_CONFS = ['crates/desktop/artcraft/tauri.conf.json', 'crates/desktop/artcraft/tauri-mac.conf.json'];
-const MARK_SRC = '../docs/agents/assets/h0x-mark-blue.png';
 const LOGO = `${PUBLIC}/resources/logo/h0x-icon.png`;
 const OLD_BRANDS = /artcraft|getartcraft|storyteller\.ai|fakeyou|lightricks|\bltx\b/i;
 // Asset basenames B2 removed; no tracked source may still reference them.
@@ -150,8 +149,9 @@ describe('B2 edge: h0x-icon.svg is self-contained', () => {
 });
 
 describe('B2 edge: logo and web icons', () => {
-  it('resources/logo/h0x-icon.png is a byte copy of h0x-mark-blue.png', () => {
-    expect(readFileSync(abs(LOGO)).equals(readFileSync(abs(MARK_SRC)))).toBe(true);
+  it('resources/logo/h0x-icon.png is the 512px app tile (see r4-app-icons)', () => {
+    const b = readFileSync(abs(LOGO));
+    expect([b.readUInt32BE(16), b.readUInt32BE(20)]).toEqual([512, 512]);
   });
 
   it('web PNGs are distinct renders, not one file copied under every name', () => {

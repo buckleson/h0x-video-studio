@@ -20,9 +20,8 @@ vi.mock("~/config/appMenu", async () => {
   };
 });
 
-vi.mock("@storyteller/icons", () => ({
-  DynamicIcon: () => <i data-testid="icon" />,
-}));
+// Tiles render the app's Phosphor icon component directly.
+const TestIcon = () => <i data-testid="icon" />;
 
 import { AppsIndexPage } from "./AppsIndexPage";
 
@@ -35,7 +34,7 @@ const app = (
     id,
     label: `${id} label`,
     description: `${id} description`,
-    icon: id,
+    icon: TestIcon,
     action,
     badge,
   }) as unknown as FullAppItem;

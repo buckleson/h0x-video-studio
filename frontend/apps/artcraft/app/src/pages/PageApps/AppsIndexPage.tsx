@@ -1,5 +1,4 @@
-import { ArrowRightIcon } from "lucide-react";
-import { DynamicIcon } from "@storyteller/icons";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { twMerge } from "tailwind-merge";
 import {
   useGenerateApps,
@@ -78,10 +77,10 @@ function AppTile({ app, wide = false }: { app: FullAppItem; wide?: boolean }) {
     >
       <div className="flex w-full items-start justify-between gap-2">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-tile border border-primary/20 bg-primary/10 text-primary">
-          <DynamicIcon icon={app.icon} className="text-base" />
+          <app.icon weight="duotone" className="text-xl" />
         </span>
         {enabled && (
-          <ArrowRightIcon className="h-4 w-4 text-base-fg/40 transition-colors group-hover:text-primary" />
+          <ArrowRightIcon weight="bold" className="h-4 w-4 text-base-fg/40 transition-colors group-hover:text-primary" />
         )}
       </div>
       <div className="min-w-0">
