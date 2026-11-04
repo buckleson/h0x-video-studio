@@ -13,6 +13,7 @@ use crate::core::threads::third_party_task_polling_thread::events::notify_fronte
 };
 use crate::core::utils::auto_download::{auto_download_task_urls, clear_auto_download_checkpoint};
 use crate::core::utils::download_url_to_user_download_dir::download_url_with_filename;
+use crate::core::utils::local_asset_url::local_asset_url;
 use anyhow::{anyhow, Result};
 use byteplus_client::{get_video_task, TaskStatus, VideoTaskStatus};
 use enums::tauri::tasks::task_media_file_class::TaskMediaFileClass;
@@ -118,22 +119,26 @@ async fn complete(
     .await
     .map_err(|err| anyhow!("{}", err))?;
   let local_path_str = local_path.to_string_lossy();
+  // The task must carry the saved file, or the task queue skips it and the
+  // video page has nothing it can load.
+  let primary_media_file_token = MediaFileToken::new_from_str(task.id.as_str());
+  let asset_url = local_asset_url(&local_path);
 
   let updated = update_successful_task_status_with_metadata(UpdateSuccessfulTaskArgs {
     db: task_database.get_connection(),
     task_id: &task.id,
     maybe_batch_token: None,
-    maybe_primary_media_file_token: None,
+    maybe_primary_media_file_token: Some(&primary_media_file_token),
     maybe_primary_media_file_class: Some(TaskMediaFileClass::Video),
-    maybe_primary_media_file_cdn_url: Some(&local_path_str),
+    maybe_primary_media_file_cdn_url: Some(asset_url.as_str()),
     maybe_primary_media_file_thumbnail_url_template: None,
   }).await?;
 
   if updated {
     clear_auto_download_checkpoint(app_handle, task);
     let completion = CompletionData {
-      primary_media_file_token: MediaFileToken::new_from_str(task.id.as_str()),
-      maybe_cdn_url: Url::from_file_path(&local_path).ok(),
+      primary_media_file_token,
+      maybe_cdn_url: Some(asset_url),
       maybe_thumbnail_url_template: None,
       maybe_batch_token: None,
       media_class: TaskMediaFileClass::Video,
@@ -200,11 +205,11 @@ mod tests {
   }
 
   #[test]
-  fn local_download_path_converts_to_file_url() {
+  fn local_download_path_converts_to_asset_url() {
     let path = std::env::temp_dir().join("downloads").join("task_01abc.mp4");
-    let url = Url::from_file_path(&path).expect("absolute temp path converts to a file URL");
-    assert_eq!(url.scheme(), "file");
-    assert!(url.path().ends_with("/downloads/task_01abc.mp4"), "{}", url);
+    let url = local_asset_url(&path);
+    assert_eq!(url.host_str(), Some(if cfg!(windows) { "asset.localhost" } else { "localhost" }));
+    assert!(url.as_str().ends_with("downloads%2Ftask_01abc.mp4") || url.as_str().ends_with("downloads%5Ctask_01abc.mp4"), "{}", url);
   }
 
   mod status_mapping_edge_cases {
@@ -290,7 +295,16 @@ mod tests {
       let production = production_source();
       assert!(production.contains("format!(\"{}.mp4\", task.id.as_str())"));
       assert!(production.contains("app_data_root.downloads_dir()"));
-      assert!(production.contains("maybe_primary_media_file_cdn_url: Some(&local_path_str)"));
+      assert!(production.contains("maybe_primary_media_file_cdn_url: Some(asset_url.as_str())"));
+    }
+
+    #[test]
+    fn completed_task_records_token_and_asset_url() {
+      let production = production_source();
+      assert!(production.contains("maybe_primary_media_file_token: Some(&primary_media_file_token)"));
+      assert!(production.contains("maybe_cdn_url: Some(asset_url)"));
+      assert!(!production.contains("maybe_primary_media_file_token: None"));
+      assert!(!production.contains("Url::from_file_path"));
     }
 
     #[test]
