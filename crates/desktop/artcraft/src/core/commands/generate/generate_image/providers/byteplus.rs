@@ -11,6 +11,7 @@ use crate::core::state::data_dir::app_data_root::AppDataRoot;
 use crate::core::state::data_dir::trait_data_subdir::DataSubdir;
 use crate::core::state::task_database::TaskDatabase;
 use crate::core::threads::third_party_task_polling_thread::events::notify_frontend_of_completion::{notify_frontend_of_completion, CompletionData};
+use crate::core::utils::local_asset_url::local_asset_url;
 use artcraft_client::utils::api_host::ApiHost;
 use byteplus_client::{generate_image, ImageRequest};
 use chrono::Local;
@@ -22,6 +23,9 @@ use log::info;
 use reqwest::Url;
 use serde_json::Value;
 use sqlite_tasks::queries::create_task::{create_task, CreateTaskArgs};
+use sqlite_tasks::queries::update_successful_task_status_with_metadata::{
+  update_successful_task_status_with_metadata, UpdateSuccessfulTaskArgs,
+};
 use sqlite_tasks::queries::task::Task;
 use std::path::Path;
 use tauri::{AppHandle, Manager};
@@ -93,7 +97,20 @@ pub async fn generate_image_byteplus(
     frontend_subscriber_payload: request.frontend_subscriber_payload.as_deref(),
   }).await.map_err(local_error)?;
 
+  // The task must carry the saved file, or the canvas and the task queue
+  // have nothing to show and fall back to the logo placeholder.
   let primary_media_file_token = MediaFileToken::new_from_str(task_id.as_str());
+  let asset_url = local_asset_url(&path);
+  update_successful_task_status_with_metadata(UpdateSuccessfulTaskArgs {
+    db: database.get_connection(),
+    task_id: &task_id,
+    maybe_batch_token: None,
+    maybe_primary_media_file_token: Some(&primary_media_file_token),
+    maybe_primary_media_file_class: Some(TaskMediaFileClass::Image),
+    maybe_primary_media_file_cdn_url: Some(asset_url.as_str()),
+    maybe_primary_media_file_thumbnail_url_template: None,
+  }).await.map_err(local_error)?;
+
   let task = Task {
     id: task_id,
     status: TaskStatus::CompleteSuccess,
@@ -111,11 +128,44 @@ pub async fn generate_image_byteplus(
 
   notify_frontend_of_completion(app, api_host, None, &task, &CompletionData {
     primary_media_file_token,
-    maybe_cdn_url: None,
+    maybe_cdn_url: Some(asset_url),
     maybe_thumbnail_url_template: None,
     maybe_batch_token: None,
     media_class: TaskMediaFileClass::Image,
   }).await;
 
   Ok(TauriGenerateImageResponse {}.into())
+}
+
+#[cfg(test)]
+mod tests {
+  const SOURCE: &str = include_str!("byteplus.rs");
+
+  #[test]
+  fn completed_task_records_the_saved_image() {
+    let production = production_source();
+    assert!(production.contains("maybe_primary_media_file_token: Some(&primary_media_file_token)"));
+    assert!(production.contains("maybe_primary_media_file_class: Some(TaskMediaFileClass::Image)"));
+    assert!(production.contains("maybe_primary_media_file_cdn_url: Some(asset_url.as_str())"));
+  }
+
+  #[test]
+  fn completion_event_carries_the_local_asset_url() {
+    let production = production_source();
+    assert!(production.contains("let asset_url = local_asset_url(&path);"));
+    assert!(production.contains("maybe_cdn_url: Some(asset_url)"));
+    assert!(!production.contains("maybe_cdn_url: None"));
+  }
+
+  #[test]
+  fn task_is_updated_before_the_frontend_is_notified() {
+    let production = production_source();
+    let update = production.find("update_successful_task_status_with_metadata(UpdateSuccessfulTaskArgs").unwrap();
+    let notify = production.find("notify_frontend_of_completion(app,").unwrap();
+    assert!(update < notify);
+  }
+
+  fn production_source() -> &'static str {
+    SOURCE.split("#[cfg(test)]").next().unwrap()
+  }
 }

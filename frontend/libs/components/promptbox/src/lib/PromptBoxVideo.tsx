@@ -37,6 +37,7 @@ import type { UploadImageFn } from "./ImagePromptRow";
 import { ReferenceDeck } from "./deck/ReferenceDeck";
 import { KeyframeCards } from "./deck/KeyframeCards";
 import { useDeckMedia } from "./deck/useDeckMedia";
+import { keepImageLocal, localImageSource } from "./common/localImage";
 import {
   PromptBoxDropOverlay,
   usePromptBoxDrop,
@@ -476,6 +477,10 @@ export const PromptBoxVideo = ({
 
   const isReferenceMode =
     inputMode === "reference" && !!selectedModel?.supportsReferenceMode;
+  // BytePlus reads the first frame from this machine, so it never goes to
+  // the vendor upload API.
+  const isBytePlusModel =
+    !!selectedModel?.getProviders().includes(GenerationProvider.BytePlus);
   const maxImageCount = isReferenceMode
     ? (selectedModel?.maxReferenceImages ?? 3)
     : 1;
@@ -497,7 +502,7 @@ export const PromptBoxVideo = ({
     setReferenceAudios,
     maxAudios: maxAudioCount,
     maxAudioTotalSec: selectedModel?.maxAudioRefDuration ?? 15,
-    uploadImage,
+    uploadImage: isBytePlusModel ? keepImageLocal : uploadImage,
     uploadVideo,
     uploadAudio,
     ownGalleryModal: true,
@@ -1072,7 +1077,9 @@ export const PromptBoxVideo = ({
     let imageMediaToken = undefined;
 
     if (!isRefMode && referenceImages.length > 0) {
-      imageMediaToken = referenceImages[0].mediaToken;
+      imageMediaToken = isBytePlusModel
+        ? await localImageSource(referenceImages[0])
+        : referenceImages[0].mediaToken;
     }
 
     setTimeout(() => {
