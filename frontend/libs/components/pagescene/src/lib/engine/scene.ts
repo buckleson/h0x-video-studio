@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader, GLTF } from "three/addons/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { MMDLoader } from "three/addons/loaders/MMDLoader.js";
 
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
@@ -1045,7 +1046,8 @@ class Scene {
         reject(error);
         return;
       }
-      const glbLoader = new GLTFLoader();
+      // Bundled clips use EXT_meshopt_compression.
+      const glbLoader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
       glbLoader.parse(
         buffer,
         "", // NB: No relative path to load additional assets!
@@ -1109,7 +1111,8 @@ class Scene {
     progress: (event: ProgressEvent) => void,
   ): Promise<GLTF> {
     return new Promise((resolve, reject) => {
-      const glbLoader = new GLTFLoader();
+      // Bundled clips use EXT_meshopt_compression.
+      const glbLoader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
       glbLoader.load(
         media_url,
         (gltf) => {

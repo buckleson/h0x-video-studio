@@ -50,16 +50,24 @@ export function installStageAutomation(editor: Editor): () => void {
       return addClipToCharacter(editor, id, { media_id: clipMediaId }, startSec);
     },
     setCamera({ x, y, z }, { lookAt }) {
-      const camera = editor.cameraController.camera;
-      if (!camera) throw new Error("Stage camera not ready");
-      camera.position.set(x, y, z);
-      camera.lookAt(lookAt.x, lookAt.y, lookAt.z);
+      // capture() renders the render camera, so move it together with the editor view.
+      const cameras = [editor.cameraController.camera, editor.cameraController.render_camera].filter(Boolean);
+      if (!cameras.length) throw new Error("Stage camera not ready");
+      for (const camera of cameras) {
+        camera.position.set(x, y, z);
+        camera.lookAt(lookAt.x, lookAt.y, lookAt.z);
+      }
     },
     seek(sec) {
       seekTimeline(editor, sec);
     },
     capture() {
+      // The snapshot renders the editor view, which also sees the ::CAM:: frustum; hide it.
+      const frustum = editor.activeScene?.scene?.getObjectByName?.("::CAM::");
+      const wasVisible = frustum?.visible;
+      if (frustum) frustum.visible = false;
       const snap = editor.snapShotOfCurrentFrame(false);
+      if (frustum) frustum.visible = wasVisible ?? true;
       if (!snap) throw new Error("Stage renderer not ready");
       return `data:image/png;base64,${snap.base64Snapshot}`;
     },
