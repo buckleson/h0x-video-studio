@@ -12,7 +12,7 @@ const OVERLAY_CONFS = ['tauri-dev-hot-reload.conf.json', 'tauri-dev-static.conf.
 const EXPECTED = {
   productName: 'H0x Video Studio',
   identifier: 'com.buckleson.h0xvideostudio',
-  version: '0.2.0',
+  version: '0.3.0',
 };
 
 function read(rel: string): string {
