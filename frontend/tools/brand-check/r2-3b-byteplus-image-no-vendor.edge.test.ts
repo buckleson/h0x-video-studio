@@ -174,9 +174,9 @@ describe('R2-3b vendor and brand leaks', () => {
     expect(PROVIDER).toContain(ALLOWED_ARTCRAFT_CLIENT_USE);
   });
 
-  it('the only CDN mention is the empty maybe_cdn_url field (no upload, no CDN URL)', () => {
-    const lines = PROVIDER.split(/\r?\n/).filter((l) => /cdn/i.test(l));
-    expect(lines.map((l) => l.trim())).toEqual(['maybe_cdn_url: None,']);
+  it('CDN fields carry only the local asset URL (no upload)', () => {
+    const lines = shipped(PROVIDER).split(/\r?\n/).filter((l) => /cdn/i.test(l));
+    expect(lines.map((l) => l.trim())).toEqual(['maybe_primary_media_file_cdn_url: Some(asset_url.as_str()),', 'maybe_cdn_url: Some(asset_url),']);
   });
 
   it.each(VENDOR_SYMBOLS)('providers/byteplus.rs does not use %s', (symbol) => {

@@ -34,9 +34,18 @@ use crate::core::commands::media_files::save_scene_frame_command::save_scene_fra
 use crate::core::commands::platform_info_command::platform_info_command;
 use crate::core::commands::providers::deprecated::get_provider_order_command::get_provider_order_command;
 use crate::core::commands::providers::deprecated::set_provider_order_command::set_provider_order_command;
+use crate::core::commands::providers::custom_endpoint_delete_command::custom_endpoint_delete_command;
+use crate::core::commands::providers::custom_endpoint_list_command::custom_endpoint_list_command;
+use crate::core::commands::providers::custom_endpoint_save_command::custom_endpoint_save_command;
+use crate::core::commands::providers::get_fal_api_key_command::get_fal_api_key_command;
+use crate::core::commands::providers::get_openai_api_key_command::get_openai_api_key_command;
+use crate::core::commands::providers::modality_defaults_get_command::modality_defaults_get_command;
+use crate::core::commands::providers::modality_defaults_set_command::modality_defaults_set_command;
 use crate::core::commands::providers::provider_clear_command::provider_clear_command;
 use crate::core::commands::providers::provider_list_command::provider_list_command;
 use crate::core::commands::providers::provider_set_api_key_command::provider_set_api_key_command;
+use crate::core::commands::providers::set_fal_api_key_command::set_fal_api_key_command;
+use crate::core::commands::providers::set_openai_api_key_command::set_openai_api_key_command;
 use crate::core::commands::task_queue::get_task_queue_command::get_task_queue_command;
 use crate::core::commands::task_queue::mark_task_as_dismissed_command::mark_task_as_dismissed_command;
 use crate::core::commands::task_queue::tasks_nuke_all_command::tasks_nuke_all_command;
@@ -184,6 +193,9 @@ pub fn run() {
     estimate_splat_cost_command,
     estimate_video_cost_command,
     estimate_audio_cost_command,
+    custom_endpoint_delete_command,
+    custom_endpoint_list_command,
+    custom_endpoint_save_command,
     estimate_mesh_cost_command,
     list_image_models_command,
     list_video_models_command,
@@ -195,6 +207,8 @@ pub fn run() {
     generate_mesh_command,
     get_app_info_command,
     get_app_preferences_command,
+    get_fal_api_key_command,
+    get_openai_api_key_command,
     get_provider_order_command,
     get_task_queue_command,
     provider_clear_command,
@@ -202,11 +216,15 @@ pub fn run() {
     provider_set_api_key_command,
     load_without_cors_command,
     mark_task_as_dismissed_command,
+    modality_defaults_get_command,
+    modality_defaults_set_command,
     list_local_media_command,
     save_scene_frame_command,
     media_file_delete_command,
     platform_info_command,
     set_provider_order_command,
+    set_fal_api_key_command,
+    set_openai_api_key_command,
     storyteller_get_login_session_command,
     storyteller_password_login_command,
     storyteller_password_signup_command,

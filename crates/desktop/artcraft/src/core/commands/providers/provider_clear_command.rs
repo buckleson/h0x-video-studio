@@ -8,7 +8,7 @@ use tauri::State;
 
 #[derive(Deserialize)]
 pub struct ProviderClearRequest {
-  pub provider_credential: ProviderCredentialKey,
+  pub provider: String,
 }
 
 #[derive(Serialize)]
@@ -21,9 +21,11 @@ pub async fn provider_clear_command(
   request: ProviderClearRequest,
   credential_cache: State<'_, ProviderCredentialLoadingCache>,
 ) -> ResponseOrErrorMessage<ProviderClearResponse> {
-  info!("provider_clear_command called for key: {:?}", request.provider_credential);
+  let key = ProviderCredentialKey::from_provider_id(&request.provider).ok_or("Unknown provider")?;
 
-  credential_cache.delete_credentials(request.provider_credential)
+  info!("provider_clear_command called for key: {:?}", key);
+
+  credential_cache.delete_credentials(key)
     .map_err(|err| {
       error!("Failed to clear provider credential: {:?}", err);
       "Failed to clear provider credential"

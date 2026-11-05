@@ -126,10 +126,10 @@ const APP_CARD_PALETTES: Record<string, AppCardPalette> = {
     hoverStyle: "hover:border-cyan-400/60 hover:bg-cyan-500/10",
   },
   "image-to-3d-world": {
-    accent: "from-teal-500/20 to-teal-500/0",
-    iconBg: "bg-teal-500/20 border-teal-400/40",
-    iconColor: "text-teal-300",
-    hoverStyle: "hover:border-teal-400/60 hover:bg-teal-500/10",
+    accent: "from-violet-500/20 to-violet-500/0",
+    iconBg: "bg-violet-500/20 border-violet-400/40",
+    iconColor: "text-violet-300",
+    hoverStyle: "hover:border-violet-400/60 hover:bg-violet-500/10",
   },
   "3d-editor": {
     accent: "from-amber-500/20 to-amber-500/0",
@@ -138,10 +138,10 @@ const APP_CARD_PALETTES: Record<string, AppCardPalette> = {
     hoverStyle: "hover:border-amber-400/60 hover:bg-amber-500/10",
   },
   "background-change": {
-    accent: "from-emerald-500/20 to-emerald-500/0",
-    iconBg: "bg-emerald-500/20 border-emerald-400/40",
-    iconColor: "text-emerald-300",
-    hoverStyle: "hover:border-emerald-400/60 hover:bg-emerald-500/10",
+    accent: "from-primary/20 to-primary/0",
+    iconBg: "bg-primary/15 border-primary/30",
+    iconColor: "text-primary",
+    hoverStyle: "hover:border-primary/60 hover:bg-primary/10",
   },
   "video-editor": {
     accent: "from-rose-500/20 to-rose-500/0",
@@ -180,10 +180,10 @@ const APP_CARD_PALETTES: Record<string, AppCardPalette> = {
     hoverStyle: "hover:border-violet-400/60 hover:bg-violet-500/10",
   },
   angles: {
-    accent: "from-lime-500/20 to-lime-500/0",
-    iconBg: "bg-lime-500/20 border-lime-400/40",
-    iconColor: "text-lime-300",
-    hoverStyle: "hover:border-lime-400/60 hover:bg-lime-500/10",
+    accent: "from-primary/20 to-primary/0",
+    iconBg: "bg-primary/15 border-primary/30",
+    iconColor: "text-primary",
+    hoverStyle: "hover:border-primary/60 hover:bg-primary/10",
   },
   storyboard: {
     accent: "from-fuchsia-500/20 to-fuchsia-500/0",
@@ -250,7 +250,7 @@ export const ALL_APPS: FullAppItem[] = [
     icon: CubeIcon,
     category: "generate",
     action: "IMAGE_TO_3D_OBJECT",
-    color: "bg-emerald-500/40",
+    color: "bg-violet-500/40",
   },
   {
     id: "image-to-3d-world",
@@ -259,7 +259,7 @@ export const ALL_APPS: FullAppItem[] = [
     icon: GlobeHemisphereWestIcon,
     category: "generate",
     action: "IMAGE_TO_3D_WORLD",
-    color: "bg-primary/40",
+    color: "bg-sky-500/40",
   },
   {
     id: "edit-image",
@@ -313,7 +313,7 @@ export const ALL_APPS: FullAppItem[] = [
     icon: CrosshairIcon,
     category: "generate",
     action: "ANGLES",
-    color: "bg-lime-500/40",
+    color: "bg-primary/40",
     badge: "NEW",
   },
 
@@ -354,7 +354,7 @@ export const ALL_APPS: FullAppItem[] = [
     icon: FilmStripIcon,
     category: "edit",
     action: "VIDEO_EDITOR",
-    color: "bg-teal-500/40",
+    color: "bg-rose-500/40",
     badge: "BETA",
   },
   {
@@ -373,7 +373,7 @@ export const ALL_APPS: FullAppItem[] = [
     icon: CubeIcon,
     category: "generate",
     action: "3D",
-    color: "bg-emerald-600/40",
+    color: "bg-amber-600/40",
   },
 ];
 

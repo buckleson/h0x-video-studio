@@ -1,7 +1,6 @@
 import { Modal } from "@storyteller/ui-modal";
 import { useEffect, useState } from "react";
-import { DownloadIcon, FlaskConicalIcon, InfoIcon, KeyboardIcon, KeyRoundIcon, PaletteIcon, SettingsIcon, Volume2Icon } from "lucide-react";
-import { DynamicIcon } from "@storyteller/icons";
+import { DownloadSimpleIcon, FlaskIcon, GearIcon, InfoIcon, KeyboardIcon, KeyIcon, PaletteIcon, SpeakerHighIcon } from "@phosphor-icons/react";
 import { twMerge } from "tailwind-merge";
 import { KeybindsSettings } from "@storyteller/keybinds";
 import { MiscSettingsPane } from "./panes/MiscSettingsPane";
@@ -16,47 +15,7 @@ import { AppearanceSettingsPane } from "./panes/AppearanceSettingsPane";
 import { Button } from "@storyteller/ui-button";
 import { useExperimentalStore } from "./experimental-store";
 import { ExperimentalConfirmModal } from "./ExperimentalConfirmModal";
-import { CommandSuccessStatus, ProviderSetApiKey } from "@storyteller/tauri-api";
-
-const ProviderKeysSettingsPane = () => {
-  const [apiKey, setApiKey] = useState("");
-  const [saved, setSaved] = useState(false);
-
-  const handleSave = async () => {
-    try {
-      const result = await ProviderSetApiKey(apiKey);
-      if (result?.status === CommandSuccessStatus.Success) {
-        setApiKey("");
-        setSaved(true);
-      }
-    } catch {
-      // backend unavailable: keep the input and the saved state as they are
-    }
-  };
-
-  return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor="byteplus-api-key">BytePlus API key</label>
-      <div className="flex items-center gap-2">
-        <input
-          id="byteplus-api-key"
-          type="password"
-          autoComplete="off"
-          value={apiKey}
-          onChange={(e) => {
-            setApiKey(e.target.value);
-            setSaved(false);
-          }}
-          className="flex-1 rounded-[3px] border border-ui-panel-border bg-transparent px-2 py-1"
-        />
-        <Button onClick={handleSave} disabled={!apiKey}>
-          Save
-        </Button>
-      </div>
-      {saved && <span>saved ✓</span>}
-    </div>
-  );
-};
+import { ProvidersPane } from "./ProvidersPane";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -108,22 +67,22 @@ export const SettingsModal = ({
   }, [experimentalEnabled, selectedSection]);
 
   const sections = [
-    { id: "general" as const, label: "General", icon: SettingsIcon },
-    { id: "downloads" as const, label: "Downloads", icon: DownloadIcon },
+    { id: "general" as const, label: "General", icon: GearIcon },
+    { id: "downloads" as const, label: "Downloads", icon: DownloadSimpleIcon },
     /* {
       id: "provider_priority" as const,
       label: "Provider Priority",
       icon: RouteIcon,
     }, */
-    { id: "provider_keys" as const, label: "Provider keys", icon: KeyRoundIcon },
+    { id: "provider_keys" as const, label: "Providers & keys", icon: KeyIcon },
     { id: "appearance" as const, label: "Appearance", icon: PaletteIcon },
     { id: "keybinds" as const, label: "Keybinds", icon: KeyboardIcon },
-    { id: "alerts" as const, label: "Alerts", icon: Volume2Icon },
+    { id: "alerts" as const, label: "Alerts", icon: SpeakerHighIcon },
     { id: "about" as const, label: "About", icon: InfoIcon },
     //{ id: "video" as const, label: "Video", icon: VideoIcon },
     //{ id: "image" as const, label: "Image", icon: ImageIcon },
     ...(experimentalEnabled
-      ? [{ id: "experimental" as const, label: "Experimental", icon: FlaskConicalIcon }]
+      ? [{ id: "experimental" as const, label: "Experimental", icon: FlaskIcon }]
       : []),
   ];
 
@@ -150,7 +109,7 @@ export const SettingsModal = ({
       case "provider_priority":
         return <ProviderPrioritySettingsPane />;
       case "provider_keys":
-        return <ProviderKeysSettingsPane />;
+        return <ProvidersPane />;
       case "billing":
         return <BillingSettingsPane />;
       case "experimental":
@@ -199,7 +158,7 @@ export const SettingsModal = ({
                     }}
                   >
                     <div className="flex items-center gap-2.5 text-sm">
-                      <DynamicIcon icon={section.icon} />
+                      <section.icon size={16} />
                       {section.label}
                     </div>
                   </button>
@@ -215,7 +174,7 @@ export const SettingsModal = ({
               {experimentalEnabled && selectedSection === "experimental" && (
                 <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-ui-panel-border bg-ui-modal px-3 py-2">
                   <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] opacity-80">
-                    <FlaskConicalIcon />
+                    <FlaskIcon />
                     Experimental features enabled
                   </div>
                   <Button

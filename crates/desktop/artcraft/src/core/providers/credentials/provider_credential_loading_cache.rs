@@ -156,8 +156,38 @@ impl ProviderCredentialLoadingCache {
     }
     
     self.invalidate(key);
-    
+
     Ok(())
+  }
+
+  /// Custom endpoint keys are not cached. Endpoint ids must be filename-safe (see custom_endpoints).
+  pub fn get_custom_endpoint_api_key(&self, endpoint_id: &str) -> Result<Option<ApiKeyData>, ProviderCredentialLoadingCacheError> {
+    let file_path = self.custom_endpoint_key_path(endpoint_id);
+    if !file_path.exists() {
+      return Ok(None);
+    }
+    ApiKeyData::load_from_file(&file_path)
+      .map(Some)
+      .map_err(ProviderCredentialLoadingCacheError::ApiKeyError)
+  }
+
+  pub fn save_custom_endpoint_api_key(&self, endpoint_id: &str, api_key: &ApiKeyData) -> Result<(), ProviderCredentialLoadingCacheError> {
+    api_key.save_to_file(self.custom_endpoint_key_path(endpoint_id))
+      .map_err(ProviderCredentialLoadingCacheError::ApiKeyError)
+  }
+
+  pub fn delete_custom_endpoint_api_key(&self, endpoint_id: &str) -> Result<(), ProviderCredentialLoadingCacheError> {
+    let file_path = self.custom_endpoint_key_path(endpoint_id);
+    if file_path.exists() {
+      std::fs::remove_file(file_path)
+        .map_err(ProviderCredentialLoadingCacheError::IoError)?;
+    }
+    Ok(())
+  }
+
+  fn custom_endpoint_key_path(&self, endpoint_id: &str) -> std::path::PathBuf {
+    let filename = format!("custom_endpoint.{}.api_key.txt", endpoint_id);
+    self.app_data_root.credentials_dir().path().join(filename)
   }
 }
 

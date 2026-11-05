@@ -28,7 +28,7 @@ const AppsQuickMenuSection = ({
 }) => (
   <div>
     <h3 className="hud-label mb-2 px-2 text-base-fg/50">{title}</h3>
-    <div className="space-y-0.5">
+    <div className="space-y-1">
       {apps.map((app) => {
         const palette = getAppCardPalette(app.id);
         return (
@@ -37,15 +37,15 @@ const AppsQuickMenuSection = ({
             onClick={() => goToApp(app.action)}
             disabled={!app.action}
             className={twMerge(
-              "group flex w-full items-center gap-3 rounded-[3px] px-2 py-2 text-left transition-colors",
+              "group flex w-full items-center gap-3 rounded-xl border border-transparent px-2 py-2 text-left transition-colors",
               app.action
-                ? "cursor-pointer hover:bg-white/[0.08]"
+                ? "cursor-pointer hover:border-white/10 hover:bg-white/[0.06]"
                 : "cursor-default opacity-60",
             )}
           >
             <div
               className={twMerge(
-                "flex h-8 w-8 shrink-0 items-center justify-center border transition-colors",
+                "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition-colors",
                 palette.iconBg,
                 palette.iconColor,
               )}
@@ -60,7 +60,7 @@ const AppsQuickMenuSection = ({
                 {app.badge && (
                   <span
                     className={twMerge(
-                      "shrink-0 border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase leading-none tracking-[0.12em]",
+                      "shrink-0 rounded-full border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase leading-none tracking-[0.12em]",
                       getBadgeStyles(app.badge),
                     )}
                   >

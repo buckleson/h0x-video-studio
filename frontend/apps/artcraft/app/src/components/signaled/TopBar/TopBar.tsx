@@ -1,6 +1,13 @@
-import { HouseIcon } from "@phosphor-icons/react";
-import { ChevronRightIcon, ImagesIcon, MinusIcon, PictureInPicture2Icon, SettingsIcon, SquareIcon, XIcon } from "lucide-react";
-import { DynamicIcon } from "@storyteller/icons";
+import {
+  CaretRightIcon,
+  CopyIcon,
+  GearSixIcon,
+  HouseIcon,
+  ImagesIcon,
+  MinusIcon,
+  SquareIcon,
+  XIcon,
+} from "@phosphor-icons/react";
 import { signal } from "@preact/signals-react";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useCreditsState } from "@storyteller/credits";
@@ -380,8 +387,9 @@ export const TopBar = ({ pageName }: Props) => {
                   return (
                     <Fragment key={`${crumb}-${i}`}>
                       {i > 0 && (
-                        <ChevronRightIcon
+                        <CaretRightIcon
                           aria-hidden="true"
+                          weight="bold"
                           className="h-3 w-3 shrink-0 text-base-fg/50"
                           data-tauri-drag-region
                         />
@@ -389,7 +397,7 @@ export const TopBar = ({ pageName }: Props) => {
                       <span
                         className={
                           isLast
-                            ? "truncate bg-ui-ink px-1.5 py-1 text-ui-panel"
+                            ? "truncate rounded-md bg-ui-ink px-1.5 py-1 text-ui-panel"
                             : "truncate"
                         }
                         aria-current={isLast ? "page" : undefined}
@@ -418,9 +426,9 @@ export const TopBar = ({ pageName }: Props) => {
                 type="button"
                 onClick={handleOpenGalleryModal}
                 aria-label="My Library"
-                className="flex h-8 items-center gap-1.5 rounded-[3px] border border-white/15 px-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-white/80 transition-colors hover:border-white/30 hover:bg-white/10"
+                className="flex h-8 items-center gap-1.5 rounded-xl border border-white/15 px-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-white/80 transition-colors hover:border-white/30 hover:bg-white/10"
               >
-                <ImagesIcon className="text-[11px]" />
+                <ImagesIcon className="h-4 w-4 shrink-0" />
                 <span className="hidden whitespace-nowrap xl:block">
                   My Library
                 </span>
@@ -432,14 +440,14 @@ export const TopBar = ({ pageName }: Props) => {
                 <Button
                   aria-label="Settings"
                   variant="secondary"
-                  icon={SettingsIcon}
-                  iconClassName="h-4 w-4 shrink-0"
-                  className="h-8 w-8 border-white/15 bg-transparent p-0 text-white/80 hover:border-white/30 hover:bg-white/10"
+                  className="h-8 w-8 rounded-xl border-white/15 bg-transparent p-0 text-white/80 hover:border-white/30 hover:bg-white/10"
                   onClick={() => {
                     setSettingsSection("general");
                     setIsSettingsModalOpen(true);
                   }}
-                />
+                >
+                  <GearSixIcon className="h-4 w-4 shrink-0" />
+                </Button>
               </Tooltip>
             </div>
 
@@ -454,24 +462,25 @@ export const TopBar = ({ pageName }: Props) => {
                   className="h-[32px] w-[44px] rounded-none border-0 bg-transparent p-0 text-base-fg opacity-70 shadow-none hover:bg-white/10 hover:opacity-100"
                   onClick={minimize}
                 >
-                  <MinusIcon className="text-xs" />
+                  <MinusIcon className="h-3.5 w-3.5" />
                 </Button>
                 <Button
                   variant="secondary"
                   className="h-[32px] w-[44px] rounded-none border-0 bg-transparent p-0 text-base-fg opacity-70 shadow-none hover:bg-white/10 hover:opacity-100"
                   onClick={toggleMaximize}
                 >
-                  <DynamicIcon
-                    icon={isMaximized ? PictureInPicture2Icon : SquareIcon}
-                    className="text-xs"
-                  />
+                  {isMaximized ? (
+                    <CopyIcon className="h-3.5 w-3.5" />
+                  ) : (
+                    <SquareIcon className="h-3.5 w-3.5" />
+                  )}
                 </Button>
                 <Button
                   variant="secondary"
                   className="h-[32px] w-[44px] rounded-none border-0 bg-transparent p-0 text-base-fg opacity-70 shadow-none hover:bg-red hover:text-white hover:opacity-100"
                   onClick={close}
                 >
-                  <XIcon className="text-lg" />
+                  <XIcon className="h-4 w-4" />
                 </Button>
               </div>
             )}
