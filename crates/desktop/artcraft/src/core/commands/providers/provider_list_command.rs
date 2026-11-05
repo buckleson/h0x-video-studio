@@ -4,21 +4,10 @@ use crate::core::providers::credentials::payload::provider_credential_payload::P
 use crate::core::providers::credentials::provider_credential_key::ProviderCredentialKey;
 use crate::core::providers::credentials::provider_credential_loading_cache::ProviderCredentialLoadingCache;
 use crate::core::providers::credentials::provider_credential_type::ProviderCredentialType;
+use crate::core::providers::modality_defaults::Modality;
 use log::{info, warn};
 use serde_derive::Serialize;
 use tauri::State;
-
-/// All known credential keys. Add new ones here as providers are added.
-const ALL_KEYS: &[ProviderCredentialKey] = &[
-  ProviderCredentialKey::FalApiKey,
-  ProviderCredentialKey::ReplicateApiKey,
-  ProviderCredentialKey::GrokWebLogin,
-  ProviderCredentialKey::HiggsfieldWebLogin,
-  ProviderCredentialKey::MidjourneyLogin,
-  ProviderCredentialKey::RunwayWebLogin,
-];
-
-const REDACTED_KEY_VISIBLE_CHARS: usize = 6;
 
 #[derive(Serialize)]
 pub struct ProviderListResponse {
@@ -27,24 +16,15 @@ pub struct ProviderListResponse {
 
 impl SerializeMarker for ProviderListResponse {}
 
+/// Never carries the key itself: only whether one is stored and its last 4 characters.
 #[derive(Serialize)]
 pub struct ProviderListEntry {
-  pub provider_credential: ProviderCredentialKey,
-  pub credential_type: ProviderCredentialType,
-  pub has_credentials: bool,
-  pub maybe_details: Option<ProviderCredentialDetails>,
-}
-
-#[derive(Serialize)]
-pub struct ProviderCredentialDetails {
-  /// For API keys: the first few characters followed by asterisks.
-  pub maybe_key_start: Option<String>,
-  /// For API keys: the full key value.
-  pub maybe_full_key: Option<String>,
-  /// For web logins: the email address if available.
-  pub maybe_email_address: Option<String>,
-  /// For web logins: the username if available.
-  pub maybe_username: Option<String>,
+  pub id: &'static str,
+  pub name: &'static str,
+  pub kind: ProviderCredentialType,
+  pub modalities: &'static [Modality],
+  pub has_key: bool,
+  pub key_hint: Option<String>,
 }
 
 #[tauri::command]
@@ -53,54 +33,67 @@ pub async fn provider_list_command(
 ) -> ResponseOrErrorMessage<ProviderListResponse> {
   info!("provider_list_command called");
 
-  let mut providers = Vec::with_capacity(ALL_KEYS.len());
-
-  for &key in ALL_KEYS {
-    let maybe_payload = match credential_cache.get_credentials(key) {
-      Ok(payload) => payload,
-      Err(err) => {
+  let providers = ProviderCredentialKey::ALL.into_iter()
+    .map(|key| {
+      let maybe_payload = credential_cache.get_credentials(key).unwrap_or_else(|err| {
         warn!("Error checking credential for {:?}: {:?}", key, err);
         None
+      });
+      let key_hint = match &maybe_payload {
+        Some(ProviderCredentialPayload::ApiKey(api_key)) => api_key.hint(),
+        _ => None,
+      };
+      ProviderListEntry {
+        id: key.provider_id(),
+        name: key.display_name(),
+        kind: key.get_type(),
+        modalities: key.modalities(),
+        has_key: maybe_payload.is_some(),
+        key_hint,
       }
-    };
-
-    let has_credentials = maybe_payload.is_some();
-
-    let maybe_details = maybe_payload.map(|payload| match payload {
-      ProviderCredentialPayload::ApiKey(data) => {
-        ProviderCredentialDetails {
-          maybe_key_start: Some(redact_key(data.as_str())),
-          maybe_full_key: Some(data.as_str().to_string()),
-          maybe_email_address: None,
-          maybe_username: None,
-        }
-      }
-      ProviderCredentialPayload::WebLogin(data) => {
-        ProviderCredentialDetails {
-          maybe_key_start: None,
-          maybe_full_key: None,
-          maybe_email_address: data.email_address,
-          maybe_username: data.username,
-        }
-      }
-    });
-
-    providers.push(ProviderListEntry {
-      provider_credential: key,
-      credential_type: key.get_type(),
-      has_credentials,
-      maybe_details,
-    });
-  }
+    })
+    .collect();
 
   Ok(ProviderListResponse { providers }.into())
 }
 
-fn redact_key(key: &str) -> String {
-  if key.len() <= REDACTED_KEY_VISIBLE_CHARS {
-    "********".to_string()
-  } else {
-    let visible = &key[..REDACTED_KEY_VISIBLE_CHARS];
-    format!("{}********", visible)
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn entry_serializes_to_the_contract_fields_only() {
+    let key = ProviderCredentialKey::FalApiKey;
+    let entry = ProviderListEntry {
+      id: key.provider_id(),
+      name: key.display_name(),
+      kind: key.get_type(),
+      modalities: key.modalities(),
+      has_key: true,
+      key_hint: Some("1234".to_string()),
+    };
+    let value = serde_json::to_value(&entry).unwrap();
+    let mut fields: Vec<&str> = value.as_object().unwrap().keys().map(|k| k.as_str()).collect();
+    fields.sort();
+    assert_eq!(fields, vec!["has_key", "id", "key_hint", "kind", "modalities", "name"]);
+    assert_eq!(value["id"], "fal");
+    assert_eq!(value["kind"], "api_key");
+    assert_eq!(value["modalities"], serde_json::json!(["image", "video", "audio"]));
+  }
+
+  #[test]
+  fn web_login_entry_has_web_login_kind_and_null_hint() {
+    let key = ProviderCredentialKey::RunwayWebLogin;
+    let entry = ProviderListEntry {
+      id: key.provider_id(),
+      name: key.display_name(),
+      kind: key.get_type(),
+      modalities: key.modalities(),
+      has_key: false,
+      key_hint: None,
+    };
+    let value = serde_json::to_value(&entry).unwrap();
+    assert_eq!(value["kind"], "web_login");
+    assert!(value["key_hint"].is_null());
   }
 }

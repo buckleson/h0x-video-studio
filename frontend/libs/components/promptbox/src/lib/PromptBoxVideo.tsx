@@ -10,7 +10,7 @@ import {
   NEUTRAL_BUTTON_HOVER_CLASSES,
 } from "@storyteller/ui-button";
 import { GenerateVideo, GenerateVideoRequest, commandErrorMessage } from "@storyteller/tauri-api";
-import { AudioLinesIcon, ChevronDownIcon, ChevronUpIcon, ClockIcon, InfoIcon } from "lucide-react";
+import { CaretDownIcon, CaretUpIcon, ClockIcon, InfoIcon, WaveformIcon } from "@phosphor-icons/react";
 import { DynamicIcon } from "@storyteller/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import {
@@ -1536,8 +1536,8 @@ export const PromptBoxVideo = ({
                 >
                   <ToggleButton
                     isActive={generateWithSound}
-                    icon={AudioLinesIcon}
-                    activeIcon={AudioLinesIcon}
+                    icon={WaveformIcon}
+                    activeIcon={WaveformIcon}
                     onClick={() => setGenerateWithSound(!generateWithSound)}
                   />
                 </Tooltip>
@@ -1550,7 +1550,7 @@ export const PromptBoxVideo = ({
             <div className="flex items-center gap-1.5">
               {modelNeedsAnImageButNoneAreSelected && (
                 <span className="flex items-center gap-1.5 text-xs text-red-500 font-medium animate-pulse">
-                  <InfoIcon />
+                  <InfoIcon size="1.2em" />
                   Starting frame required
                 </span>
               )}
@@ -1596,8 +1596,9 @@ export const PromptBoxVideo = ({
                 className="text-base-fg/30 hover:text-base-fg/90 transition-colors px-3 py-0.5"
               >
                 <DynamicIcon
-                  icon={isExpanded ? ChevronUpIcon : ChevronDownIcon}
+                  icon={isExpanded ? CaretUpIcon : CaretDownIcon}
                   className="text-xs"
+                  size="1.2em"
                 />
               </button>
             </Tooltip>
@@ -1605,7 +1606,7 @@ export const PromptBoxVideo = ({
         </div>
         {/* {selectedModel?.id === "seedance_2p0" && (
           <div className="flex items-start gap-2.5 rounded-lg border border-yellow-500/40 bg-yellow-500/10 px-3.5 py-2.5 text-xs text-yellow-200">
-            <TriangleAlertIcon className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-yellow-400" />
+            <WarningIcon className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-yellow-400" />
             <span>
               Seedance 2.0 is in Early Alpha. Generations may be slow, and may
               experience outages. Seedance may reject safe inputs unexpectedly.

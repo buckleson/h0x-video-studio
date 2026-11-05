@@ -1,10 +1,11 @@
 import { invoke } from "@tauri-apps/api/core";
 import { CommandResult } from "../common/CommandStatus";
 
-export const ProviderSetApiKey = async (apiKey: string) : Promise<CommandResult> => {
+// `provider` is a provider id from ProviderList (e.g. "byteplus").
+export const ProviderSetApiKey = async (provider: string, apiKey: string) : Promise<CommandResult> => {
   const result = await invoke("provider_set_api_key_command", {
     request: {
-      provider_credential: "byte_plus_api_key",
+      provider,
       api_key: apiKey,
     }
   });

@@ -12,8 +12,8 @@ import React, {
   useRef,
 } from "react";
 import { createPortal } from "react-dom";
-import { convertFileSrc } from "@tauri-apps/api/core";
 import { ListLocalMedia, type LocalMediaFile } from "@storyteller/tauri-api";
+import { LocalMediaTile } from "./LocalMediaTile";
 import {
   FilterMediaClasses,
   FilterMediaType,
@@ -63,26 +63,26 @@ import {
 } from "./galleryModalSignals";
 import galleryDnd, { FOLDER_DROP_EVENT } from "./galleryDnd";
 import {
-  BoxIcon,
-  EllipsisIcon,
+  ArrowClockwiseIcon,
+  CornersInIcon,
+  CornersOutIcon,
+  CubeIcon,
+  DotsThreeIcon,
   FolderIcon,
   FolderPlusIcon,
   GlobeIcon,
-  Grid3x3Icon,
+  GridNineIcon,
   ImageIcon,
-  MaximizeIcon,
-  MinimizeIcon,
-  MusicIcon,
-  PencilIcon,
+  MusicNoteIcon,
+  PencilSimpleIcon,
   PlusIcon,
-  RefreshCwIcon,
   StarIcon,
   TagIcon,
-  Trash2Icon,
-  UploadIcon,
-  VideoIcon,
+  TrashIcon,
+  UploadSimpleIcon,
+  VideoCameraIcon,
   XIcon,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { DynamicIcon } from "@storyteller/icons";
 import {
   useMediaPromptTokens,
@@ -326,13 +326,13 @@ interface GalleryModalProps {
 const EMPTY_SELECTED_IDS: string[] = [];
 
 const SIDEBAR_FILTERS = [
-  { id: "all", label: "All Assets", icon: Grid3x3Icon },
+  { id: "all", label: "All Assets", icon: GridNineIcon },
   { id: "image", label: "Image", icon: ImageIcon },
-  { id: "video", label: "Video", icon: VideoIcon },
-  { id: "audio", label: "Audio", icon: MusicIcon },
-  { id: "mesh", label: "Mesh", icon: BoxIcon },
+  { id: "video", label: "Video", icon: VideoCameraIcon },
+  { id: "audio", label: "Audio", icon: MusicNoteIcon },
+  { id: "mesh", label: "Mesh", icon: CubeIcon },
   { id: "splat", label: "Splat", icon: GlobeIcon },
-  { id: "uploaded", label: "Uploaded", icon: UploadIcon },
+  { id: "uploaded", label: "Uploaded", icon: UploadSimpleIcon },
 ];
 
 // Media classes for the user-list endpoint. The Mesh and Splat tabs don't use
@@ -535,7 +535,7 @@ const FolderContextMenuItems = ({
       className="flex w-full items-center gap-2 rounded-[3px] px-2 py-2 hover:bg-ui-controls/60 text-sm text-base-fg"
       onClick={() => onToggleStar(folderId, !hasStar)}
     >
-      <StarIcon
+      <StarIcon size="1.2em"
         className={twMerge(
           "w-4",
           hasStar ? "text-amber-400" : "text-base-fg/40",
@@ -553,7 +553,7 @@ const FolderContextMenuItems = ({
       className="flex w-full items-center gap-2 rounded-[3px] px-2 py-2 hover:bg-ui-controls/60 text-sm text-base-fg"
       onClick={() => onNewSubfolder(folderId)}
     >
-      <FolderPlusIcon className="w-4" />
+      <FolderPlusIcon size="1.2em" className="w-4" />
       <span>New subfolder</span>
     </button>
     <button
@@ -561,7 +561,7 @@ const FolderContextMenuItems = ({
       className="flex w-full items-center gap-2 rounded-[3px] px-2 py-2 hover:bg-ui-controls/60 text-sm text-base-fg"
       onClick={() => onRename(folderId)}
     >
-      <PencilIcon className="w-4" />
+      <PencilSimpleIcon size="1.2em" className="w-4" />
       <span>Rename</span>
     </button>
     <button
@@ -569,7 +569,7 @@ const FolderContextMenuItems = ({
       className="flex w-full items-center gap-2 rounded-[3px] px-2 py-2 hover:bg-ui-controls/60 text-sm text-red"
       onClick={() => onDelete(folderId)}
     >
-      <Trash2Icon className="w-4" />
+      <TrashIcon size="1.2em" className="w-4" />
       <span>Delete folder</span>
     </button>
   </div>
@@ -2665,7 +2665,7 @@ export const GalleryModal = React.memo(
                         onClick={() => handleOpenNewFolderModal(null)}
                         className="flex items-center gap-2 rounded-[3px] bg-ui-controls/60 px-3 py-1.5 text-sm font-medium text-base-fg hover:bg-ui-controls/90 transition-colors relative z-[51]"
                       >
-                        <FolderPlusIcon className="text-xs" />
+                        <FolderPlusIcon size="1.2em" className="text-xs" />
                         New folder
                       </button>
                     )}
@@ -2680,7 +2680,7 @@ export const GalleryModal = React.memo(
                         Tags
                       </button>
                       <span className="text-base-fg/30">/</span>
-                      <TagIcon className="text-sm text-violet-400" />
+                      <TagIcon size="1.2em" className="text-sm text-violet-400" />
                       <h2 className="text-lg font-semibold truncate max-w-[16rem]">
                         {activeTag.tag_value}
                       </h2>
@@ -2694,13 +2694,13 @@ export const GalleryModal = React.memo(
                         aria-label="Close tag view"
                         className="flex h-7 w-7 items-center justify-center rounded-[3px] hover:bg-ui-controls/60 text-base-fg/60 hover:text-base-fg transition-colors"
                       >
-                        <XIcon className="text-sm" />
+                        <XIcon size="1.2em" className="text-sm" />
                       </button>
                     </div>
                   ) : tagBrowserOpen ? (
                     /* ── All-tags browser header ── */
                     <div className="flex items-center gap-2 relative z-[51]">
-                      <TagIcon className="text-sm text-violet-400" />
+                      <TagIcon size="1.2em" className="text-sm text-violet-400" />
                       <h2 className="text-lg font-semibold">Tags</h2>
                       <button
                         type="button"
@@ -2708,7 +2708,7 @@ export const GalleryModal = React.memo(
                         aria-label="Close tags"
                         className="flex h-7 w-7 items-center justify-center rounded-[3px] hover:bg-ui-controls/60 text-base-fg/60 hover:text-base-fg transition-colors"
                       >
-                        <XIcon className="text-sm" />
+                        <XIcon size="1.2em" className="text-sm" />
                       </button>
                     </div>
                   ) : galleryTab === "folders" && activeFolder ? (
@@ -2772,7 +2772,7 @@ export const GalleryModal = React.memo(
                           onClick={() => setFolderMenuOpen((v) => !v)}
                           className="flex h-7 w-7 items-center justify-center rounded-[3px] hover:bg-ui-controls/60 text-base-fg/60 hover:text-base-fg transition-colors"
                         >
-                          <EllipsisIcon className="text-sm" />
+                          <DotsThreeIcon size="1.2em" className="text-sm" />
                         </button>
                         {folderMenuOpen && (
                           <>
@@ -2871,7 +2871,7 @@ export const GalleryModal = React.memo(
                       disabled={loading}
                       aria-label="Refresh list"
                     >
-                      <RefreshCwIcon
+                      <ArrowClockwiseIcon size="1.2em"
                         className={`text-lg text-base-fg ${loading ? "animate-spin" : ""}`}
                       />
                     </Button>
@@ -2893,7 +2893,7 @@ export const GalleryModal = React.memo(
                     >
                       <DynamicIcon
                         icon={
-                          imageFit === "cover" ? MaximizeIcon : MinimizeIcon
+                          imageFit === "cover" ? CornersOutIcon : CornersInIcon
                         }
                         className="text-lg text-base-fg"
                       />
@@ -2989,7 +2989,7 @@ export const GalleryModal = React.memo(
                         aria-label="New folder"
                         className="flex h-5 w-5 items-center justify-center rounded-[3px] text-base-fg/50 hover:bg-ui-controls/60 hover:text-base-fg transition-colors"
                       >
-                        <PlusIcon className="text-[10px]" />
+                        <PlusIcon size="1.2em" className="text-[10px]" />
                       </button>
                     )}
                   </div>
@@ -3026,7 +3026,7 @@ export const GalleryModal = React.memo(
                               : "text-base-fg/70 hover:bg-ui-controls/30 hover:text-base-fg",
                           )}
                         >
-                          <FolderIcon
+                          <FolderIcon size="1.2em"
                             className={twMerge(
                               "text-xs w-4",
                               !folder.colorCode && "text-primary",
@@ -3039,7 +3039,7 @@ export const GalleryModal = React.memo(
                           />
                           <span className="truncate">{folder.name}</span>
                           {folder.hasStar && (
-                            <StarIcon className="ml-auto text-[10px] text-amber-400" />
+                            <StarIcon size="1.2em" className="ml-auto text-[10px] text-amber-400" />
                           )}
                         </button>
                       ))
@@ -3069,7 +3069,7 @@ export const GalleryModal = React.memo(
                                 : "text-base-fg/70 hover:bg-ui-controls/30 hover:text-base-fg",
                             )}
                           >
-                            <TagIcon className="text-xs w-4 text-violet-400" />
+                            <TagIcon size="1.2em" className="text-xs w-4 text-violet-400" />
                             <span className="truncate">{tag.tag_value}</span>
                             <span className="ml-auto text-[10px] text-base-fg/40">
                               {tag.use_count}
@@ -3086,7 +3086,7 @@ export const GalleryModal = React.memo(
                               : "text-base-fg/50 hover:bg-ui-controls/30 hover:text-base-fg",
                           )}
                         >
-                          <EllipsisIcon className="text-xs w-4" />
+                          <DotsThreeIcon size="1.2em" className="text-xs w-4" />
                           <span>All tags</span>
                           <span className="ml-auto text-[10px] text-base-fg/40">
                             {sortedTags.length}
@@ -3124,25 +3124,13 @@ export const GalleryModal = React.memo(
                         gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
                       }}
                     >
-                      {localItems.map((file) =>
-                        file.kind === "video" ? (
-                          <video
-                            key={file.path}
-                            src={convertFileSrc(file.path)}
-                            className="aspect-square w-full bg-black/30 object-cover"
-                            controls
-                            muted
-                            preload="metadata"
-                          />
-                        ) : (
-                          <img
-                            key={file.path}
-                            src={convertFileSrc(file.path)}
-                            alt=""
-                            className="aspect-square w-full bg-black/30 object-cover"
-                          />
-                        ),
-                      )}
+                      {localItems.map((file) => (
+                        <LocalMediaTile
+                          key={file.path}
+                          file={file}
+                          scrollRoot={scrollContainerRef.current}
+                        />
+                      ))}
                     </div>
                   )
                 ) : activeTagToken ? (
@@ -3154,7 +3142,7 @@ export const GalleryModal = React.memo(
                   ) : activeTagItems.length === 0 ? (
                     <div className="flex h-full flex-col items-center justify-center gap-3">
                       <div className="flex h-16 w-16 items-center justify-center bg-violet-400/10">
-                        <TagIcon className="text-violet-400 text-2xl" />
+                        <TagIcon size="1.2em" className="text-violet-400 text-2xl" />
                       </div>
                       <div className="text-base-fg font-semibold">
                         No files carry this tag
@@ -3245,7 +3233,7 @@ export const GalleryModal = React.memo(
                   userTags.length === 0 ? (
                     <div className="flex h-full flex-col items-center justify-center gap-3">
                       <div className="flex h-16 w-16 items-center justify-center bg-violet-400/10">
-                        <TagIcon className="text-violet-400 text-2xl" />
+                        <TagIcon size="1.2em" className="text-violet-400 text-2xl" />
                       </div>
                       <div className="text-base-fg font-semibold">
                         No tags yet
@@ -3266,7 +3254,7 @@ export const GalleryModal = React.memo(
                   currentSubfolders.length === 0 ? (
                     <div className="flex h-full flex-col items-center justify-center gap-3">
                       <div className="flex h-16 w-16 items-center justify-center bg-primary/10">
-                        <FolderIcon className="text-primary text-2xl" />
+                        <FolderIcon size="1.2em" className="text-primary text-2xl" />
                       </div>
                       <div className="text-base-fg font-semibold">
                         No folders yet
@@ -3298,7 +3286,7 @@ export const GalleryModal = React.memo(
                     currentSubfolders.length > 0 ? null : (
                       <div className="flex h-full flex-col items-center justify-center gap-3">
                         <div className="flex h-16 w-16 items-center justify-center bg-primary/10">
-                          <FolderIcon className="text-primary text-2xl" />
+                          <FolderIcon size="1.2em" className="text-primary text-2xl" />
                         </div>
                         <div className="text-base-fg font-semibold">
                           This folder is empty
@@ -3604,13 +3592,13 @@ export const GalleryModal = React.memo(
                     {bulkSelectedItems.slice(0, 4).map((si) => {
                       const placeholderIcon =
                         si.mediaClass === "video"
-                          ? VideoIcon
+                          ? VideoCameraIcon
                           : si.mediaClass === "audio"
-                            ? MusicIcon
+                            ? MusicNoteIcon
                             : si.mediaClass === "dimensional" ||
                                 si.mediaClass === "mesh" ||
                                 si.mediaClass === "splat"
-                              ? BoxIcon
+                              ? CubeIcon
                               : ImageIcon;
                       return (
                         <BulkThumb
@@ -3673,7 +3661,7 @@ export const GalleryModal = React.memo(
                                   setBulkFolderPopoverOpen(false);
                                 }}
                               >
-                                <FolderIcon className="text-primary text-xs" />
+                                <FolderIcon size="1.2em" className="text-primary text-xs" />
                                 <span className="truncate">{folder.name}</span>
                               </button>
                             ))
@@ -3688,7 +3676,7 @@ export const GalleryModal = React.memo(
                               handleOpenNewFolderModal(undefined, ids);
                             }}
                           >
-                            <PlusIcon className="text-xs w-4" />
+                            <PlusIcon size="1.2em" className="text-xs w-4" />
                             <span>Create new folder</span>
                           </button>
                         </div>
@@ -3700,7 +3688,7 @@ export const GalleryModal = React.memo(
                       variant="destructive"
                       onClick={handleBulkDelete}
                       className="px-3"
-                      icon={Trash2Icon}
+                      icon={TrashIcon}
                     >
                       Delete
                     </Button>
@@ -3710,7 +3698,7 @@ export const GalleryModal = React.memo(
                     className="flex h-8 w-8 items-center justify-center rounded-[3px] bg-ui-controls/60 hover:bg-ui-controls/90 text-base-fg transition-colors"
                     aria-label="Clear selection"
                   >
-                    <XIcon className="text-base" />
+                    <XIcon size="1.2em" className="text-base" />
                   </button>
                 </div>
               </div>

@@ -1,4 +1,13 @@
+pub mod custom_endpoint_delete_command;
+pub mod custom_endpoint_list_command;
+pub mod custom_endpoint_save_command;
 pub mod deprecated;
+pub mod get_fal_api_key_command;
+pub mod get_openai_api_key_command;
+pub mod modality_defaults_get_command;
+pub mod modality_defaults_set_command;
+pub mod provider_clear_command;
 pub mod provider_list_command;
 pub mod provider_set_api_key_command;
-pub mod provider_clear_command;
+pub mod set_fal_api_key_command;
+pub mod set_openai_api_key_command;

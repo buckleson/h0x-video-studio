@@ -16,9 +16,10 @@ describe('R2-3b BytePlus image branch', () => {
     expect(BYTEPLUS_RS.toLowerCase()).not.toContain(ref);
   });
 
-  it('names no CDN URL beyond the empty completion field', () => {
-    expect(BYTEPLUS_RS).toMatch(/maybe_cdn_url:\s*None/);
-    expect(BYTEPLUS_RS.toLowerCase().split('cdn')).toHaveLength(2);
+  it('the CDN field carries only the local asset URL (no upload)', () => {
+    const shipped = BYTEPLUS_RS.split('#[cfg(test)]')[0];
+    expect(shipped).toMatch(/maybe_cdn_url:\s*Some\(asset_url\)/);
+    expect(shipped).not.toMatch(/maybe_cdn_url:\s*None/);
   });
 
   it('runs Seedream 4.5 and records a completed local byteplus task', () => {

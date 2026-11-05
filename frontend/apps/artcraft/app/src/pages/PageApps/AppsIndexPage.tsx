@@ -68,15 +68,15 @@ function AppTile({ app, wide = false }: { app: FullAppItem; wide?: boolean }) {
       onClick={() => goToApp(app.action)}
       disabled={!enabled}
       className={twMerge(
-        "group flex h-full flex-col justify-between gap-4 rounded-tile border border-ui-border bg-ui-panel p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:border-primary",
+        "group flex h-full flex-col justify-between gap-4 rounded-tile border border-ui-border bg-ui-panel p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:border-primary",
         wide && "col-span-2",
         enabled
           ? "cursor-pointer"
-          : "cursor-default opacity-60 hover:translate-y-0 hover:shadow-sm",
+          : "cursor-default opacity-60 hover:translate-y-0 hover:border-ui-border hover:shadow-sm",
       )}
     >
       <div className="flex w-full items-start justify-between gap-2">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-tile border border-primary/20 bg-primary/10 text-primary">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
           <app.icon weight="duotone" className="text-xl" />
         </span>
         {enabled && (
@@ -91,7 +91,7 @@ function AppTile({ app, wide = false }: { app: FullAppItem; wide?: boolean }) {
           {app.badge && (
             <span
               className={twMerge(
-                "shrink-0 border px-1.5 py-1 font-mono text-[9px] font-medium leading-none tracking-wider",
+                "shrink-0 rounded-full border px-2 py-1 font-mono text-[9px] font-medium leading-none tracking-wider",
                 app.badge === "SOON"
                   ? getBadgeStyles(app.badge)
                   : "border-primary/30 text-ui-accent-ink",

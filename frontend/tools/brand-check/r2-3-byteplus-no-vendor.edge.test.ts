@@ -173,7 +173,7 @@ describe('R2-3a task options', () => {
 
   it('a missing prompt becomes an empty string, not a panic', () => {
     expect(BYTEPLUS_RS).toContain('field("prompt").unwrap_or_default()');
-    expect(BYTEPLUS_RS).not.toMatch(/\.unwrap\(\)|\.expect\(/);
+    expect(BYTEPLUS_RS.split('#[cfg(test)]')[0]).not.toMatch(/\.unwrap\(\)|\.expect\(/);
   });
 });
 

@@ -1,44 +1,34 @@
-// R2-1b edge cases: the "Provider keys" pane (masked BytePlus key + Save).
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+// R4-3b: the settings modal routes "Providers & keys" to ProvidersPane (replacing the R2-1b
+// BytePlus-only pane), keeps the Provider Priority pane, and uses Phosphor icons only.
+import { cleanup, render, screen, within } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { invoke } from '@tauri-apps/api/core';
 
 import SettingsModal from './settings-modal';
 
+vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
+vi.mock('@tauri-apps/api/event', () => ({ listen: vi.fn(), emit: vi.fn() }));
+
 // --- constants ---
 
-const KEY = 'bp-secret-123';
-const LABEL = 'BytePlus API key';
-const SAVED = 'saved ✓';
-const BRAND_LEAKS = /artcraft|getartcraft|storyteller|fakeyou|ltx|lightricks/i;
+const LABEL = 'Providers & keys';
+const BRAND_LEAKS = /artcraft|getartcraft|storyteller|fakeyou|\bltx\b|lightricks/i;
+const MODAL_SRC = readFileSync(join(__dirname, 'settings-modal.tsx'), 'utf8');
+
+const PROVIDERS = [
+  { id: 'byteplus', name: 'BytePlus', kind: 'api_key', modalities: ['image', 'video'], has_key: true, key_hint: 'c123' },
+];
 
 // --- helpers ---
 
-const api = vi.hoisted(() => ({ setKey: vi.fn() }));
+const mockedInvoke = vi.mocked(invoke);
 
-vi.mock('@storyteller/tauri-api', async (importOriginal) => ({
-  ...(await importOriginal<object>()),
-  ProviderSetApiKey: api.setKey,
-}));
-
-const renderModal = (initialSection?: string) =>
+const renderModal = () =>
   render(
-    <SettingsModal
-      isOpen
-      onClose={() => {}}
-      globalAccountLogoutCallback={() => {}}
-      {...(initialSection ? { initialSection: initialSection as any } : {})}
-    />,
+    <SettingsModal isOpen onClose={() => {}} globalAccountLogoutCallback={() => {}} initialSection="provider_keys" />,
   );
-
-const keyInput = () => screen.getByLabelText(LABEL) as HTMLInputElement;
-const saveButton = () => screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement;
-
-const deferred = <T,>() => {
-  let resolve!: (v: T) => void;
-  const promise = new Promise<T>((r) => (resolve = r));
-  return { promise, resolve };
-};
 
 beforeEach(() => {
   vi.stubGlobal('ResizeObserver', class {
@@ -46,7 +36,11 @@ beforeEach(() => {
     unobserve() {}
     disconnect() {}
   });
-  api.setKey.mockResolvedValue({ status: 'success' });
+  mockedInvoke.mockImplementation(async (cmd: string) => {
+    if (cmd === 'provider_list_command') return { status: 'success', payload: { providers: PROVIDERS } };
+    if (cmd === 'custom_endpoint_list_command') return { status: 'success', payload: { endpoints: [] } };
+    return { status: 'success' };
+  });
 });
 
 afterEach(() => {
@@ -55,143 +49,55 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('Provider keys pane', () => {
-  it('is reachable from the settings nav', async () => {
-    const user = userEvent.setup();
+describe('Providers & keys in the settings modal', () => {
+  it('has a nav entry and a header with the new label (old label gone)', async () => {
     renderModal();
-    expect(screen.queryByLabelText(LABEL)).toBeNull();
-    await user.click(screen.getByText('Provider keys'));
-    expect(keyInput().type).toBe('password');
+    await screen.findByTestId('provider-byteplus');
+    expect(screen.getByRole('button', { name: LABEL })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: LABEL })).toBeTruthy();
+    expect(screen.queryByText('Provider keys')).toBeNull();
   });
 
-  it('labels the masked input and disables autocomplete', () => {
-    renderModal('provider_keys');
-    expect(keyInput().type).toBe('password');
-    expect(keyInput().getAttribute('autocomplete')).toBe('off');
-    expect(keyInput().value).toBe('');
+  it('leaves the Provider Priority nav entry hidden, as upstream does', async () => {
+    renderModal();
+    await screen.findByTestId('provider-byteplus');
+    expect(screen.queryByRole('button', { name: 'Provider Priority' })).toBeNull();
   });
 
-  it('keeps Save disabled while the input is empty and never calls the wrapper', async () => {
-    const user = userEvent.setup();
-    renderModal('provider_keys');
-    expect(saveButton().disabled).toBe(true);
-    await user.click(saveButton());
-    expect(api.setKey).not.toHaveBeenCalled();
-    expect(screen.queryByText(SAVED)).toBeNull();
+  it('existing BytePlus users see a masked hint, never a pre-filled key field', async () => {
+    renderModal();
+    const card = within(await screen.findByTestId('provider-byteplus'));
+    expect(card.getByText('Connected •••• c123')).toBeTruthy();
+    expect(screen.queryByLabelText('BytePlus API key')).toBeNull();
+    expect(screen.getByTestId('provider-byteplus').querySelectorAll('input').length).toBe(0);
+    expect(screen.getByTestId('provider-byteplus').textContent).not.toMatch(/c123.+c123/);
   });
 
-  it('re-disables Save after the user deletes what they typed', async () => {
-    const user = userEvent.setup();
-    renderModal('provider_keys');
-    await user.type(keyInput(), 'ab');
-    expect(saveButton().disabled).toBe(false);
-    await user.clear(keyInput());
-    expect(saveButton().disabled).toBe(true);
-  });
-
-  it('does not show saved or clear the input before the save resolves', async () => {
-    const user = userEvent.setup();
-    const pending = deferred<{ status: string }>();
-    api.setKey.mockReturnValue(pending.promise);
-    renderModal('provider_keys');
-
-    await user.type(keyInput(), KEY);
-    await user.click(saveButton());
-    expect(screen.queryByText(SAVED)).toBeNull();
-    expect(keyInput().value).toBe(KEY);
-
-    pending.resolve({ status: 'success' });
-    await screen.findByText(SAVED);
-    expect(keyInput().value).toBe('');
-  });
-
-  it('on an error status: no saved mark and the key stays for a retry', async () => {
-    const user = userEvent.setup();
-    api.setKey.mockResolvedValue({ status: 'server_error' });
-    renderModal('provider_keys');
-
-    await user.type(keyInput(), KEY);
-    await user.click(saveButton());
-
-    await waitFor(() => expect(api.setKey).toHaveBeenCalledTimes(1));
-    expect(screen.queryByText(SAVED)).toBeNull();
-    expect(keyInput().value).toBe(KEY);
-  });
-
-  it('on a null/undefined result: no saved mark', async () => {
-    const user = userEvent.setup();
-    api.setKey.mockResolvedValue(undefined);
-    renderModal('provider_keys');
-
-    await user.type(keyInput(), KEY);
-    await user.click(saveButton());
-
-    await waitFor(() => expect(api.setKey).toHaveBeenCalledTimes(1));
-    expect(screen.queryByText(SAVED)).toBeNull();
-  });
-
-  it('on a rejected save (backend offline): no saved mark and no unhandled error', async () => {
-    const user = userEvent.setup();
-    const unhandled = vi.fn();
-    process.on('unhandledRejection', unhandled);
-    api.setKey.mockRejectedValue(new Error('ipc down'));
-    try {
-      renderModal('provider_keys');
-      await user.type(keyInput(), KEY);
-      await user.click(saveButton());
-      await waitFor(() => expect(api.setKey).toHaveBeenCalledTimes(1));
-      await new Promise((r) => setTimeout(r, 0));
-      expect(screen.queryByText(SAVED)).toBeNull();
-      expect(unhandled).not.toHaveBeenCalled();
-    } finally {
-      process.off('unhandledRejection', unhandled);
+  it('shows all four pane sections inside the modal', async () => {
+    renderModal();
+    await screen.findByTestId('provider-byteplus');
+    for (const heading of ['Providers', 'Custom endpoints', 'Defaults', 'Connect your agent']) {
+      expect(screen.getByRole('heading', { name: heading })).toBeTruthy();
     }
   });
 
-  it('hides the saved mark once the user starts typing a new key', async () => {
-    const user = userEvent.setup();
-    renderModal('provider_keys');
-    await user.type(keyInput(), KEY);
-    await user.click(saveButton());
-    await screen.findByText(SAVED);
+  it('has no brand leaks in the modal text', async () => {
+    const { baseElement } = renderModal();
+    await screen.findByTestId('provider-byteplus');
+    expect(baseElement.textContent).not.toMatch(BRAND_LEAKS);
+  });
+});
 
-    await user.type(keyInput(), 'n');
-    expect(screen.queryByText(SAVED)).toBeNull();
+describe('settings-modal.tsx source', () => {
+  it('has no lucide imports', () => {
+    expect(MODAL_SRC).not.toMatch(/lucide/i);
+    expect(MODAL_SRC).toMatch(/from "@phosphor-icons\/react"/);
   });
 
-  it('saves a second key separately and never renders either key', async () => {
-    const user = userEvent.setup();
-    const { baseElement } = renderModal('provider_keys');
-
-    await user.type(keyInput(), 'first-key');
-    await user.click(saveButton());
-    await screen.findByText(SAVED);
-    await user.type(keyInput(), 'second-key');
-    await user.click(saveButton());
-    await screen.findByText(SAVED);
-
-    expect(api.setKey.mock.calls).toEqual([['first-key'], ['second-key']]);
-    expect(baseElement.innerHTML).not.toContain('first-key');
-    expect(baseElement.innerHTML).not.toContain('second-key');
-    expect(baseElement.textContent).not.toContain('second-key');
-  });
-
-  it('passes the key without trimming', async () => {
-    const user = userEvent.setup();
-    renderModal('provider_keys');
-    await user.type(keyInput(), ' k e y ');
-    await user.click(saveButton());
-    expect(api.setKey).toHaveBeenCalledWith(' k e y ');
-  });
-
-  it('has no brand leaks in the pane text or the nav label', () => {
-    const { baseElement } = renderModal('provider_keys');
-    const pane = keyInput().closest('div')!.parentElement!;
-    expect(within(pane).getByText(LABEL)).toBeTruthy();
-    expect(pane.textContent ?? '').not.toMatch(BRAND_LEAKS);
-    expect(LABEL).not.toMatch(BRAND_LEAKS);
-    expect(SAVED).not.toMatch(BRAND_LEAKS);
-    expect(screen.getAllByText('Provider keys')[0].textContent).not.toMatch(BRAND_LEAKS);
-    expect(baseElement).toBeTruthy();
+  it('routes provider_keys to ProvidersPane and drops the inline BytePlus-only pane', () => {
+    expect(MODAL_SRC).toMatch(/case "provider_keys":\s*return <ProvidersPane \/>/);
+    expect(MODAL_SRC).not.toMatch(/ProviderKeysSettingsPane/);
+    expect(MODAL_SRC).not.toMatch(/BytePlus API key/);
+    expect(MODAL_SRC).toMatch(/<ProviderPrioritySettingsPane \/>/);
   });
 });
