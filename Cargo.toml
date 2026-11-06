@@ -72,8 +72,8 @@ uuid_utils = { path = "crates/lib/uuid_utils" }
 web_base64 = { path = "crates/lib/data/web_base64" }
 worldlabs_api_client = { path = "crates/api_clients/worldlabs_api_client" }
 anyhow = "1.0.102"
-assertor = "0.0.3"
-base64 = "0.22.1"
+assertor = "0.0.4"
+base64 = "0.23.1"
 bstr = "1.12.1"
 byteorder = "1.5.0"
 chrono = { version = "0.4.44", features = ["serde"] }
@@ -105,6 +105,6 @@ tokio = { version = "1.50.0", features = ["macros"] }
 tokio-util = "0.7.12"
 toml = "1.0.7+spec-1.1.0"
 url = { version = "2.5.8", features = ["serde"] }
-utoipa = { version = "5.4.0", features = ["chrono", "actix_extras", "url"] }
+utoipa = { version = "6.0.0", features = ["chrono", "actix_extras", "url"] }
 uuid = "1.22.0"
 walkdir = "2.4.0"
