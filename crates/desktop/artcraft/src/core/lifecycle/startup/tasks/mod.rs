@@ -5,3 +5,4 @@ pub (super) mod spawn_discord_presence_thread;
 pub (super) mod spawn_main_window_thread;
 pub (super) mod spawn_storyteller_threads;
 pub (super) mod load_provider_priority_state;
+pub (super) mod spawn_thumbnail_cache_prune;

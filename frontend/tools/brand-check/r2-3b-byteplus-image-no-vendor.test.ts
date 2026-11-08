@@ -18,6 +18,7 @@ describe('R2-3b BytePlus image branch', () => {
 
   it('the CDN field carries only the local asset URL (no upload)', () => {
     const shipped = BYTEPLUS_RS.split('#[cfg(test)]')[0];
+    expect(shipped).toContain('let asset_url = local_asset_url(&path);');
     expect(shipped).toMatch(/maybe_cdn_url:\s*Some\(asset_url\)/);
     expect(shipped).not.toMatch(/maybe_cdn_url:\s*None/);
   });

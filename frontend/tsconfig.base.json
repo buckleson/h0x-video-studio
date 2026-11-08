@@ -123,6 +123,9 @@
       "@storyteller/ui-pagescene": [
         "libs/components/pagescene/src/index.ts"
       ],
+      "@storyteller/ui-pagescene/store": [
+        "libs/components/pagescene/src/store.ts"
+      ],
       "@storyteller/ui-popover": [
         "libs/components/popover/src/index.ts"
       ],

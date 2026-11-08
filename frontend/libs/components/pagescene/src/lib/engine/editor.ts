@@ -1134,7 +1134,11 @@ class Editor {
     // nothing reads this scene again. The gizmo's dispose also removes its
     // pointer listeners from the canvas.
     this.entranceAnimator.clear();
+    this.characterAnimationManager.clear();
     this.gizmo.control?.dispose();
+    // PointerLockControls listens on the document; left connected it keeps
+    // this Editor reachable after the stage is gone.
+    this.cameraController.lockControls?.dispose();
     this.activeScene.dispose();
 
     // Fix: dispose 3D contexts

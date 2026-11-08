@@ -22,7 +22,7 @@ export {
   usePageSceneStore,
   useIsVisitingOthersScene,
   getIsVisitingOthersScene,
-} from "./lib/PageSceneStore";
+} from "./store";
 export type {
   Camera,
   FocalLengthDragging,

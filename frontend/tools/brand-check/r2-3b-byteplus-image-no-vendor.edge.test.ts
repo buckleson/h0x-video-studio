@@ -176,6 +176,7 @@ describe('R2-3b vendor and brand leaks', () => {
 
   it('CDN fields carry only the local asset URL (no upload)', () => {
     const lines = shipped(PROVIDER).split(/\r?\n/).filter((l) => /cdn/i.test(l));
+    expect(shipped(PROVIDER)).toContain('let asset_url = local_asset_url(&path);');
     expect(lines.map((l) => l.trim())).toEqual(['maybe_primary_media_file_cdn_url: Some(asset_url.as_str()),', 'maybe_cdn_url: Some(asset_url),']);
   });
 

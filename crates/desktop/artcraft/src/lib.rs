@@ -29,6 +29,7 @@ use crate::core::commands::flip_image::flip_image;
 use crate::core::commands::get_app_info_command::get_app_info_command;
 use crate::core::commands::load_without_cors_command::load_without_cors_command;
 use crate::core::commands::media_files::list_local_media_command::list_local_media_command;
+use crate::core::commands::media_files::local_media_thumbnail_command::local_media_thumbnail_command;
 use crate::core::commands::media_files::media_file_delete_command::media_file_delete_command;
 use crate::core::commands::media_files::save_scene_frame_command::save_scene_frame_command;
 use crate::core::commands::platform_info_command::platform_info_command;
@@ -219,6 +220,7 @@ pub fn run() {
     modality_defaults_get_command,
     modality_defaults_set_command,
     list_local_media_command,
+    local_media_thumbnail_command,
     save_scene_frame_command,
     media_file_delete_command,
     platform_info_command,

@@ -32,7 +32,8 @@ const LOCAL_FILES = [
 describe("GalleryModal", () => {
   beforeEach(() => {
     vi.mocked(invoke).mockReset();
-    vi.mocked(invoke).mockResolvedValue(LOCAL_FILES);
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args?: any) =>
+      cmd === "local_media_thumbnail_command" ? { thumb_path: `${args.path}.thumb.jpg` } : LOCAL_FILES);
     vi.spyOn(FoldersApi.prototype, "ListAllFolders").mockResolvedValue({
       success: true,
       data: [],
@@ -69,7 +70,7 @@ describe("GalleryModal", () => {
       "asset://localhost/C:/dl/clip.mp4",
     );
     expect(
-      baseElement.querySelector('img[src="asset://localhost/C:/dl/still.png"]'),
+      baseElement.querySelector('img[src="asset://localhost/C:/dl/still.png.thumb.jpg"]'),
     ).not.toBeNull();
     expect(
       screen.getByRole("button", { name: "On this computer" }).className,

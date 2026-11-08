@@ -50,7 +50,8 @@ const localCalls = () =>
 describe("GalleryModal local source", () => {
   beforeEach(() => {
     vi.mocked(invoke).mockReset();
-    vi.mocked(invoke).mockResolvedValue(LOCAL_FILES);
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args?: any) =>
+      cmd === "local_media_thumbnail_command" ? { thumb_path: `${args.path}.thumb.jpg` } : LOCAL_FILES);
     vi.spyOn(FoldersApi.prototype, "ListAllFolders").mockResolvedValue({
       success: true,
       data: [],
@@ -74,7 +75,7 @@ describe("GalleryModal local source", () => {
     const videos = baseElement.querySelectorAll("video");
     expect(videos).toHaveLength(1);
     expect(videos[0].getAttribute("src")).toBe(converted(WIN_VIDEO));
-    expect(baseElement.querySelector(`img[src="${converted(WIN_IMAGE)}"]`)).not.toBeNull();
+    expect(baseElement.querySelector(`img[src="${converted(WIN_IMAGE + ".thumb.jpg")}"]`)).not.toBeNull();
     expect(baseElement.querySelector(`video[src="${converted(WIN_IMAGE)}"]`)).toBeNull();
     expect(baseElement.querySelector(`img[src="${converted(WIN_VIDEO)}"]`)).toBeNull();
   });

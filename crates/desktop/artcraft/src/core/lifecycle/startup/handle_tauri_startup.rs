@@ -5,6 +5,7 @@ use crate::core::lifecycle::startup::tasks::set_app_log_level::set_app_log_level
 use crate::core::lifecycle::startup::tasks::spawn_discord_presence_thread::spawn_discord_presence_thread;
 use crate::core::lifecycle::startup::tasks::spawn_main_window_thread::spawn_main_window_thread;
 use crate::core::lifecycle::startup::tasks::spawn_storyteller_threads::spawn_storyteller_threads;
+use crate::core::lifecycle::startup::tasks::spawn_thumbnail_cache_prune::spawn_thumbnail_cache_prune;
 use crate::core::state::app_env_configs::app_env_configs::AppEnvConfigs;
 use crate::core::state::artcraft_platform_info::ArtcraftPlatformInfo;
 use crate::core::state::artcraft_usage_tracker::artcraft_usage_tracker::ArtcraftUsageTracker;
@@ -63,6 +64,8 @@ pub async fn handle_tauri_startup(
   ));
 
   spawn_discord_presence_thread()?;
+
+  spawn_thumbnail_cache_prune(&root);
 
   initially_size_and_position_windows(&app, &root);
 

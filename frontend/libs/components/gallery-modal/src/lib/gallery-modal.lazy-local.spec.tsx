@@ -55,7 +55,8 @@ describe("GalleryModal lazy local tiles", () => {
       }),
     );
     vi.mocked(invoke).mockReset();
-    vi.mocked(invoke).mockResolvedValue(LOCAL_FILES);
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args?: any) =>
+      cmd === "local_media_thumbnail_command" ? { thumb_path: `${args.path}.thumb.jpg` } : LOCAL_FILES);
     vi.spyOn(UsersApi.prototype, "GetSession").mockResolvedValue({ success: false } as any);
     vi.spyOn(FoldersApi.prototype, "ListAllFolders").mockResolvedValue({
       success: true,
@@ -129,6 +130,6 @@ describe("GalleryModal lazy local tiles", () => {
     await waitFor(() =>
       expect(baseElement.querySelector(`video[src="${converted(WIN_VIDEO)}"]`)).not.toBeNull(),
     );
-    expect(baseElement.querySelector(`img[src="${converted(WIN_IMAGE)}"]`)).not.toBeNull();
+    expect(baseElement.querySelector(`img[src="${converted(WIN_IMAGE + ".thumb.jpg")}"]`)).not.toBeNull();
   });
 });
