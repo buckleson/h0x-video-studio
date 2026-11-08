@@ -60,10 +60,6 @@ const KNOWN_UNREGISTERED = [
   "fal_background_removal_command",
   "fal_hunyuan_image_to_3d_command",
   "fal_kling_image_to_video_command",
-  "get_fal_api_key_command",
-  "set_fal_api_key_command",
-  "get_openai_api_key_command",
-  "set_openai_api_key_command",
 ];
 
 // Consumer-login provider identifiers that must not survive as provider/enum values.

@@ -6,7 +6,7 @@ import { PopoverMenu, PopoverItem } from "@storyteller/ui-popover";
 import { Tooltip } from "@storyteller/ui-tooltip";
 import { GenerateIconButton } from "@storyteller/ui-button";
 import { GenerateImage, GenerateImageRequest, commandErrorMessage } from "@storyteller/tauri-api";
-import { ChevronDownIcon, ChevronUpIcon, MaximizeIcon } from "lucide-react";
+import { CaretDownIcon, CaretUpIcon, CornersOutIcon } from "@phosphor-icons/react";
 import { DynamicIcon } from "@storyteller/icons";
 import { ImageModel, imageModelForProvider } from "@storyteller/model-list";
 import { arrayMove } from "@dnd-kit/sortable";
@@ -264,17 +264,17 @@ export const PromptBoxImage = ({
     {
       label: "1K",
       selected: resolution === "1k",
-      icon: <MaximizeIcon  className="h-4 w-4" />,
+      icon: <CornersOutIcon  className="h-4 w-4" />,
     },
     {
       label: "2K",
       selected: resolution === "2k",
-      icon: <MaximizeIcon  className="h-4 w-4" />,
+      icon: <CornersOutIcon  className="h-4 w-4" />,
     },
     {
       label: "4K",
       selected: resolution === "4k",
-      icon: <MaximizeIcon  className="h-4 w-4" />,
+      icon: <CornersOutIcon  className="h-4 w-4" />,
     },
   ]);
 
@@ -562,7 +562,7 @@ export const PromptBoxImage = ({
                       panelTitle="Resolution"
                       showIconsInList
                       triggerIcon={
-                        <MaximizeIcon  className="h-4 w-4" />
+                        <CornersOutIcon  className="h-4 w-4" />
                       }
                     />
                   </Tooltip>
@@ -608,8 +608,9 @@ export const PromptBoxImage = ({
                 className="text-base-fg/30 hover:text-base-fg/90 transition-colors px-3 py-0.5"
               >
                 <DynamicIcon
-                  icon={isExpanded ? ChevronUpIcon : ChevronDownIcon}
+                  icon={isExpanded ? CaretUpIcon : CaretDownIcon}
                   className="text-xs"
+                  size="1.2em"
                 />
               </button>
             </Tooltip>

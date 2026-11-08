@@ -154,10 +154,10 @@ body {
   --st-fg: #fafafa;
   --st-fg-rgb: 250 250 250;
   --st-divider: #282828;
-  --st-primary: #00ff04;
-  --st-primary-rgb: 0 255 4;
+  --st-primary: #ff6b1a;
+  --st-primary-rgb: 255 107 26;
   --st-primary-fg: #171717;
-  --radius-tile: 0.625rem;
+  --radius-tile: 1rem;
   --st-color-scheme: dark;
   --st-gallery-vignette-alpha: 0.3;
   --st-photo-tint-rgb: 0 0 0;
@@ -172,7 +172,7 @@ body {
   --card-foreground: 180 0% 98%;
   --popover: 0 0% 15%;
   --popover-foreground: 180 0% 98%;
-  --primary: 121 100% 50%;
+  --primary: 21 100% 55%;
   --primary-foreground: 0 0% 9%;
   --secondary: 0 0% 15%;
   --secondary-foreground: 180 0% 98%;

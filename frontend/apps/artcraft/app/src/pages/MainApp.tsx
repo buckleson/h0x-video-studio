@@ -55,16 +55,14 @@ import { useTabStore } from "./Stores/TabState";
 import { useTextToImageStore } from "./PageImage/TextToImageStore";
 
 import { AppsIndexPage } from "./PageApps/AppsIndexPage";
-import PageDraw from "./PageDraw/PageDraw";
 import {
   topNavMediaId,
   topNavMediaUrl,
 } from "~/components/signaled/TopBar/TopBar";
 
-// Load editors when selected, keeping their code off the launch path. Drawing
-// stays eager: its shared store/UI is already needed by the shell, so deferring
-// its small host adapter adds first-open latency for very little byte saving.
+// Load editors when selected, keeping their code off the launch path.
 // Declare lazy components once so navigating does not recreate their identity.
+const PageDraw = lazy(() => import("./PageDraw/PageDraw"));
 const TextToImage = lazy(() => import("./PageImage/TextToImage"));
 const ImageToVideo = lazy(() => import("./PageVideo/ImageToVideo"));
 const CreateAudio = lazy(() => import("./PageAudio/CreateAudio"));

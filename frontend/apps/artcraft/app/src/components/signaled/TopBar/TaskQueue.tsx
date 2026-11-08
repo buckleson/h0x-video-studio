@@ -1,7 +1,18 @@
 import { findDesktopModel } from "@storyteller/tauri-api";
 import { Tooltip } from "@storyteller/ui-tooltip";
 import { PopoverMenu } from "@storyteller/ui-popover";
-import { BombIcon, BrushIcon, CheckIcon, CircleAlertIcon, CopyIcon, ListChecksIcon, LoaderCircleIcon, Trash2Icon, TriangleAlertIcon, XIcon } from "lucide-react";
+import {
+  BombIcon,
+  CheckIcon,
+  CircleNotchIcon,
+  CopyIcon,
+  ListChecksIcon,
+  PaintBrushIcon,
+  TrashIcon,
+  WarningCircleIcon,
+  WarningIcon,
+  XIcon,
+} from "@phosphor-icons/react";
 import { DynamicIcon } from "@storyteller/icons";
 import { Modal } from "@storyteller/ui-modal";
 import {
@@ -207,10 +218,10 @@ const InProgressCard = ({
       />
       <div className="absolute inset-0 bg-black/30" />
       <div className="absolute inset-0 flex items-center justify-center">
-        <LoaderCircleIcon
+        <CircleNotchIcon
           
           className="animate-spin text-white/80"
-          size="lg" />
+          size="1.2em" />
       </div>
       {task.refImageUrls!.length > 1 && (
         <div className="absolute bottom-0.5 right-0.5 bg-black/60 px-1 text-[9px] text-white/80">
@@ -220,10 +231,10 @@ const InProgressCard = ({
     </div>
   ) : (
     <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden bg-ui-controls">
-      <LoaderCircleIcon
+      <CircleNotchIcon
         
         className="animate-spin text-base-fg/60"
-        size="lg" />
+        size="1.2em" />
     </div>
   );
 
@@ -244,7 +255,7 @@ const InProgressCard = ({
                   zIndex={50}
                   delay={100}
                 >
-                  <TriangleAlertIcon
+                  <WarningIcon
                     
                     className="h-3 w-3 shrink-0 text-yellow-400/60 transition-all hover:text-yellow-400" />
                 </Tooltip>
@@ -285,7 +296,7 @@ const InProgressCard = ({
                 onDismiss();
               }}
             >
-              <XIcon />
+              <XIcon size="1.2em" />
             </button>
           )}
         </div>
@@ -359,7 +370,7 @@ const CompletedCard = ({
               onDismiss();
             }}
           >
-            <XIcon />
+            <XIcon size="1.2em" />
           </button>
         )}
       </div>
@@ -410,10 +421,10 @@ const FailedCard = ({
       />
       <div className="absolute inset-0 bg-red-900/40" />
       <div className="absolute inset-0 flex items-center justify-center">
-        <CircleAlertIcon
+        <WarningCircleIcon
           
           className="text-red-400"
-          size="lg" />
+          size="1.2em" />
       </div>
       {task.refImageUrls!.length > 1 && (
         <div className="absolute bottom-0.5 right-0.5 bg-black/60 px-1 text-[9px] text-white/80">
@@ -423,10 +434,10 @@ const FailedCard = ({
     </div>
   ) : (
     <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden bg-red-500/10">
-      <CircleAlertIcon
+      <WarningCircleIcon
         
         className="text-red-400"
-        size="lg" />
+        size="1.2em" />
     </div>
   );
 
@@ -497,7 +508,7 @@ const FailedCard = ({
                 onDismiss();
               }}
             >
-              <XIcon />
+              <XIcon size="1.2em" />
             </button>
           )}
         </div>
@@ -538,7 +549,7 @@ export const TaskQueue = () => {
     title: "",
     message: null,
     primaryActionText: "",
-    primaryActionIcon: Trash2Icon,
+    primaryActionIcon: TrashIcon,
     primaryActionBtnClassName: "",
     onConfirm: async () => {},
   });
@@ -553,7 +564,7 @@ export const TaskQueue = () => {
         </span>
       ),
       primaryActionText: "Clear completed",
-      primaryActionIcon: BrushIcon,
+      primaryActionIcon: PaintBrushIcon,
       primaryActionBtnClassName:
         "bg-green-500/10 hover:bg-green-500/20 text-green-500",
       onConfirm: async () => {
@@ -573,7 +584,7 @@ export const TaskQueue = () => {
         </span>
       ),
       primaryActionText: "Clear stale",
-      primaryActionIcon: Trash2Icon,
+      primaryActionIcon: TrashIcon,
       primaryActionBtnClassName:
         "bg-orange-500/10 hover:bg-orange-500/20 text-orange-500",
       onConfirm: async () => {
@@ -592,7 +603,7 @@ export const TaskQueue = () => {
         </span>
       ),
       primaryActionText: "Clear failed",
-      primaryActionIcon: Trash2Icon,
+      primaryActionIcon: TrashIcon,
       primaryActionBtnClassName:
         "bg-red-500/10 hover:bg-red-500/20 text-red-500",
       onConfirm: async () => {
@@ -1020,9 +1031,9 @@ export const TaskQueue = () => {
             align="end"
             triggerIcon={
               inProgressCount > 0 ? (
-                <LoaderCircleIcon className="animate-spin text-[11px]" />
+                <CircleNotchIcon size="1.2em" className="animate-spin text-[11px]" />
               ) : (
-                <ListChecksIcon className="text-[11px]" />
+                <ListChecksIcon size="1.2em" className="text-[11px]" />
               )
             }
             onOpenChange={handleOpenChange}
@@ -1034,7 +1045,7 @@ export const TaskQueue = () => {
                     {hasNothing ? (
                       <div className="flex w-full flex-col items-center justify-center p-5 text-base-fg/60">
                         <div className="flex items-center gap-2.5 text-sm opacity-60">
-                          <ListChecksIcon /> No tasks yet
+                          <ListChecksIcon size="1.2em" /> No tasks yet
                         </div>
                       </div>
                     ) : (
@@ -1067,7 +1078,7 @@ export const TaskQueue = () => {
                                 className="text-xs tracking-wide text-red-400/70 transition-colors hover:text-red-300"
                                 onClick={() => handleClearFailed()}
                               >
-                                <XIcon
+                                <XIcon size="1.2em"
                                   
                                   className="mr-1" />
                                 Clear failed
@@ -1092,7 +1103,7 @@ export const TaskQueue = () => {
                                 className="text-xs tracking-wide text-base-fg/50 transition-colors hover:text-base-fg/100"
                                 onClick={() => handleClearCompleted()}
                               >
-                                <XIcon
+                                <XIcon size="1.2em"
                                   
                                   className="mr-1" />
                                 Clear completed
@@ -1171,28 +1182,28 @@ export const TaskQueue = () => {
                   className="flex h-9 items-center justify-center bg-green-500/10 px-3 text-green-500 hover:bg-green-500/20"
                   onClick={() => handleClearCompleted()}
                 >
-                  <BrushIcon  className="mr-1.5" />
+                  <PaintBrushIcon size="1.2em" className="mr-1.5" />
                   Clear completed
                 </Button>
                 <Button
                   className="flex h-9 items-center justify-center bg-orange-500/10 px-3 text-orange-500 hover:bg-orange-500/20"
                   onClick={() => handleClearStale()}
                 >
-                  <Trash2Icon  className="mr-1.5" />
+                  <TrashIcon size="1.2em" className="mr-1.5" />
                   Clear stale
                 </Button>
                 <Button
                   className="flex h-9 items-center justify-center bg-red-500/10 px-3 text-red-400 hover:bg-red-500/20"
                   onClick={() => handleClearFailed()}
                 >
-                  <Trash2Icon  className="mr-1.5" />
+                  <TrashIcon size="1.2em" className="mr-1.5" />
                   Clear failed
                 </Button>
                 <Button
                   className="flex h-9 items-center justify-center bg-red-500/10 px-3 text-red-500 hover:bg-red-500/20"
                   onClick={() => handleRemoveAll()}
                 >
-                  <BombIcon  className="mr-1.5" />
+                  <BombIcon size="1.2em" className="mr-1.5" />
                   Remove all
                 </Button>
                 <div className="mr-2 h-4 w-[1px] bg-base-fg/10" />
@@ -1204,7 +1215,7 @@ export const TaskQueue = () => {
             {hasNothing ? (
               <div className="flex w-full flex-col items-center justify-center p-5 text-base-fg/60">
                 <div className="flex items-center gap-2.5 text-sm opacity-60">
-                  <ListChecksIcon /> No tasks yet
+                  <ListChecksIcon size="1.2em" /> No tasks yet
                 </div>
               </div>
             ) : (

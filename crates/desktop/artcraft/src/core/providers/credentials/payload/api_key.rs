@@ -14,6 +14,15 @@ impl ApiKeyData {
     self.0.as_str()
   }
 
+  /// The last 4 characters, safe to show in the UI. None for keys too short to reveal any part of.
+  pub fn hint(&self) -> Option<String> {
+    let chars: Vec<char> = self.0.chars().collect();
+    if chars.len() < 8 {
+      return None;
+    }
+    Some(chars[chars.len() - 4..].iter().collect())
+  }
+
   pub fn load_from_file<P: AsRef<Path>>(file_path: P) -> Result<Self, ApiKeyDataError> {
     let contents = std::fs::read_to_string(file_path)
       .map_err(ApiKeyDataError::IoError)?;
@@ -90,6 +99,50 @@ mod tests {
 
     let loaded = ApiKeyData::load_from_file(file.path()).unwrap();
     assert_eq!(loaded.as_str(), "sk-round-trip-test-key");
+  }
+
+  #[test]
+  fn hint_is_last_four_chars() {
+    assert_eq!(ApiKeyData::from_str("sk-abcdef1234").hint().as_deref(), Some("1234"));
+    assert_eq!(ApiKeyData::from_str("kéy-✓✓✓✓x").hint().as_deref(), Some("✓✓✓x"));
+  }
+
+  #[test]
+  fn short_keys_have_no_hint() {
+    assert_eq!(ApiKeyData::from_str("1234567").hint(), None);
+    assert_eq!(ApiKeyData::from_str("").hint(), None);
+  }
+
+  // R4-3a edge cases for the key hint shown in the UI.
+  mod hint_tests {
+    use super::*;
+
+    #[test]
+    fn exactly_eight_chars_reveal_only_the_last_four() {
+      assert_eq!(ApiKeyData::from_str("abcd1234").hint().as_deref(), Some("1234"));
+    }
+
+    #[test]
+    fn padding_does_not_count_toward_length() {
+      assert_eq!(ApiKeyData::from_str("   1234567   ").hint(), None);
+      assert_eq!(ApiKeyData::from_str("\t\n").hint(), None);
+    }
+
+    #[test]
+    fn hint_comes_from_the_trimmed_key() {
+      assert_eq!(ApiKeyData::from_str("sk-abcdef1234 \n").hint().as_deref(), Some("1234"));
+    }
+
+    #[test]
+    fn hint_never_reveals_more_than_half_of_the_key() {
+      for key in ["abcd1234", "sk-0123456789abcdef", "kéy-✓✓✓✓x"] {
+        let data = ApiKeyData::from_str(key);
+        let hint = data.hint().unwrap();
+        assert_eq!(hint.chars().count(), 4, "{}", key);
+        assert!(hint.chars().count() * 2 <= key.chars().count(), "{}", key);
+        assert_ne!(hint, key);
+      }
+    }
   }
 
   #[test]
