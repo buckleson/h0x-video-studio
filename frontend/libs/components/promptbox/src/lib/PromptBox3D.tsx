@@ -25,6 +25,7 @@ import {
   CommandSuccessStatus,
   GenerateImage,
   GenerateImageRequest,
+  commandErrorMessage,
 } from "@storyteller/tauri-api";
 import { usePrompt3DStore, useEnterToGenerateStore } from "./promptStore";
 import {
@@ -434,7 +435,6 @@ export const PromptBox3D = ({
         timestamp: Date.now(),
       });
 
-      toast.success("Image added to queue");
     } catch (err) {
       handleError(
         err instanceof Error ? err.message : "Generation request failed",
@@ -503,7 +503,19 @@ export const PromptBox3D = ({
           timestamp: Date.now(),
         });
 
-        const generateResponse = await GenerateImage(request);
+        let generateResponse;
+        try {
+          generateResponse = await GenerateImage(request);
+        } catch (err) {
+          toast.error(
+            commandErrorMessage(
+              err,
+              "Failed to start image generation. Please try again.",
+            ),
+          );
+          setIsEnqueueing(false);
+          return;
+        }
 
         console.log("generateResponse", generateResponse);
 
@@ -527,7 +539,6 @@ export const PromptBox3D = ({
         await new Promise((resolve) => setTimeout(resolve, 2000));
       } finally {
         setIsEnqueueing(false);
-        toast.success("Image added to queue");
       }
     }
 

@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { SoundManager } from "@storyteller/soundboard";
-import { toast } from "@storyteller/ui-toaster";
 import { GenerationAction, GenerationModel, GenerationServiceProvider } from "./common";
 import { BasicEventWrapper } from "../../common/BasicEventWrapper";
 
@@ -20,8 +19,6 @@ export const useGenerationEnqueueSuccessEvent = () => {
       unlisten = listen<BasicEventWrapper<GenerationEnqueueSuccessEvent>>('generation-enqueue-success-event', async (event) => {
         console.log("Generation enqueue success event received:", event);
         await SoundManager.playEnqueueSuccess();
-        const message = makeMessage(event.payload.data);
-        toast.success(message);
       });
 
       if (isUnmounted) {
@@ -37,21 +34,4 @@ export const useGenerationEnqueueSuccessEvent = () => {
     };
 
   }, []);
-}
-
-const makeMessage = (event: GenerationEnqueueSuccessEvent) => {
-  switch (event.action) {
-    case GenerationAction.GenerateImage:
-      return "Image generation enqueued!";
-    case GenerationAction.GenerateVideo:
-      return "Video generation enqueued!";
-    case GenerationAction.RemoveBackground:
-      return "Background removal enqueued!";
-    case GenerationAction.ImageTo3d:
-      return "3D model generation enqueued!";
-    case GenerationAction.GenerateGaussian:
-      return "3D world generation enqueued!";
-    default:
-      return "Generation enqueued!";
-  }
 }
