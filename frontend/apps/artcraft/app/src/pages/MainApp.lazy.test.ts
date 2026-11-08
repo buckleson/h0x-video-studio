@@ -20,7 +20,5 @@ describe("MainApp lazy pages", () => {
     expect(SRC).toMatch(/<PageDraw\s*\/>/);
   });
 
-  it("keeps the eager usePageSceneStore import", () => {
-    expect(SRC).toMatch(/import \{ usePageSceneStore \} from "@storyteller\/ui-pagescene";/);
-  });
+  // R4-M3 replaced the barrel import; see MainApp.pagesceneStore.test.ts.
 });

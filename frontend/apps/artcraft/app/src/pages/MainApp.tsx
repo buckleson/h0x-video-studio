@@ -46,7 +46,7 @@ import {
 } from "@storyteller/tauri-events";
 import { SoundManager } from "@storyteller/soundboard";
 import { useStoryboardPageEnabled } from "@storyteller/ui-settings-modal";
-import { usePageSceneStore } from "@storyteller/ui-pagescene";
+import { usePageSceneStore } from "@storyteller/ui-pagescene/store";
 
 import { useActiveJobs } from "~/hooks/useActiveJobs";
 import { useBackgroundLoadingMedia } from "~/hooks/useBackgroundLoadingMedia";
