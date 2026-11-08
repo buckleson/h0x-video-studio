@@ -1,0 +1,31 @@
+/* Shared base for Explainer Studio scenes (1920x1080). Served at /engine/h0x.css; fonts are local. */
+@font-face { font-family: "Jakarta"; src: url("/fonts/plus-jakarta-sans/plus-jakarta-sans-latin-wght-normal.woff2") format("woff2"); font-weight: 200 800; }
+@font-face { font-family: "Grotesk"; src: url("/fonts/space-grotesk/space-grotesk-latin-wght-normal.woff2") format("woff2"); font-weight: 300 700; }
+@font-face { font-family: "Playfair"; src: url("/fonts/playfair-display/playfair-display-latin-wght-normal.woff2") format("woff2"); font-weight: 400 900; }
+@font-face { font-family: "Playfair"; font-style: italic; src: url("/fonts/playfair-display/playfair-display-latin-wght-italic.woff2") format("woff2"); font-weight: 400 900; }
+@font-face { font-family: "Mono"; src: url("/fonts/jetbrains-mono/jetbrains-mono-latin-wght-normal.woff2") format("woff2"); font-weight: 100 800; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+/* The renderer seeks the GSAP timeline frame by frame. CSS animations and transitions run on the
+   wall clock and would differ between frames, so they are switched off for every scene. */
+*, *::before, *::after { animation: none !important; transition: none !important; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; }
+body { background: var(--bg, #0b0b12); color: var(--fg, #fff); font-family: var(--font, "Jakarta"), system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+/* Full-frame layers. Scenes are stacked; GSAP controls visibility. */
+#stage { position: absolute; inset: 0; overflow: hidden; }
+.scene { position: absolute; inset: 0; visibility: hidden; }
+
+/* Safe area: keep content clear of the subtitle band and the watermark corner. */
+.safe { position: absolute; left: 140px; right: 140px; top: 110px; bottom: 210px; }
+
+/* Subtitles */
+#subs { position: absolute; left: 0; right: 0; bottom: 64px; display: flex; justify-content: center; pointer-events: none; z-index: 50; }
+#subs .cue { position: absolute; bottom: 0; max-width: 1240px; padding: 14px 30px; border-radius: 18px;
+  background: var(--sub-bg, rgba(8, 8, 14, 0.78)); color: var(--sub-fg, #fff); font: 600 38px/1.32 var(--sub-font, "Jakarta"), sans-serif;
+  text-align: center; opacity: 0; letter-spacing: 0.005em; }
+
+/* Watermark */
+#wm { position: absolute; right: 48px; top: 40px; z-index: 60; display: flex; align-items: center; gap: 12px; opacity: var(--wm-opacity, 0.85); }
+#wm img { height: 46px; width: auto; }
+#wm span { font: 700 22px/1 "Jakarta", sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--wm-fg, #fff); }

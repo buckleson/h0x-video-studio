@@ -1,0 +1,14 @@
+{
+  "name": "h0x-video-studio",
+  "description": "H0x Video Studio plugins for Claude Code",
+  "owner": {
+    "name": "Buckleson"
+  },
+  "plugins": [
+    {
+      "name": "h0x",
+      "source": "./plugin",
+      "description": "Make motion-graphics explainers from a URL, or AI images and videos with your own key, saved to H0x My Library"
+    }
+  ]
+}
