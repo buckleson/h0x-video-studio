@@ -35,6 +35,21 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=8192
         run: npx nx run artcraft:build --skip-sync --outputStyle=static
 
+  installers:
+    name: Installers (syntax)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: bash -n install.sh
+
+      - name: Parse install.ps1
+        shell: pwsh
+        run: |
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("$PWD/install.ps1", [ref]$null, [ref]$errors) | Out-Null
+          if ($errors) { $errors | ForEach-Object { Write-Error $_.ToString() }; exit 1 }
+
   rust:
     name: Rust (check + test)
     runs-on: ubuntu-22.04

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "h0x": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/server/h0x-mcp.mjs"]
+    }
+  }
+}

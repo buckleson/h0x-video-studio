@@ -144,6 +144,7 @@ const REGISTERED_COMMANDS = [
   'list_local_media_command',
   'list_video_models_command',
   'load_without_cors_command',
+  'local_media_thumbnail_command',
   'mark_task_as_dismissed_command',
   'media_file_delete_command',
   'modality_defaults_get_command',

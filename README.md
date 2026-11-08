@@ -25,6 +25,22 @@ Prompts alone rarely give you the exact frame you want. H0x Video Studio lets yo
 - **Turn images into assets.** Make 3D meshes and environments from pictures and reuse them across shots.
 - **Edit the result.** Trim and arrange clips on a timeline without leaving the app.
 
+## Install in one line
+
+macOS or Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/buckleson/h0x-video-studio/main/install.sh | bash
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/buckleson/h0x-video-studio/main/install.ps1 | iex
+```
+
+The installer downloads the latest release and installs the app: to `/Applications` on macOS, as an AppImage in `~/.local/bin` on Linux (add `bash -s -- --deb` to install the `.deb` with apt instead), or with the setup program on Windows. Because the builds are not signed yet, it explains the extra step first: on macOS it clears the download quarantine flag on the installed app only, and on Windows SmartScreen may ask you to choose **Run anyway**. If Claude Code is installed, it then adds the h0x plugin (`claude plugin marketplace add buckleson/h0x-video-studio` and `claude plugin install h0x@h0x-video-studio`) and checks for Node 18 or newer. It never asks for or stores API keys. When it finishes, open the app, run `claude` and type `/h0x:start`.
+
 ## Download
 
 Installers for **Windows**, **macOS** and **Linux** are on the [Releases](https://github.com/buckleson/h0x-video-studio/releases) page.

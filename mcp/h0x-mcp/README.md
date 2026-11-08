@@ -9,6 +9,18 @@ Lets Claude (Claude Code or Claude Desktop) make videos for you. It runs on your
 | `list_video_providers` | Shows which providers are ready and where videos are saved |
 | `generate_video` | Makes a video from a prompt (and optionally animates an image), waits, and saves an `.mp4` |
 | `generate_image` | Makes a still image with Seedream 4.5 (needs `BYTEPLUS_API_KEY`) and saves a `.png`. Use it as a keyframe for `generate_video`. |
+| `list_library` | Lists the images and videos in My Library (`~/Artcraft/downloads`), newest first. Filter with `kind` (`image`, `video`, `all`) and `limit`. |
+| `provider_status` | Says which providers have a key, in the environment or saved in the H0x app. Shows true/false only, never the key. |
+| `open_library` | Gives the My Library folder and how to open it in the app |
+| `create_explainer` | **Explainer Studio.** Voices a script (edge-tts) and creates an explainer project with timings, subtitles and a starter scene |
+| `qa_explainer` | Snapshots the explainer scene, reports layout warnings and returns a contact sheet image |
+| `render_explainer` | Renders the scene with its voice: a quick preview, or the 1080p30 final plus a copy in My Library |
+
+## Explainer Studio
+
+Voiced motion-graphics explainers with isometric 3D "Anatomy" figures, made by an agent. The agent writes a script and an HTML/GSAP scene. The tools do the voice, the layout checks and a deterministic frame-by-frame render. Finals land in `~/Artcraft/downloads/explainers`, so they show in My Library. The agent workflow, scene contract and figure method are in [EXPLAINER.md](EXPLAINER.md).
+
+It also needs Google Chrome (or Chromium or Microsoft Edge), ffmpeg and Python 3 with `pip install edge-tts`. The browser is found in the usual places on Windows, macOS (`/Applications`) and Linux (`google-chrome`, `chromium` or `chromium-browser` on `PATH`); otherwise set `CHROME_PATH` to its executable. Projects are kept in `~/Artcraft/explainers` (set `H0X_EXPLAINER_DIR` to use a roomier drive). The isometric kit in `explainer/runtime/` is from [Anatomy](https://github.com/wheresryan22/anatomy) (MIT, see `explainer/runtime/LICENSE-anatomy`).
 
 ## Providers
 
@@ -40,6 +52,8 @@ npm install
   }
 }
 ```
+
+**Single file:** `npm run bundle` writes `dist/h0x-mcp.mjs`, the whole server in one file, plus `dist/explainer-runtime/` (scene runtime, GSAP, fonts). Copy the `dist` folder anywhere and point `args` at `dist/h0x-mcp.mjs`; it runs with plain `node` and needs no `npm install`.
 
 **Claude Desktop:** add the same `h0x-video-studio` entry under `mcpServers` in `claude_desktop_config.json`.
 
