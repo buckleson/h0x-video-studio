@@ -1,5 +1,5 @@
 // R4-4 edge cases: My Library local tiles load lazily inside GalleryModal.
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { invoke } from "@tauri-apps/api/core";
 import {
   FoldersApi,
@@ -8,6 +8,7 @@ import {
   UsersApi,
 } from "@storyteller/api";
 
+import { favoritePaths, favoritesStore } from "./favoritesStore";
 import GalleryModal from "./gallery-modal";
 
 vi.mock("@tauri-apps/api/core", () => ({
@@ -41,6 +42,9 @@ const localCalls = () =>
 
 describe("GalleryModal lazy local tiles", () => {
   beforeEach(() => {
+    // Files share one fork; start from an empty body so stray portals from other files never match.
+    cleanup();
+    document.body.innerHTML = "";
     observers = [];
     vi.stubGlobal(
       "IntersectionObserver",
@@ -55,8 +59,12 @@ describe("GalleryModal lazy local tiles", () => {
       }),
     );
     vi.mocked(invoke).mockReset();
-    vi.mocked(invoke).mockImplementation(async (cmd: string, args?: any) =>
-      cmd === "local_media_thumbnail_command" ? { thumb_path: `${args.path}.thumb.jpg` } : LOCAL_FILES);
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args?: any) => {
+      if (cmd === "list_favorites") return [];
+      return cmd === "local_media_thumbnail_command" ? { thumb_path: `${args.path}.thumb.jpg` } : LOCAL_FILES;
+    });
+    favoritePaths.value = new Set();
+    vi.spyOn(favoritesStore, "load").mockResolvedValue();
     vi.spyOn(UsersApi.prototype, "GetSession").mockResolvedValue({ success: false } as any);
     vi.spyOn(FoldersApi.prototype, "ListAllFolders").mockResolvedValue({
       success: true,
@@ -70,6 +78,7 @@ describe("GalleryModal lazy local tiles", () => {
   });
 
   afterEach(() => {
+    cleanup();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });

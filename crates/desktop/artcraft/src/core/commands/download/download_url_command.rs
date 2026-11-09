@@ -35,6 +35,7 @@ pub struct DownloadUrlRequest {
 
 #[derive(Serialize)]
 pub struct DownloadUrlSuccessResponse {
+  pub path: PathBuf,
 }
 
 impl SerializeMarker for DownloadUrlSuccessResponse {}
@@ -69,45 +70,46 @@ pub async fn download_url_command(
     &app_env_configs,
   ).await;
 
-  if let Err(err) = result {
-    error!("Error downloading media: {:?}", err);
+  let err = match result {
+    Ok(path) => return Ok(DownloadUrlSuccessResponse { path }.into()),
+    Err(err) => err,
+  };
 
-    let mut endpoint_message = "unknown error when downloading file";
-    let mut error_type = DownloadUrlErrorType::UnknownError;
+  error!("Error downloading media: {:?}", err);
 
-    let mut flash_error_type = FlashFileDownloadErrorType::UnknownError;
-    let mut flash_filename = None;
-    let mut flash_message = Some("Failed to download file".to_string());
+  let mut endpoint_message = "unknown error when downloading file";
+  let mut error_type = DownloadUrlErrorType::UnknownError;
 
-    match err {
-      ArtcraftError::CannotDownloadFilePathAlreadyExists { path } => {
-        endpoint_message = "file already downloaded";
-        error_type = DownloadUrlErrorType::FilesystemError;
+  let mut flash_error_type = FlashFileDownloadErrorType::UnknownError;
+  let mut flash_filename = None;
+  let mut flash_message = Some("Failed to download file".to_string());
 
-        flash_error_type = FlashFileDownloadErrorType::FileAlreadyDownloaded;
-        flash_message = Some(format!("File already downloaded: {:?}", path));
-        flash_filename = Some(path);
-      }
-      _ => {}, // NB: Fall-through
+  match err {
+    ArtcraftError::CannotDownloadFilePathAlreadyExists { path } => {
+      endpoint_message = "file already downloaded";
+      error_type = DownloadUrlErrorType::FilesystemError;
+
+      flash_error_type = FlashFileDownloadErrorType::FileAlreadyDownloaded;
+      flash_message = Some(format!("File already downloaded: {:?}", path));
+      flash_filename = Some(path);
     }
-
-    let event = FlashFileDownloadErrorEvent {
-      filename: flash_filename,
-      message: flash_message,
-      error_type: flash_error_type,
-    };
-
-    event.send_infallible(&app);
-
-    return Err(CommandErrorResponseWrapper {
-      status: CommandErrorStatus::ServerError,
-      error_message: Some(endpoint_message.to_string()),
-      error_type: Some(error_type),
-      error_details: None,
-    });
+    _ => {}, // NB: Fall-through
   }
 
-  Ok(DownloadUrlSuccessResponse {}.into())
+  let event = FlashFileDownloadErrorEvent {
+    filename: flash_filename,
+    message: flash_message,
+    error_type: flash_error_type,
+  };
+
+  event.send_infallible(&app);
+
+  Err(CommandErrorResponseWrapper {
+    status: CommandErrorStatus::ServerError,
+    error_message: Some(endpoint_message.to_string()),
+    error_type: Some(error_type),
+    error_details: None,
+  })
 }
 
 
@@ -117,7 +119,7 @@ pub async fn handle_request(
   app_prefs: &AppPreferencesManager,
   app_data_root: &AppDataRoot,
   app_env_configs: &AppEnvConfigs
-) -> Result<(), ArtcraftError> {
+) -> Result<PathBuf, ArtcraftError> {
 
   let app_prefs = app_prefs.get_clone()?;
 
@@ -127,5 +129,5 @@ pub async fn handle_request(
 
   info!("downloaded to: {:?}", download_path);
 
-  Ok(())
+  Ok(download_path)
 }

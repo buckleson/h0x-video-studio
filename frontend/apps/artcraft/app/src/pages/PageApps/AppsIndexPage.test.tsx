@@ -50,7 +50,7 @@ describe("AppsIndexPage bento", () => {
   it("renders every app as a rounded-tile button", () => {
     render(<AppsIndexPage />);
     const buttons = screen.getAllByRole("button");
-    expect(buttons).toHaveLength(generateApps.length + editApps.length);
+    expect(buttons).toHaveLength(generateApps.length + editApps.length + 1); // +1 = Favorites tile
     for (const app of [...generateApps, ...editApps]) {
       const button = screen.getByRole("button", { name: new RegExp(app.label) });
       expect(button.className).toContain("rounded-tile");

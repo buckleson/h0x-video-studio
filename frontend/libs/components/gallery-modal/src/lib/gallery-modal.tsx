@@ -13,7 +13,9 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import { ListLocalMedia, type LocalMediaFile } from "@storyteller/tauri-api";
-import { LocalMediaTile } from "./LocalMediaTile";
+import { convertFileSrc } from "@tauri-apps/api/core";
+import { FavoriteHeartButton, LocalMediaTile } from "./LocalMediaTile";
+import { favoritePaths, favoritesStore } from "./favoritesStore";
 import {
   FilterMediaClasses,
   FilterMediaType,
@@ -72,6 +74,7 @@ import {
   FolderPlusIcon,
   GlobeIcon,
   GridNineIcon,
+  HeartIcon,
   ImageIcon,
   MusicNoteIcon,
   PencilSimpleIcon,
@@ -333,6 +336,7 @@ const SIDEBAR_FILTERS = [
   { id: "mesh", label: "Mesh", icon: CubeIcon },
   { id: "splat", label: "Splat", icon: GlobeIcon },
   { id: "uploaded", label: "Uploaded", icon: UploadSimpleIcon },
+  { id: "favorites", label: "Favorites", icon: HeartIcon },
 ];
 
 // Media classes for the user-list endpoint. The Mesh and Splat tabs don't use
@@ -656,6 +660,9 @@ export const GalleryModal = React.memo(
       "vendor",
     );
     const [localItems, setLocalItems] = useState<LocalMediaFile[]>([]);
+    const [localPreview, setLocalPreview] = useState<LocalMediaFile | null>(
+      null,
+    );
     const [pageIndex, setPageIndex] = useState(0);
     const [hasMore, setHasMore] = useState(true);
 
@@ -989,6 +996,7 @@ export const GalleryModal = React.memo(
         isOpen || (mode === "view" && galleryModalVisibleViewMode.value);
       if (!modalIsOpen || librarySource !== "local") return;
       let cancelled = false;
+      favoritesStore.load();
       ListLocalMedia()
         .then((files) => !cancelled && setLocalItems(files))
         .catch(() => !cancelled && setLocalItems([]));
@@ -1303,7 +1311,7 @@ export const GalleryModal = React.memo(
           : typeof isOpen === "boolean"
             ? isOpen
             : true;
-      if (modalIsOpen && username) {
+      if (modalIsOpen && username && activeFilter !== "favorites") {
         refreshGallery();
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2379,6 +2387,12 @@ export const GalleryModal = React.memo(
 
     useSignals();
 
+    // Favorites only lists files found on disk, so missing favorites never show.
+    const visibleLocalItems =
+      activeFilter === "favorites"
+        ? localItems.filter((file) => favoritePaths.value.has(file.path))
+        : localItems;
+
     // Synchronize lightbox image when external media id signal is set.
     // Skip if the signal already carries carousel data (imageUrls / batchImageToken)
     // set by the caller (e.g. TextToImage batch, TaskQueue) — overwriting it with
@@ -2625,7 +2639,12 @@ export const GalleryModal = React.memo(
                       <button
                         key={src}
                         type="button"
-                        onClick={() => setLibrarySource(src)}
+                        onClick={() => {
+                          setLibrarySource(src);
+                          if (src === "vendor" && activeFilter === "favorites") {
+                            setActiveFilter("all");
+                          }
+                        }}
                         className={twMerge(
                           "rounded-[3px] px-3 py-1 text-sm font-medium transition-colors",
                           librarySource === src
@@ -2951,6 +2970,7 @@ export const GalleryModal = React.memo(
                             if (!forceFilter) {
                               setActiveFilter(f.id);
                               switchGalleryTab("unsorted");
+                              if (f.id === "favorites") setLibrarySource("local");
                             }
                           }}
                           className={twMerge(
@@ -3111,10 +3131,12 @@ export const GalleryModal = React.memo(
                 {librarySource === "vendor" && folderChipsSection}
                 {librarySource === "local" ? (
                   /* ── Local media (On this computer) ── */
-                  localItems.length === 0 ? (
+                  visibleLocalItems.length === 0 ? (
                     <div className="flex h-full items-center justify-center">
                       <div className="text-base-fg/40 text-sm">
-                        No media on this computer yet
+                        {activeFilter === "favorites"
+                          ? "No favorites yet. Tap the heart on any image or video."
+                          : "No media on this computer yet"}
                       </div>
                     </div>
                   ) : (
@@ -3124,11 +3146,12 @@ export const GalleryModal = React.memo(
                         gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
                       }}
                     >
-                      {localItems.map((file) => (
+                      {visibleLocalItems.map((file) => (
                         <LocalMediaTile
                           key={file.path}
                           file={file}
                           scrollRoot={scrollContainerRef.current}
+                          onOpen={setLocalPreview}
                         />
                       ))}
                     </div>
@@ -3772,6 +3795,44 @@ export const GalleryModal = React.memo(
             onNavigateToMedia={handleNavigateToMedia}
           />
         )}
+
+        {localPreview &&
+          createPortal(
+            <div
+              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-8"
+              onClick={() => setLocalPreview(null)}
+            >
+              <div
+                className="relative max-h-full max-w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {localPreview.kind === "video" ? (
+                  <video
+                    src={convertFileSrc(localPreview.path)}
+                    className="max-h-[85vh] max-w-full"
+                    controls
+                    autoPlay
+                  />
+                ) : (
+                  <img
+                    src={convertFileSrc(localPreview.path)}
+                    alt=""
+                    className="max-h-[85vh] max-w-full object-contain"
+                  />
+                )}
+                <FavoriteHeartButton path={localPreview.path} />
+              </div>
+              <button
+                type="button"
+                aria-label="Close preview"
+                onClick={() => setLocalPreview(null)}
+                className="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
+              >
+                <XIcon size="1.2em" />
+              </button>
+            </div>,
+            document.body,
+          )}
 
         {/* Right-click context menu for sidebar folders — portaled to body to avoid transform issues */}
         {contextMenu &&

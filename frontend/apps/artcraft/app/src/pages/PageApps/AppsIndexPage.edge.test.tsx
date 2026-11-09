@@ -150,7 +150,10 @@ describe("AppsIndexPage bento: tile styling", () => {
 
   it("renders a primary-tinted icon chip in every tile", () => {
     render(<AppsIndexPage />);
-    for (const button of screen.getAllByRole("button")) {
+    const configTiles = screen
+      .getAllByRole("button")
+      .filter((b) => !/Favorites/.test(b.textContent ?? ""));
+    for (const button of configTiles) {
       const icon = within(button).getByTestId("icon");
       const chip = icon.parentElement!;
       expect(chip.className).toMatch(/\bbg-primary\//);
@@ -203,12 +206,14 @@ describe("AppsIndexPage bento: behaviour kept from the old page", () => {
 });
 
 describe("AppsIndexPage bento: empty config", () => {
-  it("still renders the hero with no apps and no buttons", () => {
+  it("still renders the hero and only the Favorites tile with no apps", () => {
     state.generate = [];
     state.edit = [];
     render(<AppsIndexPage />);
     expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
-    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    const buttons = screen.queryAllByRole("button");
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0].textContent).toMatch(/Favorites/);
   });
 });
 

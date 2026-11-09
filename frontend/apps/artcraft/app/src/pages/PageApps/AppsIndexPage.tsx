@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon, HeartIcon } from "@phosphor-icons/react";
 import { twMerge } from "tailwind-merge";
 import {
   useGenerateApps,
@@ -7,6 +7,15 @@ import {
   goToApp,
   type FullAppItem,
 } from "~/config/appMenu";
+import { useTabStore } from "~/pages/Stores/TabState";
+
+const FAVORITES_APP = {
+  id: "favorites",
+  label: "Favorites",
+  description: "Your hearted images and videos in one place.",
+  icon: HeartIcon,
+  category: "edit",
+} as FullAppItem;
 
 const GRID =
   "grid grid-flow-dense auto-rows-[minmax(140px,auto)] grid-cols-2 gap-3 md:grid-cols-4";
@@ -47,6 +56,11 @@ export const AppsIndexPage = () => {
           <AppTile key={app.id} app={app} wide={index < 2} />
         ))}
 
+        <AppTile
+          app={FAVORITES_APP}
+          onOpen={() => useTabStore.getState().setActiveTab("FAVORITES")}
+        />
+
         <section className="col-span-full mt-6">
           <h2 className="hud-label mb-3 text-base-fg/70">Edit</h2>
           <div className={GRID}>
@@ -60,12 +74,20 @@ export const AppsIndexPage = () => {
   );
 };
 
-function AppTile({ app, wide = false }: { app: FullAppItem; wide?: boolean }) {
-  const enabled = !!app.action;
+function AppTile({
+  app,
+  wide = false,
+  onOpen,
+}: {
+  app: FullAppItem;
+  wide?: boolean;
+  onOpen?: () => void;
+}) {
+  const enabled = !!app.action || !!onOpen;
 
   return (
     <button
-      onClick={() => goToApp(app.action)}
+      onClick={onOpen ?? (() => goToApp(app.action))}
       disabled={!enabled}
       className={twMerge(
         "group flex h-full flex-col justify-between gap-4 rounded-tile border border-ui-border bg-ui-panel p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:border-primary",

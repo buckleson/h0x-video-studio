@@ -11,3 +11,5 @@ export * from "./lib/folderUtils";
 export * from "./lib/folderMapping";
 export * from "./lib/promptFolderDrop";
 export * from "./lib/galleryDnd";
+export * from "./lib/favoritesStore";
+export { FavoriteHeartButton, LocalMediaTile } from "./lib/LocalMediaTile";

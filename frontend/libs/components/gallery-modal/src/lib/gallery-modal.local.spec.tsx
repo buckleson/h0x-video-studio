@@ -1,5 +1,5 @@
 // R2-5c edge cases: the "On this computer" source in My Library.
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { invoke } from "@tauri-apps/api/core";
 import {
   FoldersApi,
@@ -8,6 +8,7 @@ import {
   UsersApi,
 } from "@storyteller/api";
 
+import { favoritePaths, favoritesStore } from "./favoritesStore";
 import GalleryModal from "./gallery-modal";
 
 vi.mock("@tauri-apps/api/core", () => ({
@@ -49,9 +50,16 @@ const localCalls = () =>
 
 describe("GalleryModal local source", () => {
   beforeEach(() => {
+    // Files share one fork; start from an empty body so stray portals from other files never match.
+    cleanup();
+    document.body.innerHTML = "";
     vi.mocked(invoke).mockReset();
-    vi.mocked(invoke).mockImplementation(async (cmd: string, args?: any) =>
-      cmd === "local_media_thumbnail_command" ? { thumb_path: `${args.path}.thumb.jpg` } : LOCAL_FILES);
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args?: any) => {
+      if (cmd === "list_favorites") return [];
+      return cmd === "local_media_thumbnail_command" ? { thumb_path: `${args.path}.thumb.jpg` } : LOCAL_FILES;
+    });
+    favoritePaths.value = new Set();
+    vi.spyOn(favoritesStore, "load").mockResolvedValue();
     vi.spyOn(FoldersApi.prototype, "ListAllFolders").mockResolvedValue({
       success: true,
       data: [],
@@ -64,6 +72,7 @@ describe("GalleryModal local source", () => {
   });
 
   afterEach(() => {
+    cleanup();
     vi.restoreAllMocks();
   });
 
@@ -91,7 +100,10 @@ describe("GalleryModal local source", () => {
 
   it("falls back to the empty state when listing local media fails", async () => {
     noSession();
-    vi.mocked(invoke).mockRejectedValue(new Error("scan failed"));
+    vi.mocked(invoke).mockImplementation(async (cmd: string) => {
+      if (cmd === "list_favorites") return [];
+      throw new Error("scan failed");
+    });
     const { baseElement } = render(<GalleryModal mode="select" isOpen />);
 
     expect(await screen.findByText(EMPTY_LOCAL_TEXT)).toBeTruthy();

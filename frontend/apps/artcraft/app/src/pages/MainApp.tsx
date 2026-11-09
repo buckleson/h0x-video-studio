@@ -102,6 +102,7 @@ const PageVideoEditor = lazy(() =>
 const PageMoodboard = lazy(() =>
   import("./PageMoodboard").then((m) => ({ default: m.PageMoodboard })),
 );
+const PageFavorites = lazy(() => import("./PageFavorites/PageFavorites"));
 
 interface Props {
   sceneToken?: string;
@@ -335,6 +336,12 @@ const TabBody = ({ sceneToken }: { sceneToken?: string }) => {
       return (
         <div className="h-[calc(100vh-56px)] w-full overflow-hidden">
           <PageMoodboard />
+        </div>
+      );
+    case "FAVORITES":
+      return (
+        <div>
+          <PageFavorites />
         </div>
       );
     default:
