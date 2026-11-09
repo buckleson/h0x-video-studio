@@ -12,6 +12,7 @@ import { Client as GradioClient, handle_file } from "@gradio/client";
 import { z } from "zod";
 import { GUIDE, NAME_RE, createExplainer, qaExplainer, renderExplainer } from "./explainer/engine.mjs";
 import { addFavorite, favoritesFile, listFavorites } from "./favorites.mjs";
+import { listRecent } from "./recent.mjs";
 
 const OUTPUT_DIR = process.env.H0X_OUTPUT_DIR || path.join(homedir(), "Artcraft", "downloads", "h0x-mcp");
 // The app's My Library lists everything under ~/Artcraft/downloads.
@@ -187,6 +188,17 @@ server.registerTool(
     if (!favorites.length) return text("No favorites yet.");
     return text(favorites.map((f) => `${f.path} | ${f.kind} | ${f.missing ? "missing" : "ok"}`).join("\n"));
   },
+);
+
+server.registerTool(
+  "list_recent",
+  {
+    description: "Recent images and videos in H0x My Library, newest first, as JSON { path, kind, created }.",
+    inputSchema: {
+      limit: z.number().int().min(1).max(50).default(8),
+    },
+  },
+  async ({ limit }) => text(JSON.stringify(await listRecent(LIBRARY_DIR, limit))),
 );
 
 server.registerTool(

@@ -8,6 +8,7 @@ import {
   type FullAppItem,
 } from "~/config/appMenu";
 import { useTabStore } from "~/pages/Stores/TabState";
+import { RecentGenerations } from "./RecentGenerations";
 
 const FAVORITES_APP = {
   id: "favorites",
@@ -69,6 +70,7 @@ export const AppsIndexPage = () => {
             ))}
           </div>
         </section>
+        <RecentGenerations />
       </main>
     </div>
   );

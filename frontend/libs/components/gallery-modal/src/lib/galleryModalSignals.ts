@@ -17,6 +17,10 @@ export const galleryModalDraggingUnder = signal(false);
 // (Library, Draw, Moodboard) it stays false so sidebar folders remain targetable.
 export const galleryDragHidesImmediately = signal(false);
 
+// Bumped once per completed local (ListLocalMedia) load so other views can
+// refresh alongside My Library.
+export const libraryRefreshTick = signal(0);
+
 // Lightbox Modal Signals
 export const galleryModalLightboxMediaId = signal<string | null>(null);
 export const galleryModalLightboxVisible = signal(false);
