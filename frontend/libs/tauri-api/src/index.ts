@@ -25,6 +25,7 @@ export * from "./lib/fal/SetFalApiKey.js";
 export * from "./lib/media_files/ListLocalMedia.js";
 export * from "./lib/media_files/MediaFileDeleteCommand.js";
 export * from "./lib/media_files/LocalMediaThumbnail.js";
+export * from "./lib/favorites/Favorites.js";
 export * from "./lib/openai/GetOpenAIApiKey.js";
 export * from "./lib/openai/SetOpenAIApiKey.js";
 export * from "./lib/opener/OpenUrl.js";

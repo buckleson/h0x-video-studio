@@ -1,9 +1,10 @@
 // R4-2b: the My Library sidebar filters and toolbar render Phosphor icons
 // (no Lucide svg), at the 1.2em box, and keep their labels and handlers.
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { invoke } from "@tauri-apps/api/core";
 import { FoldersApi, TagsApi, UsersApi } from "@storyteller/api";
 
+import { favoritePaths, favoritesStore } from "./favoritesStore";
 import GalleryModal from "./gallery-modal";
 
 vi.mock("@tauri-apps/api/core", () => ({
@@ -45,8 +46,13 @@ function expectPhosphorSvg(el: Element, what: string) {
 
 describe("R4-2b My Library icons", () => {
   beforeEach(() => {
+    // Files share one fork; start from an empty body so stray portals from other files never match.
+    cleanup();
+    document.body.innerHTML = "";
     vi.mocked(invoke).mockReset();
     vi.mocked(invoke).mockResolvedValue([]);
+    favoritePaths.value = new Set();
+    vi.spyOn(favoritesStore, "load").mockResolvedValue();
     vi.spyOn(FoldersApi.prototype, "ListAllFolders").mockResolvedValue({
       success: true,
       data: [],
@@ -61,6 +67,7 @@ describe("R4-2b My Library icons", () => {
   });
 
   afterEach(() => {
+    cleanup();
     vi.restoreAllMocks();
   });
 

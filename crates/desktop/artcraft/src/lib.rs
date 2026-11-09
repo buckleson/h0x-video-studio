@@ -27,6 +27,9 @@ use crate::core::commands::generate::generate_image::generate_image_command::gen
 use crate::core::commands::generate::generate_video::generate_video_command::generate_video_command;
 use crate::core::commands::flip_image::flip_image;
 use crate::core::commands::get_app_info_command::get_app_info_command;
+use crate::core::commands::favorites::add_remove::{add_favorite, remove_favorite};
+use crate::core::commands::favorites::import::import_favorite_files;
+use crate::core::commands::favorites::list::list_favorites;
 use crate::core::commands::load_without_cors_command::load_without_cors_command;
 use crate::core::commands::media_files::list_local_media_command::list_local_media_command;
 use crate::core::commands::media_files::local_media_thumbnail_command::local_media_thumbnail_command;
@@ -223,6 +226,10 @@ pub fn run() {
     save_scene_frame_command,
     local_media_thumbnail_command,
     media_file_delete_command,
+    list_favorites,
+    add_favorite,
+    remove_favorite,
+    import_favorite_files,
     platform_info_command,
     set_provider_order_command,
     set_fal_api_key_command,

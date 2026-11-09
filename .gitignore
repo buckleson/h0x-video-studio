@@ -108,3 +108,6 @@ windows_dlls/
 
 # local code graph
 graphify-out/
+
+# MCP bundle build output (the plugin keeps its own synced copy)
+mcp/h0x-mcp/dist/

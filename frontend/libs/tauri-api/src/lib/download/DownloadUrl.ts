@@ -6,6 +6,7 @@ export interface DownloadUrlSuccess extends CommandResult {
 }
 
 export interface DownloadUrlPayload {
+  path: string;
 }
 
 export interface DownloadOptions {

@@ -11,10 +11,12 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { Client as GradioClient, handle_file } from "@gradio/client";
 import { z } from "zod";
 import { GUIDE, NAME_RE, createExplainer, qaExplainer, renderExplainer } from "./explainer/engine.mjs";
+import { addFavorite, favoritesFile, listFavorites } from "./favorites.mjs";
 
 const OUTPUT_DIR = process.env.H0X_OUTPUT_DIR || path.join(homedir(), "Artcraft", "downloads", "h0x-mcp");
 // The app's My Library lists everything under ~/Artcraft/downloads.
 const LIBRARY_DIR = path.join(homedir(), "Artcraft", "downloads");
+const FAVORITES_FILE = favoritesFile(LIBRARY_DIR);
 const CREDENTIALS_DIR = path.join(homedir(), "Artcraft", "credentials");
 const MEDIA = { ".png": "image", ".jpg": "image", ".jpeg": "image", ".webp": "image", ".gif": "image", ".mp4": "video", ".webm": "video", ".mov": "video" };
 const POLL_MS = 5000;
@@ -172,6 +174,38 @@ server.registerTool(
     inputSchema: {},
   },
   async () => text(`My Library folder: ${LIBRARY_DIR}\nOpen the H0x Video Studio app and choose My Library to browse, preview and reuse these files.`),
+);
+
+server.registerTool(
+  "list_favorites",
+  {
+    description: "Favorites in H0x: each favorite's path, kind (image or video) and whether the file is missing.",
+    inputSchema: {},
+  },
+  async () => {
+    const favorites = await listFavorites(FAVORITES_FILE);
+    if (!favorites.length) return text("No favorites yet.");
+    return text(favorites.map((f) => `${f.path} | ${f.kind} | ${f.missing ? "missing" : "ok"}`).join("\n"));
+  },
+);
+
+server.registerTool(
+  "add_favorite",
+  {
+    description: "Favorite an existing image or video by path; a file outside My Library is copied into My Library/favorites first and a duplicate is a no-op.",
+    inputSchema: {
+      path: z.string().min(1).describe("Absolute path to a local image (png, jpg, jpeg, webp) or video (mp4, webm, mov)."),
+    },
+  },
+  async ({ path: source }) => {
+    try {
+      const { path: file, added, copied } = await addFavorite(FAVORITES_FILE, LIBRARY_DIR, source);
+      if (!added) return text(`Already a favorite: ${file}`);
+      return text(copied ? `Copied to ${file} and added to favorites.` : `Added to favorites: ${file}`);
+    } catch (err) {
+      return text(err.message, true);
+    }
+  },
 );
 
 // ── Explainer Studio: voiced motion-graphics explainers with isometric Anatomy figures ──

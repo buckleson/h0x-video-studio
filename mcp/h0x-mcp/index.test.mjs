@@ -198,7 +198,7 @@ test("the lines this subtask changed carry no LTX/Lightricks branding", async ()
 
 // ── R4-P1: list_library, provider_status, open_library, Chrome detection, single-file bundle ──
 
-const ALL_TOOLS = ["create_explainer", "generate_image", "generate_video", "list_library", "list_video_providers", "open_library", "provider_status", "qa_explainer", "render_explainer"];
+const ALL_TOOLS = ["add_favorite", "create_explainer", "generate_image", "generate_video", "list_favorites", "list_library", "list_video_providers", "open_library", "provider_status", "qa_explainer", "render_explainer"];
 const libDir = (home) => path.join(home, "Artcraft", "downloads");
 const rejected = (e) => ({ isError: true, content: [{ text: e.message }] });
 

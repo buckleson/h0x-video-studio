@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
+import { useSignals } from "@preact/signals-react/runtime";
+import { HeartIcon } from "@phosphor-icons/react";
 import { LocalMediaThumbnail, type LocalMediaFile } from "@storyteller/tauri-api";
 import { useGalleryViewStore } from "@storyteller/ui-generation-list";
+import { favoritePaths, favoritesStore } from "./favoritesStore";
 
 const TILE_CLASS = "aspect-square w-full bg-black/30 object-cover";
 const MAX_PLAYING_PREVIEWS = 4;
@@ -18,16 +21,36 @@ const syncPreviews = () =>
     else video.pause();
   });
 
+export const FavoriteHeartButton = ({ path }: { path: string }) => {
+  useSignals();
+  const favorite = favoritePaths.value.has(path);
+  return (
+    <button
+      type="button"
+      aria-pressed={favorite}
+      aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+      onClick={(e) => {
+        e.stopPropagation();
+        favoritesStore.toggle(path);
+      }}
+      className="absolute right-1.5 top-1.5 z-10 rounded-full bg-black/50 p-1.5 text-orange-500 transition-colors hover:bg-black/70"
+    >
+      <HeartIcon size="1.2em" weight={favorite ? "fill" : "regular"} />
+    </button>
+  );
+};
+
 export interface LocalMediaTileProps {
   file: LocalMediaFile;
   /** The scroll container used as IntersectionObserver root. */
   scrollRoot: HTMLDivElement | null;
+  onOpen?: (file: LocalMediaFile) => void;
 }
 
 // Requests the media only once the tile comes within 400px of the viewport.
 // Images then keep their cached thumbnail; videos release their source again
 // when they leave.
-export const LocalMediaTile = ({ file, scrollRoot }: LocalMediaTileProps) => {
+export const LocalMediaTile = ({ file, scrollRoot, onOpen }: LocalMediaTileProps) => {
   const isVideo = file.kind === "video";
   const ref = useRef<HTMLImageElement & HTMLVideoElement>(null);
   const [isVisible, setIsVisible] = useState(
@@ -87,25 +110,30 @@ export const LocalMediaTile = ({ file, scrollRoot }: LocalMediaTileProps) => {
     };
   }, [isVideo, isVisible, autoplayVideos]);
 
-  return isVideo ? (
-    <video
-      ref={ref}
-      src={isVisible ? convertFileSrc(file.path) : undefined}
-      className={TILE_CLASS}
-      controls
-      muted
-      preload={isVisible ? "metadata" : "none"}
-      onMouseEnter={autoplayVideos ? undefined : (e) => play(e.currentTarget)}
-      onMouseLeave={autoplayVideos ? undefined : (e) => e.currentTarget.pause()}
-    />
-  ) : (
-    <img
-      ref={ref}
-      src={imageSrc}
-      alt=""
-      loading="lazy"
-      decoding="async"
-      className={TILE_CLASS}
-    />
+  return (
+    <div className="relative cursor-pointer" onClick={() => onOpen?.(file)}>
+      {isVideo ? (
+        <video
+          ref={ref}
+          src={isVisible ? convertFileSrc(file.path) : undefined}
+          className={TILE_CLASS}
+          controls
+          muted
+          preload={isVisible ? "metadata" : "none"}
+          onMouseEnter={autoplayVideos ? undefined : (e) => play(e.currentTarget)}
+          onMouseLeave={autoplayVideos ? undefined : (e) => e.currentTarget.pause()}
+        />
+      ) : (
+        <img
+          ref={ref}
+          src={imageSrc}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className={TILE_CLASS}
+        />
+      )}
+      <FavoriteHeartButton path={file.path} />
+    </div>
   );
 };

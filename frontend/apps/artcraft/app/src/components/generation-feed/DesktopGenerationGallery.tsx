@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowDownToLineIcon, LoaderCircleIcon, RotateCwIcon, VideoIcon } from "lucide-react";
+import { HeartIcon } from "@phosphor-icons/react";
+import { useSignals } from "@preact/signals-react/runtime";
 import { DynamicIcon } from "@storyteller/icons";
+import { DownloadUrl } from "@storyteller/tauri-api";
+import { favoritePaths, favoritesStore } from "@storyteller/ui-gallery-modal";
 import { Tooltip } from "@storyteller/ui-tooltip";
 import { toast } from "@storyteller/ui-toaster";
 import {
@@ -128,6 +132,10 @@ export function DesktopGenerationGallery({
   );
 }
 
+// Media token -> local path saved for favoriting, so a re-toggle doesn't
+// download the item again.
+const favoritedLocalPaths = new Map<string, string>();
+
 function handleToggleSelect(item: GalleryItem) {
   useGallerySelectionStore.getState().toggle(item.id);
 }
@@ -209,6 +217,14 @@ function ItemActions({
 }) {
   const [isRecreating, setIsRecreating] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSavingFavorite, setIsSavingFavorite] = useState(false);
+
+  useSignals();
+  useEffect(() => {
+    favoritesStore.load();
+  }, []);
+  const localPath = favoritedLocalPaths.get(item.id);
+  const isFavorite = !!localPath && favoritePaths.value.has(localPath);
 
   const isVideo = item.mediaClass === "video";
   const is3D = item.mediaClass === "dimensional";
@@ -265,6 +281,28 @@ function ItemActions({
     [item.fullImage, item.mediaClass, isDownloading],
   );
 
+  const handleFavorite = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!item.fullImage || isSavingFavorite) return;
+      let path = favoritedLocalPaths.get(item.id);
+      if (!path) {
+        setIsSavingFavorite(true);
+        try {
+          const res = await DownloadUrl(item.fullImage, { model: item.modelId });
+          path = res.payload.path;
+          favoritedLocalPaths.set(item.id, path);
+        } catch {
+          return;
+        } finally {
+          setIsSavingFavorite(false);
+        }
+      }
+      await favoritesStore.toggle(path);
+    },
+    [item.fullImage, item.id, item.modelId, isSavingFavorite],
+  );
+
   return (
     <>
       {canRecreate && (
@@ -308,6 +346,27 @@ function ItemActions({
               icon={isDownloading ? LoaderCircleIcon : ArrowDownToLineIcon}
               className={`text-sm ${isDownloading ? "animate-spin" : ""}`}
             />
+          </button>
+        </Tooltip>
+      )}
+      {item.fullImage && (
+        <Tooltip
+          content={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          position="top"
+        >
+          <button
+            type="button"
+            onClick={handleFavorite}
+            disabled={isSavingFavorite}
+            aria-pressed={isFavorite}
+            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            className={buttonClass}
+          >
+            {isSavingFavorite ? (
+              <DynamicIcon icon={LoaderCircleIcon} className="animate-spin text-sm" />
+            ) : (
+              <HeartIcon className="text-sm" weight={isFavorite ? "fill" : "regular"} />
+            )}
           </button>
         </Tooltip>
       )}
