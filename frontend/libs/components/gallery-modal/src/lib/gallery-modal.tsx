@@ -62,6 +62,7 @@ import {
   galleryModalLightboxVisible,
   galleryModalLightboxNavPrev,
   galleryModalLightboxNavNext,
+  libraryRefreshTick,
 } from "./galleryModalSignals";
 import galleryDnd, { FOLDER_DROP_EVENT } from "./galleryDnd";
 import {
@@ -998,7 +999,11 @@ export const GalleryModal = React.memo(
       let cancelled = false;
       favoritesStore.load();
       ListLocalMedia()
-        .then((files) => !cancelled && setLocalItems(files))
+        .then((files) => {
+          if (cancelled) return;
+          setLocalItems(files);
+          libraryRefreshTick.value++;
+        })
         .catch(() => !cancelled && setLocalItems([]));
       return () => {
         cancelled = true;

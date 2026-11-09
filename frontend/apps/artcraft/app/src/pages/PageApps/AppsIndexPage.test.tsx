@@ -23,6 +23,7 @@ const { generateApps, editApps } = vi.hoisted(() => {
   };
 });
 
+vi.mock("./RecentGenerations", () => ({ RecentGenerations: () => null }));
 vi.mock("~/config/appMenu", () => ({
   useGenerateApps: () => generateApps,
   useEditApps: () => editApps,

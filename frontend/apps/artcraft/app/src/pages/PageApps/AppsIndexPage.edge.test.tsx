@@ -9,6 +9,7 @@ const state = vi.hoisted(() => ({
   goToApp: null as unknown as (action?: string) => void,
 }));
 
+vi.mock("./RecentGenerations", () => ({ RecentGenerations: () => null }));
 vi.mock("~/config/appMenu", async () => {
   const { vi: v } = await import("vitest");
   state.goToApp = v.fn();

@@ -6,6 +6,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
+vi.mock("./RecentGenerations", () => ({ RecentGenerations: () => null }));
 vi.mock("@storyteller/ui-settings-modal", () => ({
   useStoryboardPageEnabled: () => true,
   useExperimentalStore: { getState: () => ({ enabled: true, storyboardPageEnabled: true }) },

@@ -3278,8 +3278,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path13) {
-      let input = path13;
+    function removeDotSegments(path14) {
+      let input = path14;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -3353,11 +3353,11 @@ var require_utils = __commonJS({
       }
       return output.join("");
     }
-    function removeDotSegmentsRelative(path13) {
-      if (path13 === "" || path13[0] === "/") {
-        return removeDotSegments(path13);
+    function removeDotSegmentsRelative(path14) {
+      if (path14 === "" || path14[0] === "/") {
+        return removeDotSegments(path14);
       }
-      const segments = path13.split("/");
+      const segments = path14.split("/");
       const last2 = segments.length - 1;
       const output = [];
       let trailingDirectory = false;
@@ -3720,8 +3720,8 @@ var require_schemes = __commonJS({
       }
       if (wsComponent.resourceName) {
         const queryIndex = wsComponent.resourceName.indexOf("?");
-        const path13 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
-        wsComponent.path = path13 && path13 !== "/" ? path13 : void 0;
+        const path14 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
+        wsComponent.path = path14 && path14 !== "/" ? path14 : void 0;
         wsComponent.query = queryIndex === -1 ? void 0 : wsComponent.resourceName.slice(queryIndex + 1);
         wsComponent.resourceName = void 0;
       }
@@ -7317,14 +7317,14 @@ function getAugmentedNamespace(n) {
   });
   return a;
 }
-function commonjsRequire(path13) {
-  throw new Error('Could not dynamically require "' + path13 + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
+function commonjsRequire(path14) {
+  throw new Error('Could not dynamically require "' + path14 + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
 }
 function requireNodeGypBuild$1() {
   if (hasRequiredNodeGypBuild$1) return nodeGypBuild;
   hasRequiredNodeGypBuild$1 = 1;
   var fs7 = require$$0$1;
-  var path13 = require$$1$1;
+  var path14 = require$$1$1;
   var os8 = require$$2;
   var runtimeRequire = typeof __webpack_require__ === "function" ? __non_webpack_require__ : commonjsRequire;
   var vars = process.config && process.config.variables || {};
@@ -7341,21 +7341,21 @@ function requireNodeGypBuild$1() {
     return runtimeRequire(load2.resolve(dir));
   }
   load2.resolve = load2.path = function(dir) {
-    dir = path13.resolve(dir || ".");
+    dir = path14.resolve(dir || ".");
     try {
-      var name = runtimeRequire(path13.join(dir, "package.json")).name.toUpperCase().replace(/-/g, "_");
+      var name = runtimeRequire(path14.join(dir, "package.json")).name.toUpperCase().replace(/-/g, "_");
       if (process.env[name + "_PREBUILD"]) dir = process.env[name + "_PREBUILD"];
     } catch (err) {
     }
     if (!prebuildsOnly) {
-      var release = getFirst(path13.join(dir, "build/Release"), matchBuild);
+      var release = getFirst(path14.join(dir, "build/Release"), matchBuild);
       if (release) return release;
-      var debug6 = getFirst(path13.join(dir, "build/Debug"), matchBuild);
+      var debug6 = getFirst(path14.join(dir, "build/Debug"), matchBuild);
       if (debug6) return debug6;
     }
     var prebuild = resolve(dir);
     if (prebuild) return prebuild;
-    var nearby = resolve(path13.dirname(process.execPath));
+    var nearby = resolve(path14.dirname(process.execPath));
     if (nearby) return nearby;
     var target = [
       "platform=" + platform,
@@ -7372,14 +7372,14 @@ function requireNodeGypBuild$1() {
     ].filter(Boolean).join(" ");
     throw new Error("No native build was found for " + target + "\n    loaded from: " + dir + "\n");
     function resolve(dir2) {
-      var tuples = readdirSync(path13.join(dir2, "prebuilds")).map(parseTuple);
+      var tuples = readdirSync(path14.join(dir2, "prebuilds")).map(parseTuple);
       var tuple = tuples.filter(matchTuple(platform, arch)).sort(compareTuples)[0];
       if (!tuple) return;
-      var prebuilds = path13.join(dir2, "prebuilds", tuple.name);
+      var prebuilds = path14.join(dir2, "prebuilds", tuple.name);
       var parsed = readdirSync(prebuilds).map(parseTags);
       var candidates = parsed.filter(matchTags(runtime, abi));
       var winner = candidates.sort(compareTags(runtime))[0];
-      if (winner) return path13.join(prebuilds, winner.file);
+      if (winner) return path14.join(prebuilds, winner.file);
     }
   };
   function readdirSync(dir) {
@@ -7391,7 +7391,7 @@ function requireNodeGypBuild$1() {
   }
   function getFirst(dir, filter2) {
     var files = readdirSync(dir).filter(filter2);
-    return files[0] && path13.join(dir, files[0]);
+    return files[0] && path14.join(dir, files[0]);
   }
   function matchBuild(name) {
     return /\.node$/.test(name);
@@ -13976,11 +13976,11 @@ function evaluationString(fun, ...args) {
   }
   return `(${fun})(${args.map(serializeArgument).join(",")})`;
 }
-async function getReadableAsTypedArray(readable, path13) {
+async function getReadableAsTypedArray(readable, path14) {
   const buffers = [];
   const reader = readable.getReader();
-  if (path13) {
-    const fileHandle = await environment.value.fs.promises.open(path13, "w+");
+  if (path14) {
+    const fileHandle = await environment.value.fs.promises.open(path14, "w+");
     try {
       while (true) {
         const { done, value } = await reader.read();
@@ -18777,13 +18777,13 @@ var init_Frame = __esm({
          */
         async addScriptTag(options) {
           let { content = "", type } = options;
-          const { path: path13 } = options;
-          if (+!!options.url + +!!path13 + +!!content !== 1) {
+          const { path: path14 } = options;
+          if (+!!options.url + +!!path14 + +!!content !== 1) {
             throw new Error("Exactly one of `url`, `path`, or `content` must be specified.");
           }
-          if (path13) {
-            content = await environment.value.fs.promises.readFile(path13, "utf8");
-            content += `//# sourceURL=${path13.replace(/\n/g, "")}`;
+          if (path14) {
+            content = await environment.value.fs.promises.readFile(path14, "utf8");
+            content += `//# sourceURL=${path14.replace(/\n/g, "")}`;
           }
           type = type ?? "text/javascript";
           return await this.mainRealm().transferHandle(await this.isolatedRealm().evaluateHandle(async ({ url, id, type: type2, content: content2 }) => {
@@ -18815,13 +18815,13 @@ var init_Frame = __esm({
          */
         async addStyleTag(options) {
           let { content = "" } = options;
-          const { path: path13 } = options;
-          if (+!!options.url + +!!path13 + +!!content !== 1) {
+          const { path: path14 } = options;
+          if (+!!options.url + +!!path14 + +!!content !== 1) {
             throw new Error("Exactly one of `url`, `path`, or `content` must be specified.");
           }
-          if (path13) {
-            content = await environment.value.fs.promises.readFile(path13, "utf8");
-            content += "/*# sourceURL=" + path13.replace(/\n/g, "") + "*/";
+          if (path14) {
+            content = await environment.value.fs.promises.readFile(path14, "utf8");
+            content += "/*# sourceURL=" + path14.replace(/\n/g, "") + "*/";
             options.content = content;
           }
           return await this.mainRealm().transferHandle(await this.isolatedRealm().evaluateHandle(async ({ url, content: content2 }) => {
@@ -20453,11 +20453,11 @@ var init_Page = __esm({
         /**
          * @internal
          */
-        async _maybeWriteTypedArrayToFile(path13, typedArray) {
-          if (!path13) {
+        async _maybeWriteTypedArrayToFile(path14, typedArray) {
+          if (!path14) {
             return;
           }
-          await environment.value.fs.promises.writeFile(path13, typedArray);
+          await environment.value.fs.promises.writeFile(path14, typedArray);
         }
         /**
          * Captures a screencast of this {@link Page | page}.
@@ -22970,7 +22970,7 @@ var init_Tracing = __esm({
           "disabled-by-default-devtools.timeline.stack",
           "disabled-by-default-v8.cpu_profiler"
         ];
-        const { path: path13, screenshots = false, categories = defaultCategories } = options;
+        const { path: path14, screenshots = false, categories = defaultCategories } = options;
         if (screenshots) {
           categories.push("disabled-by-default-devtools.screenshot");
         }
@@ -22982,7 +22982,7 @@ var init_Tracing = __esm({
         const includedCategories = categories.filter((cat) => {
           return !cat.startsWith("-");
         });
-        this.#path = path13;
+        this.#path = path14;
         this.#recording = true;
         await this.#client.send("Tracing.start", {
           transferMode: "ReturnAsStream",
@@ -26055,16 +26055,16 @@ var require_InputProcessor = __commonJS({
           }
           const { handle } = result2.result;
           (0, assert_js_1.assert)(handle !== void 0);
-          const { path: path13 } = await realm.cdpClient.sendCommand("DOM.getFileInfo", {
+          const { path: path14 } = await realm.cdpClient.sendCommand("DOM.getFileInfo", {
             objectId: handle
           });
-          paths.push(path13);
+          paths.push(path14);
           void realm.disown(handle).catch(void 0);
         }
         paths.sort();
         const sortedFiles = [...params.files].sort();
-        if (paths.length !== params.files.length || sortedFiles.some((path13, index) => {
-          return paths[index] !== path13;
+        if (paths.length !== params.files.length || sortedFiles.some((path14, index) => {
+          return paths[index] !== path14;
         })) {
           const { objectId } = await realm.deserializeForCdp(params.element);
           (0, assert_js_1.assert)(objectId !== void 0);
@@ -35376,13 +35376,13 @@ var init_ElementHandle2 = __esm({
           }
         }
         async uploadFile(...files) {
-          const path13 = environment.value.path;
-          if (path13) {
+          const path14 = environment.value.path;
+          if (path14) {
             files = files.map((file) => {
-              if (path13.win32.isAbsolute(file) || path13.posix.isAbsolute(file)) {
+              if (path14.win32.isAbsolute(file) || path14.posix.isAbsolute(file)) {
                 return file;
               } else {
-                return path13.resolve(file);
+                return path14.resolve(file);
               }
             });
           }
@@ -38192,7 +38192,7 @@ var init_Page2 = __esm({
           return this.#viewport;
         }
         async pdf(options = {}) {
-          const { timeout: ms = this._timeoutSettings.timeout(), path: path13 = void 0 } = options;
+          const { timeout: ms = this._timeoutSettings.timeout(), path: path14 = void 0 } = options;
           const { printBackground: background, margin, landscape, width, height, pageRanges: ranges, scale, preferCSSPageSize } = parsePDFOptions(options, "cm");
           const pageRanges = ranges ? ranges.split(", ") : [];
           await firstValueFrom(from(this.mainFrame().isolatedRealm().evaluate(() => {
@@ -38211,7 +38211,7 @@ var init_Page2 = __esm({
             shrinkToFit: !preferCSSPageSize
           })).pipe(raceWith(timeout(ms))));
           const typedArray = stringToTypedArray(data, true);
-          await this._maybeWriteTypedArrayToFile(path13, typedArray);
+          await this._maybeWriteTypedArrayToFile(path14, typedArray);
           return typedArray;
         }
         async createPDFStream(options) {
@@ -39275,9 +39275,9 @@ var init_Browser2 = __esm({
           const { result: { userContext: context2 } } = await this.session.send("browser.createUserContext", {});
           return this.#createUserContext(context2);
         }
-        async installExtension(path13) {
+        async installExtension(path14) {
           const { result: { extension: extension3 } } = await this.session.send("webExtension.install", {
-            extensionData: { type: "path", path: path13 }
+            extensionData: { type: "path", path: path14 }
           });
           return extension3;
         }
@@ -39712,8 +39712,8 @@ var init_Browser3 = __esm({
         newPage() {
           return this.defaultBrowserContext().newPage();
         }
-        installExtension(path13) {
-          return this.#browserCore.installExtension(path13);
+        installExtension(path14) {
+          return this.#browserCore.installExtension(path14);
         }
         async uninstallExtension(id) {
           await this.#browserCore.uninstallExtension(id);
@@ -39818,7 +39818,7 @@ var require_constants = __commonJS({
 var require_node_gyp_build = __commonJS({
   "node_modules/node-gyp-build/node-gyp-build.js"(exports, module) {
     var fs7 = __require("fs");
-    var path13 = __require("path");
+    var path14 = __require("path");
     var os8 = __require("os");
     var runtimeRequire = typeof __webpack_require__ === "function" ? __non_webpack_require__ : __require;
     var vars = process.config && process.config.variables || {};
@@ -39835,21 +39835,21 @@ var require_node_gyp_build = __commonJS({
       return runtimeRequire(load2.resolve(dir));
     }
     load2.resolve = load2.path = function(dir) {
-      dir = path13.resolve(dir || ".");
+      dir = path14.resolve(dir || ".");
       try {
-        var name = runtimeRequire(path13.join(dir, "package.json")).name.toUpperCase().replace(/-/g, "_");
+        var name = runtimeRequire(path14.join(dir, "package.json")).name.toUpperCase().replace(/-/g, "_");
         if (process.env[name + "_PREBUILD"]) dir = process.env[name + "_PREBUILD"];
       } catch (err) {
       }
       if (!prebuildsOnly) {
-        var release = getFirst(path13.join(dir, "build/Release"), matchBuild);
+        var release = getFirst(path14.join(dir, "build/Release"), matchBuild);
         if (release) return release;
-        var debug6 = getFirst(path13.join(dir, "build/Debug"), matchBuild);
+        var debug6 = getFirst(path14.join(dir, "build/Debug"), matchBuild);
         if (debug6) return debug6;
       }
       var prebuild = resolve(dir);
       if (prebuild) return prebuild;
-      var nearby = resolve(path13.dirname(process.execPath));
+      var nearby = resolve(path14.dirname(process.execPath));
       if (nearby) return nearby;
       var target = [
         "platform=" + platform,
@@ -39866,14 +39866,14 @@ var require_node_gyp_build = __commonJS({
       ].filter(Boolean).join(" ");
       throw new Error("No native build was found for " + target + "\n    loaded from: " + dir + "\n");
       function resolve(dir2) {
-        var tuples = readdirSync(path13.join(dir2, "prebuilds")).map(parseTuple);
+        var tuples = readdirSync(path14.join(dir2, "prebuilds")).map(parseTuple);
         var tuple = tuples.filter(matchTuple(platform, arch)).sort(compareTuples)[0];
         if (!tuple) return;
-        var prebuilds = path13.join(dir2, "prebuilds", tuple.name);
+        var prebuilds = path14.join(dir2, "prebuilds", tuple.name);
         var parsed = readdirSync(prebuilds).map(parseTags);
         var candidates = parsed.filter(matchTags(runtime, abi));
         var winner = candidates.sort(compareTags(runtime))[0];
-        if (winner) return path13.join(prebuilds, winner.file);
+        if (winner) return path14.join(prebuilds, winner.file);
       }
     };
     function readdirSync(dir) {
@@ -39885,7 +39885,7 @@ var require_node_gyp_build = __commonJS({
     }
     function getFirst(dir, filter2) {
       var files = readdirSync(dir).filter(filter2);
-      return files[0] && path13.join(dir, files[0]);
+      return files[0] && path14.join(dir, files[0]);
     }
     function matchBuild(name) {
       return /\.node$/.test(name);
@@ -52587,8 +52587,8 @@ var require_file = __commonJS({
         debug6("Normalized pathname: %o", filepath);
         const fdHandle = await fs_1.promises.open(filepath, flags, mode);
         const fd = fdHandle.fd;
-        const stat4 = await fdHandle.stat();
-        if (cache && cache.stat && stat4 && isNotModified(cache.stat, stat4)) {
+        const stat5 = await fdHandle.stat();
+        if (cache && cache.stat && stat5 && isNotModified(cache.stat, stat5)) {
           await fdHandle.close();
           throw new notmodified_1.default();
         }
@@ -52597,7 +52597,7 @@ var require_file = __commonJS({
           ...opts,
           fd
         });
-        rs.stat = stat4;
+        rs.stat = stat5;
         return rs;
       } catch (err) {
         if (err.code === "ENOENT") {
@@ -54079,8 +54079,8 @@ var require_Client = __commonJS({
       /**
        * Set the working directory.
        */
-      async cd(path13) {
-        const validPath = await this.protectWhitespace(path13);
+      async cd(path14) {
+        const validPath = await this.protectWhitespace(path14);
         return this.send("CWD " + validPath);
       }
       /**
@@ -54093,8 +54093,8 @@ var require_Client = __commonJS({
        * Get the last modified time of a file. This is not supported by every FTP server, in which case
        * calling this method will throw an exception.
        */
-      async lastMod(path13) {
-        const validPath = await this.protectWhitespace(path13);
+      async lastMod(path14) {
+        const validPath = await this.protectWhitespace(path14);
         const res = await this.send(`MDTM ${validPath}`);
         const date3 = res.message.slice(4);
         return (0, parseListMLSD_1.parseMLSxDate)(date3);
@@ -54102,8 +54102,8 @@ var require_Client = __commonJS({
       /**
        * Get the size of a file.
        */
-      async size(path13) {
-        const validPath = await this.protectWhitespace(path13);
+      async size(path14) {
+        const validPath = await this.protectWhitespace(path14);
         const command = `SIZE ${validPath}`;
         const res = await this.send(command);
         const size = parseInt(res.message.slice(4), 10);
@@ -54130,8 +54130,8 @@ var require_Client = __commonJS({
        * You can ignore FTP error return codes which won't throw an exception if e.g.
        * the file doesn't exist.
        */
-      async remove(path13, ignoreErrorCodes = false) {
-        const validPath = await this.protectWhitespace(path13);
+      async remove(path14, ignoreErrorCodes = false) {
+        const validPath = await this.protectWhitespace(path14);
         if (ignoreErrorCodes) {
           return this.sendIgnoringError(`DELE ${validPath}`);
         }
@@ -54285,8 +54285,8 @@ var require_Client = __commonJS({
        *
        * @param [path]  Path to remote file or directory.
        */
-      async list(path13 = "") {
-        const validPath = await this.protectWhitespace(path13);
+      async list(path14 = "") {
+        const validPath = await this.protectWhitespace(path14);
         let lastError;
         for (const candidate of this.availableListCommands) {
           const command = validPath === "" ? candidate : `${candidate} ${validPath}`;
@@ -54456,21 +54456,21 @@ var require_Client = __commonJS({
       /**
        * Remove an empty directory, will fail if not empty.
        */
-      async removeEmptyDir(path13) {
-        const validPath = await this.protectWhitespace(path13);
+      async removeEmptyDir(path14) {
+        const validPath = await this.protectWhitespace(path14);
         return this.send(`RMD ${validPath}`);
       }
       /**
        * FTP servers can't handle filenames that have leading whitespace. This method transforms
        * a given path to fix that issue for most cases.
        */
-      async protectWhitespace(path13) {
-        if (!path13.startsWith(" ")) {
-          return path13;
+      async protectWhitespace(path14) {
+        if (!path14.startsWith(" ")) {
+          return path14;
         }
         const pwd = await this.pwd();
         const absolutePathPrefix = pwd.endsWith("/") ? pwd : pwd + "/";
-        return absolutePathPrefix + path13;
+        return absolutePathPrefix + path14;
       }
       async _exitAtCurrentDirectory(func) {
         const userDir = await this.pwd();
@@ -54547,11 +54547,11 @@ var require_Client = __commonJS({
       }
     };
     exports.Client = Client2;
-    async function ensureLocalDirectory(path13) {
+    async function ensureLocalDirectory(path14) {
       try {
-        await fsStat(path13);
+        await fsStat(path14);
       } catch (_a3) {
-        await fsMkDir(path13, { recursive: true });
+        await fsMkDir(path14, { recursive: true });
       }
     }
     async function ignoreError(func) {
@@ -55145,23 +55145,23 @@ var require_estraverse = __commonJS({
           return false;
         }
       };
-      function Element2(node, path13, wrap, ref) {
+      function Element2(node, path14, wrap, ref) {
         this.node = node;
-        this.path = path13;
+        this.path = path14;
         this.wrap = wrap;
         this.ref = ref;
       }
       function Controller() {
       }
-      Controller.prototype.path = function path13() {
+      Controller.prototype.path = function path14() {
         var i, iz, j, jz, result, element;
-        function addToPath(result2, path14) {
-          if (Array.isArray(path14)) {
-            for (j = 0, jz = path14.length; j < jz; ++j) {
-              result2.push(path14[j]);
+        function addToPath(result2, path15) {
+          if (Array.isArray(path15)) {
+            for (j = 0, jz = path15.length; j < jz; ++j) {
+              result2.push(path15[j]);
             }
           } else {
-            result2.push(path14);
+            result2.push(path15);
           }
         }
         if (!this.__current.path) {
@@ -56046,16 +56046,16 @@ var require_util3 = __commonJS({
     }
     exports.urlGenerate = urlGenerate;
     function normalize2(aPath) {
-      var path13 = aPath;
+      var path14 = aPath;
       var url = urlParse(aPath);
       if (url) {
         if (!url.path) {
           return aPath;
         }
-        path13 = url.path;
+        path14 = url.path;
       }
-      var isAbsolute = exports.isAbsolute(path13);
-      var parts = path13.split(/\/+/);
+      var isAbsolute = exports.isAbsolute(path14);
+      var parts = path14.split(/\/+/);
       for (var part, up = 0, i = parts.length - 1; i >= 0; i--) {
         part = parts[i];
         if (part === ".") {
@@ -56072,15 +56072,15 @@ var require_util3 = __commonJS({
           }
         }
       }
-      path13 = parts.join("/");
-      if (path13 === "") {
-        path13 = isAbsolute ? "/" : ".";
+      path14 = parts.join("/");
+      if (path14 === "") {
+        path14 = isAbsolute ? "/" : ".";
       }
       if (url) {
-        url.path = path13;
+        url.path = path14;
         return urlGenerate(url);
       }
-      return path13;
+      return path14;
     }
     exports.normalize = normalize2;
     function join2(aRoot, aPath) {
@@ -66464,22 +66464,22 @@ function __disposeResources20(env) {
   }
   return next();
 }
-function __rewriteRelativeImportExtension(path13, preserveJsx, extraExtensions, ignoreCase) {
-  if (typeof path13 === "string" && /^\.\.?\//.test(path13)) {
+function __rewriteRelativeImportExtension(path14, preserveJsx, extraExtensions, ignoreCase) {
+  if (typeof path14 === "string" && /^\.\.?\//.test(path14)) {
     if (extraExtensions) {
       for (var extension3 in extraExtensions) {
-        var suffix = path13.slice(-extension3.length);
+        var suffix = path14.slice(-extension3.length);
         if (suffix === extension3 || ignoreCase && suffix.toLowerCase() === extension3.toLowerCase()) {
           var output = extraExtensions[extension3];
-          return output === extension3 ? path13 : path13.slice(0, -extension3.length) + output;
+          return output === extension3 ? path14 : path14.slice(0, -extension3.length) + output;
         }
       }
     }
-    return path13.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
+    return path14.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
       return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : d + ext + "." + cm.toLowerCase() + "js";
     });
   }
-  return path13;
+  return path14;
 }
 var extendStatics2, __assign, __createBinding, __setModuleDefault, ownKeys, _SuppressedError, tslib_es6_default;
 var init_tslib_es6 = __esm({
@@ -67286,16 +67286,16 @@ var require_path = __commonJS({
         this.__childCache = null;
       };
       var Pp = Path.prototype;
-      function getChildCache(path13) {
-        return path13.__childCache || (path13.__childCache = /* @__PURE__ */ Object.create(null));
+      function getChildCache(path14) {
+        return path14.__childCache || (path14.__childCache = /* @__PURE__ */ Object.create(null));
       }
-      function getChildPath(path13, name) {
-        var cache = getChildCache(path13);
-        var actualChildValue = path13.getValueProperty(name);
+      function getChildPath(path14, name) {
+        var cache = getChildCache(path14);
+        var actualChildValue = path14.getValueProperty(name);
         var childPath = cache[name];
         if (!hasOwn.call(cache, name) || // Ensure consistency between cache and reality.
         childPath.value !== actualChildValue) {
-          childPath = cache[name] = new path13.constructor(actualChildValue, path13, name);
+          childPath = cache[name] = new path14.constructor(actualChildValue, path14, name);
         }
         return childPath;
       }
@@ -67307,12 +67307,12 @@ var require_path = __commonJS({
         for (var _i = 0; _i < arguments.length; _i++) {
           names[_i] = arguments[_i];
         }
-        var path13 = this;
+        var path14 = this;
         var count = names.length;
         for (var i = 0; i < count; ++i) {
-          path13 = getChildPath(path13, names[i]);
+          path14 = getChildPath(path14, names[i]);
         }
-        return path13;
+        return path14;
       };
       Pp.each = function each(callback, context2) {
         var childPaths = [];
@@ -67348,12 +67348,12 @@ var require_path = __commonJS({
       };
       function emptyMoves() {
       }
-      function getMoves(path13, offset, start, end) {
-        isArray4.assert(path13.value);
+      function getMoves(path14, offset, start, end) {
+        isArray4.assert(path14.value);
         if (offset === 0) {
           return emptyMoves;
         }
-        var length = path13.value.length;
+        var length = path14.value.length;
         if (length < 1) {
           return emptyMoves;
         }
@@ -67371,10 +67371,10 @@ var require_path = __commonJS({
         isNumber2.assert(start);
         isNumber2.assert(end);
         var moves = /* @__PURE__ */ Object.create(null);
-        var cache = getChildCache(path13);
+        var cache = getChildCache(path14);
         for (var i = start; i < end; ++i) {
-          if (hasOwn.call(path13.value, i)) {
-            var childPath = path13.get(i);
+          if (hasOwn.call(path14.value, i)) {
+            var childPath = path14.get(i);
             if (childPath.name !== i) {
               throw new Error("");
             }
@@ -67392,7 +67392,7 @@ var require_path = __commonJS({
               throw new Error("");
             }
             cache[newIndex2] = childPath2;
-            path13.value[newIndex2] = childPath2.value;
+            path14.value[newIndex2] = childPath2.value;
           }
         };
       }
@@ -67467,34 +67467,34 @@ var require_path = __commonJS({
         }
         return pp.insertAt.apply(pp, insertAtArgs);
       };
-      function repairRelationshipWithParent(path13) {
-        if (!(path13 instanceof Path)) {
+      function repairRelationshipWithParent(path14) {
+        if (!(path14 instanceof Path)) {
           throw new Error("");
         }
-        var pp = path13.parentPath;
+        var pp = path14.parentPath;
         if (!pp) {
-          return path13;
+          return path14;
         }
         var parentValue = pp.value;
         var parentCache = getChildCache(pp);
-        if (parentValue[path13.name] === path13.value) {
-          parentCache[path13.name] = path13;
+        if (parentValue[path14.name] === path14.value) {
+          parentCache[path14.name] = path14;
         } else if (isArray4.check(parentValue)) {
-          var i = parentValue.indexOf(path13.value);
+          var i = parentValue.indexOf(path14.value);
           if (i >= 0) {
-            parentCache[path13.name = i] = path13;
+            parentCache[path14.name = i] = path14;
           }
         } else {
-          parentValue[path13.name] = path13.value;
-          parentCache[path13.name] = path13;
+          parentValue[path14.name] = path14.value;
+          parentCache[path14.name] = path14;
         }
-        if (parentValue[path13.name] !== path13.value) {
+        if (parentValue[path14.name] !== path14.value) {
           throw new Error("");
         }
-        if (path13.parentPath.get(path13.name) !== path13) {
+        if (path14.parentPath.get(path14.name) !== path14) {
           throw new Error("");
         }
-        return path13;
+        return path14;
       }
       Pp.replace = function replace(replacement) {
         var results = [];
@@ -67574,11 +67574,11 @@ var require_scope2 = __commonJS({
       var Expression = namedTypes.Expression;
       var isArray4 = types.builtInTypes.array;
       var b = types.builders;
-      var Scope = function Scope2(path13, parentScope) {
+      var Scope = function Scope2(path14, parentScope) {
         if (!(this instanceof Scope2)) {
           throw new Error("Scope constructor cannot be invoked without 'new'");
         }
-        ScopeType.assert(path13.value);
+        ScopeType.assert(path14.value);
         var depth;
         if (parentScope) {
           if (!(parentScope instanceof Scope2)) {
@@ -67590,8 +67590,8 @@ var require_scope2 = __commonJS({
           depth = 0;
         }
         Object.defineProperties(this, {
-          path: { value: path13 },
-          node: { value: path13.value },
+          path: { value: path14 },
+          node: { value: path14.value },
           isGlobal: { value: !parentScope, enumerable: true },
           depth: { value: depth },
           parent: { value: parentScope },
@@ -67666,50 +67666,50 @@ var require_scope2 = __commonJS({
         this.scan();
         return this.types;
       };
-      function scanScope(path13, bindings, scopeTypes2) {
-        var node = path13.value;
+      function scanScope(path14, bindings, scopeTypes2) {
+        var node = path14.value;
         ScopeType.assert(node);
         if (namedTypes.CatchClause.check(node)) {
-          var param = path13.get("param");
+          var param = path14.get("param");
           if (param.value) {
             addPattern2(param, bindings);
           }
         } else {
-          recursiveScanScope(path13, bindings, scopeTypes2);
+          recursiveScanScope(path14, bindings, scopeTypes2);
         }
       }
-      function recursiveScanScope(path13, bindings, scopeTypes2) {
-        var node = path13.value;
-        if (path13.parent && namedTypes.FunctionExpression.check(path13.parent.node) && path13.parent.node.id) {
-          addPattern2(path13.parent.get("id"), bindings);
+      function recursiveScanScope(path14, bindings, scopeTypes2) {
+        var node = path14.value;
+        if (path14.parent && namedTypes.FunctionExpression.check(path14.parent.node) && path14.parent.node.id) {
+          addPattern2(path14.parent.get("id"), bindings);
         }
         if (!node) {
         } else if (isArray4.check(node)) {
-          path13.each(function(childPath) {
+          path14.each(function(childPath) {
             recursiveScanChild(childPath, bindings, scopeTypes2);
           });
         } else if (namedTypes.Function.check(node)) {
-          path13.get("params").each(function(paramPath) {
+          path14.get("params").each(function(paramPath) {
             addPattern2(paramPath, bindings);
           });
-          recursiveScanChild(path13.get("body"), bindings, scopeTypes2);
+          recursiveScanChild(path14.get("body"), bindings, scopeTypes2);
         } else if (namedTypes.TypeAlias && namedTypes.TypeAlias.check(node) || namedTypes.InterfaceDeclaration && namedTypes.InterfaceDeclaration.check(node) || namedTypes.TSTypeAliasDeclaration && namedTypes.TSTypeAliasDeclaration.check(node) || namedTypes.TSInterfaceDeclaration && namedTypes.TSInterfaceDeclaration.check(node)) {
-          addTypePattern(path13.get("id"), scopeTypes2);
+          addTypePattern(path14.get("id"), scopeTypes2);
         } else if (namedTypes.VariableDeclarator.check(node)) {
-          addPattern2(path13.get("id"), bindings);
-          recursiveScanChild(path13.get("init"), bindings, scopeTypes2);
+          addPattern2(path14.get("id"), bindings);
+          recursiveScanChild(path14.get("init"), bindings, scopeTypes2);
         } else if (node.type === "ImportSpecifier" || node.type === "ImportNamespaceSpecifier" || node.type === "ImportDefaultSpecifier") {
           addPattern2(
             // Esprima used to use the .name field to refer to the local
             // binding identifier for ImportSpecifier nodes, but .id for
             // ImportNamespaceSpecifier and ImportDefaultSpecifier nodes.
             // ESTree/Acorn/ESpree use .local for all three node types.
-            path13.get(node.local ? "local" : node.name ? "name" : "id"),
+            path14.get(node.local ? "local" : node.name ? "name" : "id"),
             bindings
           );
         } else if (Node2.check(node) && !Expression.check(node)) {
           types.eachField(node, function(name, child) {
-            var childPath = path13.get(name);
+            var childPath = path14.get(name);
             if (!pathHasValue(childPath, child)) {
               throw new Error("");
             }
@@ -67717,34 +67717,34 @@ var require_scope2 = __commonJS({
           });
         }
       }
-      function pathHasValue(path13, value) {
-        if (path13.value === value) {
+      function pathHasValue(path14, value) {
+        if (path14.value === value) {
           return true;
         }
-        if (Array.isArray(path13.value) && path13.value.length === 0 && Array.isArray(value) && value.length === 0) {
+        if (Array.isArray(path14.value) && path14.value.length === 0 && Array.isArray(value) && value.length === 0) {
           return true;
         }
         return false;
       }
-      function recursiveScanChild(path13, bindings, scopeTypes2) {
-        var node = path13.value;
+      function recursiveScanChild(path14, bindings, scopeTypes2) {
+        var node = path14.value;
         if (!node || Expression.check(node)) {
         } else if (namedTypes.FunctionDeclaration.check(node) && node.id !== null) {
-          addPattern2(path13.get("id"), bindings);
+          addPattern2(path14.get("id"), bindings);
         } else if (namedTypes.ClassDeclaration && namedTypes.ClassDeclaration.check(node)) {
-          addPattern2(path13.get("id"), bindings);
+          addPattern2(path14.get("id"), bindings);
         } else if (ScopeType.check(node)) {
           if (namedTypes.CatchClause.check(node) && // TODO Broaden this to accept any pattern.
           namedTypes.Identifier.check(node.param)) {
             var catchParamName = node.param.name;
             var hadBinding = hasOwn.call(bindings, catchParamName);
-            recursiveScanScope(path13.get("body"), bindings, scopeTypes2);
+            recursiveScanScope(path14.get("body"), bindings, scopeTypes2);
             if (!hadBinding) {
               delete bindings[catchParamName];
             }
           }
         } else {
-          recursiveScanScope(path13, bindings, scopeTypes2);
+          recursiveScanScope(path14, bindings, scopeTypes2);
         }
       }
       function addPattern2(patternPath, bindings) {
@@ -68080,53 +68080,53 @@ var require_node_path = __commonJS({
       NPp.firstInStatement = function() {
         return firstInStatement(this);
       };
-      function firstInStatement(path13) {
-        for (var node, parent; path13.parent; path13 = path13.parent) {
-          node = path13.node;
-          parent = path13.parent.node;
-          if (n.BlockStatement.check(parent) && path13.parent.name === "body" && path13.name === 0) {
+      function firstInStatement(path14) {
+        for (var node, parent; path14.parent; path14 = path14.parent) {
+          node = path14.node;
+          parent = path14.parent.node;
+          if (n.BlockStatement.check(parent) && path14.parent.name === "body" && path14.name === 0) {
             if (parent.body[0] !== node) {
               throw new Error("Nodes must be equal");
             }
             return true;
           }
-          if (n.ExpressionStatement.check(parent) && path13.name === "expression") {
+          if (n.ExpressionStatement.check(parent) && path14.name === "expression") {
             if (parent.expression !== node) {
               throw new Error("Nodes must be equal");
             }
             return true;
           }
-          if (n.SequenceExpression.check(parent) && path13.parent.name === "expressions" && path13.name === 0) {
+          if (n.SequenceExpression.check(parent) && path14.parent.name === "expressions" && path14.name === 0) {
             if (parent.expressions[0] !== node) {
               throw new Error("Nodes must be equal");
             }
             continue;
           }
-          if (n.CallExpression.check(parent) && path13.name === "callee") {
+          if (n.CallExpression.check(parent) && path14.name === "callee") {
             if (parent.callee !== node) {
               throw new Error("Nodes must be equal");
             }
             continue;
           }
-          if (n.MemberExpression.check(parent) && path13.name === "object") {
+          if (n.MemberExpression.check(parent) && path14.name === "object") {
             if (parent.object !== node) {
               throw new Error("Nodes must be equal");
             }
             continue;
           }
-          if (n.ConditionalExpression.check(parent) && path13.name === "test") {
+          if (n.ConditionalExpression.check(parent) && path14.name === "test") {
             if (parent.test !== node) {
               throw new Error("Nodes must be equal");
             }
             continue;
           }
-          if (isBinary(parent) && path13.name === "left") {
+          if (isBinary(parent) && path14.name === "left") {
             if (parent.left !== node) {
               throw new Error("Nodes must be equal");
             }
             continue;
           }
-          if (n.UnaryExpression.check(parent) && !parent.prefix && path13.name === "argument") {
+          if (n.UnaryExpression.check(parent) && !parent.prefix && path14.name === "argument") {
             if (parent.argument !== node) {
               throw new Error("Nodes must be equal");
             }
@@ -68296,36 +68296,36 @@ var require_path_visitor = __commonJS({
       };
       PVp.reset = function(_path) {
       };
-      PVp.visitWithoutReset = function(path13) {
+      PVp.visitWithoutReset = function(path14) {
         if (this instanceof this.Context) {
-          return this.visitor.visitWithoutReset(path13);
+          return this.visitor.visitWithoutReset(path14);
         }
-        if (!(path13 instanceof NodePath)) {
+        if (!(path14 instanceof NodePath)) {
           throw new Error("");
         }
-        var value = path13.value;
+        var value = path14.value;
         var methodName = value && typeof value === "object" && typeof value.type === "string" && this._methodNameTable[value.type];
         if (methodName) {
-          var context2 = this.acquireContext(path13);
+          var context2 = this.acquireContext(path14);
           try {
             return context2.invokeVisitorMethod(methodName);
           } finally {
             this.releaseContext(context2);
           }
         } else {
-          return visitChildren(path13, this);
+          return visitChildren(path14, this);
         }
       };
-      function visitChildren(path13, visitor) {
-        if (!(path13 instanceof NodePath)) {
+      function visitChildren(path14, visitor) {
+        if (!(path14 instanceof NodePath)) {
           throw new Error("");
         }
         if (!(visitor instanceof PathVisitor)) {
           throw new Error("");
         }
-        var value = path13.value;
+        var value = path14.value;
         if (isArray4.check(value)) {
-          path13.each(visitor.visitWithoutReset, visitor);
+          path14.each(visitor.visitWithoutReset, visitor);
         } else if (!isObject2.check(value)) {
         } else {
           var childNames = types.getFieldNames(value);
@@ -68339,19 +68339,19 @@ var require_path_visitor = __commonJS({
             if (!hasOwn.call(value, childName)) {
               value[childName] = types.getFieldValue(value, childName);
             }
-            childPaths.push(path13.get(childName));
+            childPaths.push(path14.get(childName));
           }
           for (var i = 0; i < childCount; ++i) {
             visitor.visitWithoutReset(childPaths[i]);
           }
         }
-        return path13.value;
+        return path14.value;
       }
-      PVp.acquireContext = function(path13) {
+      PVp.acquireContext = function(path14) {
         if (this._reusableContextStack.length === 0) {
-          return new this.Context(path13);
+          return new this.Context(path14);
         }
-        return this._reusableContextStack.pop().reset(path13);
+        return this._reusableContextStack.pop().reset(path14);
       };
       PVp.releaseContext = function(context2) {
         if (!(context2 instanceof this.Context)) {
@@ -68367,14 +68367,14 @@ var require_path_visitor = __commonJS({
         return this._changeReported;
       };
       function makeContextConstructor(visitor) {
-        function Context(path13) {
+        function Context(path14) {
           if (!(this instanceof Context)) {
             throw new Error("");
           }
           if (!(this instanceof PathVisitor)) {
             throw new Error("");
           }
-          if (!(path13 instanceof NodePath)) {
+          if (!(path14 instanceof NodePath)) {
             throw new Error("");
           }
           Object.defineProperty(this, "visitor", {
@@ -68383,7 +68383,7 @@ var require_path_visitor = __commonJS({
             enumerable: true,
             configurable: false
           });
-          this.currentPath = path13;
+          this.currentPath = path14;
           this.needToCallTraverse = true;
           Object.seal(this);
         }
@@ -68396,14 +68396,14 @@ var require_path_visitor = __commonJS({
         return Context;
       }
       var sharedContextProtoMethods = /* @__PURE__ */ Object.create(null);
-      sharedContextProtoMethods.reset = function reset(path13) {
+      sharedContextProtoMethods.reset = function reset(path14) {
         if (!(this instanceof this.Context)) {
           throw new Error("");
         }
-        if (!(path13 instanceof NodePath)) {
+        if (!(path14 instanceof NodePath)) {
           throw new Error("");
         }
-        this.currentPath = path13;
+        this.currentPath = path14;
         this.needToCallTraverse = true;
         return this;
       };
@@ -68426,34 +68426,34 @@ var require_path_visitor = __commonJS({
         if (this.needToCallTraverse !== false) {
           throw new Error("Must either call this.traverse or return false in " + methodName);
         }
-        var path13 = this.currentPath;
-        return path13 && path13.value;
+        var path14 = this.currentPath;
+        return path14 && path14.value;
       };
-      sharedContextProtoMethods.traverse = function traverse(path13, newVisitor) {
+      sharedContextProtoMethods.traverse = function traverse(path14, newVisitor) {
         if (!(this instanceof this.Context)) {
           throw new Error("");
         }
-        if (!(path13 instanceof NodePath)) {
+        if (!(path14 instanceof NodePath)) {
           throw new Error("");
         }
         if (!(this.currentPath instanceof NodePath)) {
           throw new Error("");
         }
         this.needToCallTraverse = false;
-        return visitChildren(path13, PathVisitor.fromMethodsObject(newVisitor || this.visitor));
+        return visitChildren(path14, PathVisitor.fromMethodsObject(newVisitor || this.visitor));
       };
-      sharedContextProtoMethods.visit = function visit(path13, newVisitor) {
+      sharedContextProtoMethods.visit = function visit(path14, newVisitor) {
         if (!(this instanceof this.Context)) {
           throw new Error("");
         }
-        if (!(path13 instanceof NodePath)) {
+        if (!(path14 instanceof NodePath)) {
           throw new Error("");
         }
         if (!(this.currentPath instanceof NodePath)) {
           throw new Error("");
         }
         this.needToCallTraverse = false;
-        return PathVisitor.fromMethodsObject(newVisitor || this.visitor).visitWithoutReset(path13);
+        return PathVisitor.fromMethodsObject(newVisitor || this.visitor).visitWithoutReset(path14);
       };
       sharedContextProtoMethods.reportChanged = function reportChanged() {
         this.visitor.reportChanged();
@@ -69667,10 +69667,10 @@ var require_degenerator = __commonJS({
       do {
         lastNamesLength = names.length;
         (0, ast_types_1.visit)(ast, {
-          visitVariableDeclaration(path13) {
-            if (path13.node.declarations) {
-              for (let i = 0; i < path13.node.declarations.length; i++) {
-                const declaration = path13.node.declarations[i];
+          visitVariableDeclaration(path14) {
+            if (path14.node.declarations) {
+              for (let i = 0; i < path14.node.declarations.length; i++) {
+                const declaration = path14.node.declarations[i];
                 if (ast_types_1.namedTypes.VariableDeclarator.check(declaration) && ast_types_1.namedTypes.Identifier.check(declaration.init) && ast_types_1.namedTypes.Identifier.check(declaration.id) && checkName(declaration.init.name, names) && !checkName(declaration.id.name, names)) {
                   names.push(declaration.id.name);
                 }
@@ -69678,18 +69678,18 @@ var require_degenerator = __commonJS({
             }
             return false;
           },
-          visitAssignmentExpression(path13) {
-            if (ast_types_1.namedTypes.Identifier.check(path13.node.left) && ast_types_1.namedTypes.Identifier.check(path13.node.right) && checkName(path13.node.right.name, names) && !checkName(path13.node.left.name, names)) {
-              names.push(path13.node.left.name);
+          visitAssignmentExpression(path14) {
+            if (ast_types_1.namedTypes.Identifier.check(path14.node.left) && ast_types_1.namedTypes.Identifier.check(path14.node.right) && checkName(path14.node.right.name, names) && !checkName(path14.node.left.name, names)) {
+              names.push(path14.node.left.name);
             }
             return false;
           },
-          visitFunction(path13) {
-            if (path13.node.id) {
+          visitFunction(path14) {
+            if (path14.node.id) {
               let shouldDegenerate = false;
-              (0, ast_types_1.visit)(path13.node, {
-                visitCallExpression(path14) {
-                  if (checkNames(path14.node, names)) {
+              (0, ast_types_1.visit)(path14.node, {
+                visitCallExpression(path15) {
+                  if (checkNames(path15.node, names)) {
                     shouldDegenerate = true;
                   }
                   return false;
@@ -69698,28 +69698,28 @@ var require_degenerator = __commonJS({
               if (!shouldDegenerate) {
                 return false;
               }
-              path13.node.async = true;
-              if (!checkName(path13.node.id.name, names)) {
-                names.push(path13.node.id.name);
+              path14.node.async = true;
+              if (!checkName(path14.node.id.name, names)) {
+                names.push(path14.node.id.name);
               }
             }
-            this.traverse(path13);
+            this.traverse(path14);
           }
         });
       } while (lastNamesLength !== names.length);
       (0, ast_types_1.visit)(ast, {
-        visitCallExpression(path13) {
-          if (checkNames(path13.node, names)) {
+        visitCallExpression(path14) {
+          if (checkNames(path14.node, names)) {
             const delegate = false;
-            const { name, parent: { node: pNode } } = path13;
-            const expr = ast_types_1.builders.awaitExpression(path13.node, delegate);
+            const { name, parent: { node: pNode } } = path14;
+            const expr = ast_types_1.builders.awaitExpression(path14.node, delegate);
             if (ast_types_1.namedTypes.CallExpression.check(pNode)) {
               pNode.arguments[name] = expr;
             } else {
               pNode[name] = expr;
             }
           }
-          this.traverse(path13);
+          this.traverse(path14);
         }
       });
       return (0, escodegen_1.generate)(ast);
@@ -74152,9 +74152,9 @@ var require_progress = __commonJS({
 
 // index.mjs
 import { existsSync as existsSync3 } from "node:fs";
-import { readFile as readFile3, readdir, stat as stat3, writeFile as writeFile3, mkdir as mkdir3 } from "node:fs/promises";
+import { readFile as readFile3, readdir as readdir2, stat as stat4, writeFile as writeFile3, mkdir as mkdir3 } from "node:fs/promises";
 import { homedir as homedir2 } from "node:os";
-import path12 from "node:path";
+import path13 from "node:path";
 
 // node_modules/zod/v3/external.js
 var external_exports = {};
@@ -74634,8 +74634,8 @@ function getErrorMap() {
 
 // node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path13, errorMaps, issueData } = params;
-  const fullPath = [...path13, ...issueData.path || []];
+  const { data, path: path14, errorMaps, issueData } = params;
+  const fullPath = [...path14, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -74751,11 +74751,11 @@ var errorUtil;
 
 // node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path13, key2) {
+  constructor(parent, value, path14, key2) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path13;
+    this._path = path14;
     this._key = key2;
   }
   get path() {
@@ -78392,10 +78392,10 @@ function assignProp(target, prop, value) {
     configurable: true
   });
 }
-function getElementAtPath(obj, path13) {
-  if (!path13)
+function getElementAtPath(obj, path14) {
+  if (!path14)
     return obj;
-  return path13.reduce((acc, key2) => acc?.[key2], obj);
+  return path14.reduce((acc, key2) => acc?.[key2], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -78715,11 +78715,11 @@ function aborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path13, issues) {
+function prefixIssues(path14, issues) {
   return issues.map((iss) => {
     var _a3;
     (_a3 = iss).path ?? (_a3.path = []);
-    iss.path.unshift(path13);
+    iss.path.unshift(path14);
     return iss;
   });
 }
@@ -82130,11 +82130,11 @@ function normalizeObjectSchema(schema) {
   }
   return void 0;
 }
-function getDotPath(path13) {
-  if (path13.length === 0) {
+function getDotPath(path14) {
+  if (path14.length === 0) {
     return "object root";
   }
-  return path13.reduce((acc, seg, index) => {
+  return path14.reduce((acc, seg, index) => {
     if (index === 0) {
       return String(seg);
     }
@@ -89112,7 +89112,7 @@ async function upload(file_data, root_url, upload_id, max_file_size) {
 }
 var FileData = class {
   constructor({
-    path: path13,
+    path: path14,
     url,
     orig_name,
     size,
@@ -89132,7 +89132,7 @@ var FileData = class {
     __publicField(this, "alt_text");
     __publicField(this, "b64");
     __publicField(this, "meta", { _type: "gradio.FileData" });
-    this.path = path13;
+    this.path = path14;
     this.url = url;
     this.orig_name = orig_name;
     this.size = size;
@@ -89171,13 +89171,13 @@ function update_object(object3, newValue, stack) {
     throw new Error("Invalid key type");
   }
 }
-async function walk_and_store_blobs(data, type = void 0, path13 = [], root = false, endpoint_info = void 0) {
+async function walk_and_store_blobs(data, type = void 0, path14 = [], root = false, endpoint_info = void 0) {
   if (Array.isArray(data)) {
     let blob_refs = [];
     await Promise.all(
       data.map(async (_, index) => {
         var _a3;
-        let new_path = path13.slice();
+        let new_path = path14.slice();
         new_path.push(String(index));
         const array_refs = await walk_and_store_blobs(
           data[index],
@@ -89193,7 +89193,7 @@ async function walk_and_store_blobs(data, type = void 0, path13 = [], root = fal
   } else if (globalThis.Buffer && data instanceof globalThis.Buffer || data instanceof Blob) {
     return [
       {
-        path: path13,
+        path: path14,
         blob: new Blob([data]),
         type
       }
@@ -89201,7 +89201,7 @@ async function walk_and_store_blobs(data, type = void 0, path13 = [], root = fal
   } else if (typeof data === "object" && data !== null) {
     let blob_refs = [];
     for (const key2 of Object.keys(data)) {
-      const new_path = [...path13, key2];
+      const new_path = [...path14, key2];
       const value = data[key2];
       blob_refs = blob_refs.concat(
         await walk_and_store_blobs(
@@ -89309,24 +89309,24 @@ async function handle_blob(endpoint, data, api_info) {
     api_info
   );
   const results = await Promise.all(
-    blobRefs.map(async ({ path: path13, blob, type }) => {
-      if (!blob) return { path: path13, type };
+    blobRefs.map(async ({ path: path14, blob, type }) => {
+      if (!blob) return { path: path14, type };
       const response = await self2.upload_files(endpoint, [blob]);
       const file_url = response.files && response.files[0];
       return {
-        path: path13,
+        path: path14,
         file_url,
         type,
         name: typeof File !== "undefined" && blob instanceof File ? blob == null ? void 0 : blob.name : void 0
       };
     })
   );
-  results.forEach(({ path: path13, file_url, type, name }) => {
+  results.forEach(({ path: path14, file_url, type, name }) => {
     if (type === "Gallery") {
-      update_object(data, file_url, path13);
+      update_object(data, file_url, path14);
     } else if (file_url) {
       const file = new FileData({ path: file_url, orig_name: name });
-      update_object(data, file, path13);
+      update_object(data, file, path14);
     }
   });
   return data;
@@ -89339,12 +89339,12 @@ async function process_local_file_commands(client2, data) {
   }
   await recursively_process_commands(client2, data);
 }
-async function recursively_process_commands(client2, data, path13 = []) {
+async function recursively_process_commands(client2, data, path14 = []) {
   for (const key2 in data) {
     if (data[key2] instanceof Command) {
       await process_single_command(client2, data, key2);
     } else if (typeof data[key2] === "object" && data[key2] !== null) {
-      await recursively_process_commands(client2, data[key2], [...path13, key2]);
+      await recursively_process_commands(client2, data[key2], [...path14, key2]);
     }
   }
 }
@@ -89360,8 +89360,8 @@ async function process_single_command(client2, data, key2) {
     let fullPath;
     if (typeof process !== "undefined" && process.versions && process.versions.node) {
       const fs7 = await import("fs/promises");
-      const path13 = await import("path");
-      fullPath = path13.resolve(process.cwd(), cmd_item.meta.path);
+      const path14 = await import("path");
+      fullPath = path14.resolve(process.cwd(), cmd_item.meta.path);
       fileBuffer = await fs7.readFile(fullPath);
     } else {
       throw new Error(NODEJS_FS_ERROR_MSG);
@@ -89913,13 +89913,13 @@ function apply_diff_stream(pending_diff_streams, event_id, data) {
   }
 }
 function apply_diff(obj, diff) {
-  diff.forEach(([action, path13, value]) => {
-    obj = apply_edit(obj, path13, action, value);
+  diff.forEach(([action, path14, value]) => {
+    obj = apply_edit(obj, path14, action, value);
   });
   return obj;
 }
-function apply_edit(target, path13, action, value) {
-  if (path13.length === 0) {
+function apply_edit(target, path14, action, value) {
+  if (path14.length === 0) {
     if (action === "replace") {
       return value;
     } else if (action === "append") {
@@ -89928,10 +89928,10 @@ function apply_edit(target, path13, action, value) {
     throw new Error(`Unsupported action: ${action}`);
   }
   let current = target;
-  for (let i = 0; i < path13.length - 1; i++) {
-    current = current[path13[i]];
+  for (let i = 0; i < path14.length - 1; i++) {
+    current = current[path14[i]];
   }
-  const last_path = path13[path13.length - 1];
+  const last_path = path14[path14.length - 1];
   switch (action) {
     case "replace":
       current[last_path] = value;
@@ -92267,13 +92267,13 @@ var CdpElementHandle = (() => {
         return element.multiple;
       });
       assert2(files.length <= 1 || isMultiple, "Multiple file uploads only work with <input type=file multiple>");
-      const path13 = environment.value.path;
-      if (path13) {
+      const path14 = environment.value.path;
+      if (path14) {
         files = files.map((filePath) => {
-          if (path13.win32.isAbsolute(filePath) || path13.posix.isAbsolute(filePath)) {
+          if (path14.win32.isAbsolute(filePath) || path14.posix.isAbsolute(filePath)) {
             return filePath;
           } else {
-            return path13.resolve(filePath);
+            return path14.resolve(filePath);
           }
         });
       }
@@ -96379,9 +96379,9 @@ var CdpPage = class _CdpPage extends Page {
     return await getReadableFromProtocolStream(this.#primaryTargetClient, result.stream);
   }
   async pdf(options = {}) {
-    const { path: path13 = void 0 } = options;
+    const { path: path14 = void 0 } = options;
     const readable = await this.createPDFStream(options);
-    const typedArray = await getReadableAsTypedArray(readable, path13);
+    const typedArray = await getReadableAsTypedArray(readable, path14);
     assert2(typedArray, "Could not create typed array");
     return typedArray;
   }
@@ -97304,8 +97304,8 @@ var CdpBrowser = class _CdpBrowser extends Browser {
     }
     return page;
   }
-  async installExtension(path13) {
-    const { id } = await this.#connection.send("Extensions.loadUnpacked", { path: path13 });
+  async installExtension(path14) {
+    const { id } = await this.#connection.send("Extensions.loadUnpacked", { path: path14 });
     return id;
   }
   uninstallExtension(id) {
@@ -100329,13 +100329,13 @@ function computeSystemExecutablePath(options) {
   if (!options.platform) {
     throw new Error(`Cannot download a binary for the provided platform: ${os3.platform()} (${os3.arch()})`);
   }
-  const path13 = resolveSystemExecutablePath2(options.browser, options.platform, options.channel);
+  const path14 = resolveSystemExecutablePath2(options.browser, options.platform, options.channel);
   try {
-    accessSync(path13);
+    accessSync(path14);
   } catch {
-    throw new Error(`Could not find Google Chrome executable for channel '${options.channel}' at '${path13}'.`);
+    throw new Error(`Could not find Google Chrome executable for channel '${options.channel}' at '${path14}'.`);
   }
-  return path13;
+  return path14;
 }
 function launch(opts) {
   return new Process(opts);
@@ -100830,8 +100830,8 @@ var BrowserLauncher = class {
         throw new Error("To use `enableExtensions` with a list of paths in Chrome, you must be connected with `--remote-debugging-pipe` (`pipe: true`).");
       }
       await Promise.all([
-        enableExtensions.map((path13) => {
-          return browser.installExtension(path13);
+        enableExtensions.map((path14) => {
+          return browser.installExtension(path14);
         })
       ]);
     }
@@ -100982,8 +100982,8 @@ var rmOptions = {
   recursive: true,
   maxRetries: 5
 };
-async function rm(path13) {
-  await fs3.promises.rm(path13, rmOptions);
+async function rm(path14) {
+  await fs3.promises.rm(path14, rmOptions);
 }
 
 // node_modules/puppeteer-core/lib/esm/puppeteer/node/ChromeLauncher.js
@@ -101058,10 +101058,10 @@ var ChromeLauncher = class extends BrowserLauncher {
   /**
    * @internal
    */
-  async cleanUserDataDir(path13, opts) {
+  async cleanUserDataDir(path14, opts) {
     if (opts.isTemp) {
       try {
-        await rm(path13);
+        await rm(path14);
       } catch (error3) {
         debugError(error3);
         throw error3;
@@ -101676,7 +101676,7 @@ var ScreenRecorder = (() => {
     /**
      * @internal
      */
-    constructor(page, width, height, { ffmpegPath, speed, scale, crop, format: format2, fps, loop, delay, quality, colors, path: path13, overwrite } = {}) {
+    constructor(page, width, height, { ffmpegPath, speed, scale, crop, format: format2, fps, loop, delay, quality, colors, path: path14, overwrite } = {}) {
       super({ allowHalfOpen: false });
       ffmpegPath ??= "ffmpeg";
       format2 ??= "webm";
@@ -101709,8 +101709,8 @@ var ScreenRecorder = (() => {
       if (vf !== -1) {
         filters.push(formatArgs.splice(vf, 2).at(-1) ?? "");
       }
-      if (path13) {
-        fs5.mkdirSync(dirname(path13), { recursive: overwrite });
+      if (path14) {
+        fs5.mkdirSync(dirname(path14), { recursive: overwrite });
       }
       this.#process = spawn(
         ffmpegPath,
@@ -102418,11 +102418,32 @@ function key(file) {
   return WINDOWS ? normalize(file).toLowerCase() : file;
 }
 
+// recent.mjs
+import { readdir, stat as stat3 } from "node:fs/promises";
+import path12 from "node:path";
+var KINDS2 = { ".png": "image", ".jpg": "image", ".jpeg": "image", ".webp": "image", ".mp4": "video", ".webm": "video", ".mov": "video" };
+async function listRecent(libraryDir2, limit = 8) {
+  const files = await scan(libraryDir2);
+  files.sort((a, b) => b.mtime - a.mtime);
+  return files.slice(0, limit).map((f) => ({ path: f.path, kind: f.kind, created: new Date(f.mtime).toISOString() }));
+}
+async function scan(dir) {
+  const entries = await readdir(dir, { withFileTypes: true }).catch(() => []);
+  const found = await Promise.all(entries.map(async (e) => {
+    const file = path12.join(dir, e.name);
+    if (e.isDirectory()) return scan(file);
+    const kind = KINDS2[path12.extname(e.name).toLowerCase()];
+    if (!kind || !e.isFile()) return [];
+    return [{ path: file, kind, mtime: (await stat3(file)).mtimeMs }];
+  }));
+  return found.flat();
+}
+
 // index.mjs
-var OUTPUT_DIR = process.env.H0X_OUTPUT_DIR || path12.join(homedir2(), "Artcraft", "downloads", "h0x-mcp");
-var LIBRARY_DIR = path12.join(homedir2(), "Artcraft", "downloads");
+var OUTPUT_DIR = process.env.H0X_OUTPUT_DIR || path13.join(homedir2(), "Artcraft", "downloads", "h0x-mcp");
+var LIBRARY_DIR = path13.join(homedir2(), "Artcraft", "downloads");
 var FAVORITES_FILE = favoritesFile(LIBRARY_DIR);
-var CREDENTIALS_DIR = path12.join(homedir2(), "Artcraft", "credentials");
+var CREDENTIALS_DIR = path13.join(homedir2(), "Artcraft", "credentials");
 var MEDIA = { ".png": "image", ".jpg": "image", ".jpeg": "image", ".webp": "image", ".gif": "image", ".mp4": "video", ".webm": "video", ".mov": "video" };
 var POLL_MS = 5e3;
 var TIMEOUT_MS = 15 * 60 * 1e3;
@@ -102549,7 +102570,7 @@ server.registerTool(
   async () => {
     const has = (env, file) => {
       const fromEnv = Boolean(process.env[env]);
-      const fromApp = existsSync3(path12.join(CREDENTIALS_DIR, file));
+      const fromApp = existsSync3(path13.join(CREDENTIALS_DIR, file));
       return `${fromEnv || fromApp} (env ${env}: ${fromEnv}, app credentials: ${fromApp})`;
     };
     return text([
@@ -102580,6 +102601,16 @@ server.registerTool(
     if (!favorites.length) return text("No favorites yet.");
     return text(favorites.map((f) => `${f.path} | ${f.kind} | ${f.missing ? "missing" : "ok"}`).join("\n"));
   }
+);
+server.registerTool(
+  "list_recent",
+  {
+    description: "Recent images and videos in H0x My Library, newest first, as JSON { path, kind, created }.",
+    inputSchema: {
+      limit: external_exports.number().int().min(1).max(50).default(8)
+    }
+  },
+  async ({ limit }) => text(JSON.stringify(await listRecent(LIBRARY_DIR, limit)))
 );
 server.registerTool(
   "add_favorite",
@@ -102656,7 +102687,7 @@ server.registerTool(
         `QA "${name}": ${r.frames.length} frames, scene length ${r.duration.toFixed(1)} s, ${warned.length} frames with warnings.`,
         ...r.errors.map((e) => `ERROR ${e}`),
         ...warned.map((f) => `t=${f.t.toFixed(2)} WARN ${f.warnings.join(" | ")}`),
-        `Frames: ${path12.dirname(r.sheet)}`,
+        `Frames: ${path13.dirname(r.sheet)}`,
         `Contact sheet: ${r.sheet}`
       ].join("\n");
       const sheet = await readFile3(r.sheet);
@@ -102776,24 +102807,24 @@ async function download(url) {
   return Buffer.from(await res.arrayBuffer());
 }
 async function dataUrl(file) {
-  const ext = path12.extname(file).slice(1).toLowerCase().replace("jpg", "jpeg");
+  const ext = path13.extname(file).slice(1).toLowerCase().replace("jpg", "jpeg");
   return `data:image/${ext};base64,${(await readFile3(file)).toString("base64")}`;
 }
 async function libraryFiles(dir) {
-  const entries = await readdir(dir, { withFileTypes: true }).catch(() => []);
+  const entries = await readdir2(dir, { withFileTypes: true }).catch(() => []);
   const found = await Promise.all(entries.map(async (e) => {
-    const file = path12.join(dir, e.name);
+    const file = path13.join(dir, e.name);
     if (e.isDirectory()) return libraryFiles(file);
-    const kind = MEDIA[path12.extname(e.name).toLowerCase()];
+    const kind = MEDIA[path13.extname(e.name).toLowerCase()];
     if (!kind || !e.isFile()) return [];
-    const info = await stat3(file);
+    const info = await stat4(file);
     return [{ path: file, kind, size: info.size, created: info.mtimeMs }];
   }));
   return found.flat();
 }
 async function save(bytes, name, ext = "mp4") {
   await mkdir3(OUTPUT_DIR, { recursive: true });
-  const file = path12.join(OUTPUT_DIR, `${name}.${ext}`);
+  const file = path13.join(OUTPUT_DIR, `${name}.${ext}`);
   await writeFile3(file, bytes);
   return file;
 }
