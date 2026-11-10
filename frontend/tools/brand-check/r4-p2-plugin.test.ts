@@ -28,7 +28,7 @@ describe("h0x plugin", () => {
   it("plugin.json has name, version, description and author", () => {
     const p = json(path.join(PLUGIN, ".claude-plugin/plugin.json"));
     expect(p.name).toBe("h0x");
-    expect(p.version).toBe("0.4.2");
+    expect(p.version).toBe("0.4.3");
     expect(p.description).toBeTruthy();
     expect(p.author.name).toBe("Buckleson");
   });

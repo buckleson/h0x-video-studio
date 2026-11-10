@@ -222,7 +222,7 @@ test("list_library lists media under ~/Artcraft/downloads newest first, recursin
   await putFile(path.join(lib, "explainers", "mid.WEBM"), Buffer.alloc(5), 100);
   await putFile(path.join(lib, "notes.txt"), Buffer.from("not media"), 1);
   await putFile(path.join(lib, "explainers", "mid.srt"), Buffer.from("1"), 1);
-  const res = await withServer(home, {}, (c) => c.callTool({ name: "list_library", arguments: {} }));
+  const res = await withServer(home, {}, (c) => c.callTool({ name: "list_library", arguments: { detail: true } }));
   assert.equal(res.isError, false);
   const rows = textOf(res).split("\n").slice(1);
   assert.deepEqual(rows.map((r) => r.split(" | ")[0]), [
@@ -410,7 +410,7 @@ test("list_library: every media extension maps to the right kind, case-insensiti
   const expect = { "a.PNG": "image", "b.jpg": "image", "c.JPEG": "image", "d.webp": "image", "e.gif": "image", "f.mp4": "video", "g.WebM": "video", "h.MOV": "video" };
   let age = 0;
   for (const f of Object.keys(expect)) await putFile(path.join(lib, "deep", "er", f), Buffer.alloc(0), (age += 10));
-  const out = textOf(await withServer(home, {}, (c) => c.callTool({ name: "list_library", arguments: { limit: 500 } })));
+  const out = textOf(await withServer(home, {}, (c) => c.callTool({ name: "list_library", arguments: { limit: 200, detail: true } })));
   const rows = out.split("\n").slice(1).map((r) => r.split(" | "));
   assert.equal(rows.length, 8);
   assert.deepEqual(rows.map((r) => path.basename(r[0])), Object.keys(expect), "newest first");
@@ -420,7 +420,7 @@ test("list_library: every media extension maps to the right kind, case-insensiti
   }
 });
 
-test("list_library: limit 1 and 500 accepted, 501 / negative / string rejected; the count is before the limit", async () => {
+test("list_library: limit 1 and 200 accepted, 201 / negative / string rejected; the count is before the limit", async () => {
   const home = await fakeHome();
   for (let i = 0; i < 3; i++) await putFile(path.join(libDir(home), `v${i}.mp4`), Buffer.alloc(1), i * 10);
   await withServer(home, {}, async (c) => {
@@ -428,8 +428,8 @@ test("list_library: limit 1 and 500 accepted, 501 / negative / string rejected; 
     assert.match(one[0], /^3 file\(s\)/);
     assert.equal(one.length, 2);
     assert.equal(path.basename(one[1].split(" | ")[0]), "v0.mp4");
-    assert.equal(textOf(await c.callTool({ name: "list_library", arguments: { limit: 500 } })).split("\n").length, 4);
-    for (const args of [{ limit: 501 }, { limit: -1 }, { limit: "5" }, { kind: "IMAGE" }]) {
+    assert.equal(textOf(await c.callTool({ name: "list_library", arguments: { limit: 200 } })).split("\n").length, 4);
+    for (const args of [{ limit: 201 }, { limit: -1 }, { limit: "5" }, { kind: "IMAGE" }]) {
       const bad = await c.callTool({ name: "list_library", arguments: args }).catch(rejected);
       assert.equal(bad.isError, true, JSON.stringify(args));
     }

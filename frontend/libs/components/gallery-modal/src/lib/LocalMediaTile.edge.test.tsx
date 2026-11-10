@@ -206,7 +206,7 @@ describe("LocalMediaTile edge cases", () => {
       const img = container.querySelector("img")!;
       expect(video.className).toBe(TILE_CLASS);
       expect(img.className).toBe(TILE_CLASS);
-      expect(video.hasAttribute("controls")).toBe(true);
+      expect(video.hasAttribute("controls")).toBe(false); // POL-1: no native controls
       expect(video.muted).toBe(true);
       expect(img.getAttribute("alt")).toBe("");
       expect(img.getAttribute("loading")).toBe("lazy");
