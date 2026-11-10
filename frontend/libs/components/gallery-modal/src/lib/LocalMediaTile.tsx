@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { useSignals } from "@preact/signals-react/runtime";
-import { HeartIcon } from "@phosphor-icons/react";
+import { HeartIcon, PlayIcon } from "@phosphor-icons/react";
 import { LocalMediaThumbnail, type LocalMediaFile } from "@storyteller/tauri-api";
 import { useGalleryViewStore } from "@storyteller/ui-generation-list";
 import { favoritePaths, favoritesStore } from "./favoritesStore";
@@ -12,6 +12,11 @@ const MAX_PLAYING_PREVIEWS = 4;
 // Visible video tiles that want to preview, in the order they came into view.
 // Only the first MAX_PLAYING_PREVIEWS play; many decoders at once freeze the WebView.
 const previewQueue: HTMLVideoElement[] = [];
+
+const formatDuration = (seconds: number) => {
+  const s = Math.floor(seconds);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+};
 
 const play = (video: HTMLVideoElement) => video.play()?.catch(() => undefined);
 
@@ -57,6 +62,7 @@ export const LocalMediaTile = ({ file, scrollRoot, onOpen }: LocalMediaTileProps
     typeof IntersectionObserver === "undefined",
   );
   const [imageSrc, setImageSrc] = useState<string>();
+  const [duration, setDuration] = useState<number>();
   const autoplayVideos = useGalleryViewStore((s) => s.autoplayVideos);
   const imageLoaded = isVisible && !isVideo;
 
@@ -117,9 +123,12 @@ export const LocalMediaTile = ({ file, scrollRoot, onOpen }: LocalMediaTileProps
           ref={ref}
           src={isVisible ? convertFileSrc(file.path) : undefined}
           className={TILE_CLASS}
-          controls
           muted
           preload={isVisible ? "metadata" : "none"}
+          onLoadedMetadata={(e) => {
+            const d = e.currentTarget.duration;
+            if (Number.isFinite(d)) setDuration(d);
+          }}
           onMouseEnter={autoplayVideos ? undefined : (e) => play(e.currentTarget)}
           onMouseLeave={autoplayVideos ? undefined : (e) => e.currentTarget.pause()}
         />
@@ -132,6 +141,24 @@ export const LocalMediaTile = ({ file, scrollRoot, onOpen }: LocalMediaTileProps
           decoding="async"
           className={TILE_CLASS}
         />
+      )}
+      {isVideo && (
+        <>
+          <span
+            data-testid="play-badge"
+            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white"
+          >
+            <PlayIcon size="1.2em" weight="fill" />
+          </span>
+          {duration !== undefined && (
+            <span
+              data-testid="duration-chip"
+              className="pointer-events-none absolute bottom-1.5 right-1.5 rounded bg-black/60 px-1.5 py-0.5 text-[11px] font-medium text-white"
+            >
+              {formatDuration(duration)}
+            </span>
+          )}
+        </>
       )}
       <FavoriteHeartButton path={file.path} />
     </div>

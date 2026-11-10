@@ -102469,11 +102469,12 @@ var PROVIDERS = {
     run: generateFal
   }
 };
-var server = new McpServer({ name: "h0x-video-studio", version: "0.1.0" });
+var INSTRUCTIONS = "H0x Video Studio makes videos, images and voiced explainer videos with the user's own provider keys and saves them to H0x My Library. Check provider_status first. Image then video: make a sharp keyframe with generate_image, then pass its path to generate_video as image_path. Explainers: create_explainer, then qa_explainer until it is clean, then render_explainer (preview, then final). The explainer guide is EXPLAINER.md; create_explainer returns its path.";
+var server = new McpServer({ name: "h0x-video-studio", version: "0.1.0" }, { instructions: INSTRUCTIONS });
 server.registerTool(
   "list_video_providers",
   {
-    description: "List the video providers this H0x MCP server can use and whether each has its key configured.",
+    description: "List the video providers this server can use and whether each has its key configured.",
     inputSchema: {}
   },
   async () => {
@@ -102484,7 +102485,7 @@ server.registerTool(
 server.registerTool(
   "generate_video",
   {
-    description: "Generate a short video from a text prompt, optionally animating a local image. Waits for the result and saves an .mp4 locally. Returns the file path.",
+    description: "Generate a short video from a text prompt, optionally animating a local image, and save it as an .mp4 whose path is returned.",
     inputSchema: {
       prompt: external_exports.string().min(1).describe("What should happen in the video: subject, motion, camera, lighting, style."),
       image_path: external_exports.string().optional().describe("Absolute path to a local PNG/JPEG to animate (image-to-video)."),
@@ -102512,7 +102513,7 @@ server.registerTool(
 server.registerTool(
   "generate_image",
   {
-    description: "Generate a still image with Seedream on BytePlus ModelArk (needs BYTEPLUS_API_KEY) and save it as a PNG. Use it to make a sharp keyframe, then pass the path to generate_video as image_path.",
+    description: "Generate a still image with Seedream on BytePlus ModelArk (needs BYTEPLUS_API_KEY) and save it as a PNG keyframe to pass to generate_video as image_path.",
     inputSchema: {
       prompt: external_exports.string().min(1).describe("The image: subject, composition, lighting, style, aspect ratio."),
       size: external_exports.string().default("2560x1440").describe('"2K", "4K" or exact WIDTHxHEIGHT, e.g. 2560x1440 for 16:9.'),
@@ -102547,24 +102548,25 @@ server.registerTool(
 server.registerTool(
   "list_library",
   {
-    description: "List the images and videos in H0x My Library (~/Artcraft/downloads), newest first: path, kind, size and creation time.",
+    description: "List the images and videos in H0x My Library, newest first, as path and kind (detail adds size and creation time).",
     inputSchema: {
       kind: external_exports.enum(["image", "video", "all"]).default("all"),
-      limit: external_exports.number().int().min(1).max(500).default(50)
+      limit: external_exports.number().int().min(1).max(200).default(10),
+      detail: external_exports.boolean().default(false)
     }
   },
-  async ({ kind, limit }) => {
+  async ({ kind, limit, detail }) => {
     const files = (await libraryFiles(LIBRARY_DIR)).filter((f) => kind === "all" || f.kind === kind);
     if (!files.length) return text(`No ${kind === "all" ? "media" : `${kind}s`} in ${LIBRARY_DIR}.`);
     files.sort((a, b) => b.created - a.created);
-    const rows = files.slice(0, limit).map((f) => `${f.path} | ${f.kind} | ${f.size} bytes | ${new Date(f.created).toISOString()}`);
+    const rows = files.slice(0, limit).map((f) => detail ? `${f.path} | ${f.kind} | ${f.size} bytes | ${new Date(f.created).toISOString()}` : `${f.path} | ${f.kind}`);
     return text([`${files.length} file(s) in ${LIBRARY_DIR}, newest first:`, ...rows].join("\n"));
   }
 );
 server.registerTool(
   "provider_status",
   {
-    description: "Report which video/image providers are usable: a key in this server's environment or in the H0x app's credential files. Reports true/false only, never key values.",
+    description: "Status of each video and image provider as true or false for a key in this server's environment or the H0x app's credential files, never key values.",
     inputSchema: {}
   },
   async () => {
@@ -102584,7 +102586,7 @@ server.registerTool(
 server.registerTool(
   "open_library",
   {
-    description: "Where H0x My Library keeps generated media, and how to open it in the app.",
+    description: "Library folder where H0x My Library keeps generated media, and how to open it in the app.",
     inputSchema: {}
   },
   async () => text(`My Library folder: ${LIBRARY_DIR}
@@ -102634,7 +102636,7 @@ var explainerName = external_exports.string().regex(NAME_RE).describe("Project n
 server.registerTool(
   "create_explainer",
   {
-    description: "Explainer Studio step 1. Create (or update) an explainer project from a voice script: writes script.json, speaks every line with an edge-tts voice, and writes build/voice.mp3, build/timings.js and build/subs.srt. Adds a starter scene.html the first time. Re-running with an edited script only re-speaks changed lines; scene.html is never overwritten. Read EXPLAINER.md (path in the result) before writing the scene.",
+    description: "Create or update an explainer project from a voice script, speaking each line with edge-tts into build/voice.mp3, build/timings.js and build/subs.srt (read EXPLAINER.md, path in the result, before writing scene.html).",
     inputSchema: {
       name: explainerName,
       script: external_exports.object({
@@ -102672,14 +102674,15 @@ server.registerTool(
 server.registerTool(
   "qa_explainer",
   {
-    description: "Explainer Studio step 2. Snapshot the scene at chosen moments and check the layout. Returns WARN lines (text off-frame, under the subtitles or watermark, overlapping text), scene errors, and a contact sheet image to look at. Fix and repeat until it is clean.",
+    description: "QA the scene layout at chosen moments, returning WARN lines (text off-frame, under the subtitles or watermark, or overlapping), scene errors and the contact sheet path, with the sheet image attached on warnings or errors or when image is true.",
     inputSchema: {
       name: explainerName,
       times: external_exports.union([external_exports.literal("lines"), external_exports.array(external_exports.number().min(0)).min(1).max(40)]).default("lines").describe('"lines" = 2 frames per voice line, or a list of seconds to inspect.'),
-      full: external_exports.boolean().default(false).describe("Save 1920x1080 frames instead of 960x540.")
+      full: external_exports.boolean().default(false).describe("Save 1920x1080 frames instead of 960x540."),
+      image: external_exports.boolean().optional().describe("Always attach the contact sheet image, even on a clean pass.")
     }
   },
-  async ({ name, times, full }) => {
+  async ({ name, times, full, image }) => {
     try {
       const r = await qaExplainer({ name, times, full });
       const warned = r.frames.filter((f) => f.warnings.length);
@@ -102690,6 +102693,7 @@ server.registerTool(
         `Frames: ${path13.dirname(r.sheet)}`,
         `Contact sheet: ${r.sheet}`
       ].join("\n");
+      if (!image && !warned.length && !r.errors.length) return text(report);
       const sheet = await readFile3(r.sheet);
       return { content: [{ type: "text", text: report }, { type: "image", data: sheet.toString("base64"), mimeType: "image/jpeg" }], isError: false };
     } catch (e) {
@@ -102700,7 +102704,7 @@ server.registerTool(
 server.registerTool(
   "render_explainer",
   {
-    description: 'Explainer Studio step 3. Render the scene frame by frame with its voice. mode "preview" makes a fast 960x540 12 fps check in the project. mode "final" makes the 1080p30 master in the project and copies a compact MP4 and the .srt to ~/Artcraft/downloads/explainers, where H0x My Library shows them. A final render takes several minutes; only one Chrome job runs at a time.',
+    description: "Render the scene frame by frame with its voice, as a fast 960x540 preview in the project or a 1080p30 final that is also copied with its subtitles into H0x My Library.",
     inputSchema: {
       name: explainerName,
       mode: external_exports.enum(["final", "preview"]).default("final"),

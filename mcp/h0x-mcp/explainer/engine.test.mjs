@@ -157,7 +157,7 @@ test("re-running create_explainer re-speaks only changed lines and keeps scene.h
 });
 
 test("qa_explainer returns a clean report and a contact sheet for the starter scene", { skip: noChrome }, async () => {
-  const res = await call("qa_explainer", { name: "demo" });
+  const res = await call("qa_explainer", { name: "demo", image: true });
   assert.equal(res.isError, false, textOf(res));
   assert.match(textOf(res), /4 frames/);
   assert.doesNotMatch(textOf(res), /WARN|ERROR/);

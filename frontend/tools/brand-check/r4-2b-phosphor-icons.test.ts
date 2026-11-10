@@ -218,6 +218,7 @@ describe("R4-2b icon meanings", () => {
       ["mesh", "Mesh", "CubeIcon"],
       ["splat", "Splat", "GlobeIcon"],
       ["uploaded", "Uploaded", "UploadSimpleIcon"],
+      ["favorites", "Favorites", "HeartIcon"],
     ]);
   });
 

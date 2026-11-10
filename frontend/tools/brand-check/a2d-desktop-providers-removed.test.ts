@@ -113,6 +113,7 @@ const REMOVED_SERVICE_MODULES = ['grok', 'midjourney', 'sora', 'worldlabs'];
 
 // Every command lib.rs registers after the 14 removals, sorted.
 const REGISTERED_COMMANDS = [
+  'add_favorite',
   'custom_endpoint_delete_command',
   'custom_endpoint_list_command',
   'custom_endpoint_save_command',
@@ -140,6 +141,8 @@ const REGISTERED_COMMANDS = [
   'get_openai_api_key_command',
   'get_provider_order_command',
   'get_task_queue_command',
+  'import_favorite_files',
+  'list_favorites',
   'list_image_models_command',
   'list_local_media_command',
   'list_video_models_command',
@@ -153,6 +156,7 @@ const REGISTERED_COMMANDS = [
   'provider_clear_command',
   'provider_list_command',
   'provider_set_api_key_command',
+  'remove_favorite',
   'save_scene_frame_command',
   'set_fal_api_key_command',
   'set_openai_api_key_command',

@@ -4,7 +4,7 @@
   "description": "H0x Video Studio MCP server",
   "main": "index.js",
   "scripts": {
-    "test": "node --test index.test.mjs explainer/engine.test.mjs",
+    "test": "node --test --test-concurrency=1 index.test.mjs explainer/engine.test.mjs favorites.test.mjs favorites.edge.test.mjs recent.test.mjs recent.edge.test.mjs list-library.test.mjs list-library.edge.test.mjs descriptions.test.mjs descriptions.edge.test.mjs package-scripts.test.mjs qa-explainer-image.test.mjs qa-explainer-image.edge.test.mjs",
     "bundle": "node build-bundle.mjs"
   },
   "keywords": [],

@@ -113,7 +113,7 @@ describe("LocalMediaTile", () => {
     intersect(true);
     expect(el.getAttribute("src")).toBe(converted(VIDEO.path));
     expect(el.getAttribute("preload")).toBe("metadata");
-    expect(el.hasAttribute("controls")).toBe(true);
+    expect(el.hasAttribute("controls")).toBe(false); // POL-1: no native controls
     expect(playing.has(el)).toBe(true);
 
     intersect(false);
